@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=UTF-8">
+    <title>Cadastro Aluno</title>
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="d-flex justify-content-between c-padrao">
+    <div class="w-25 bg-gradiente p-5 px-4">
+        <a href="/index">
+            <img src="/static/img/DipeSlogan.svg" alt="DipeLogo" class="img-fluid">
+        </a>
+
+        <h4 class="fw-regular mt-5 mb-4">Venha desbloquear
+            todo o seu <strong>potencial</strong>
+            conosco!</h4>
+
+        <small class="fs-5">Somos a sua solução para
+            um bom desempenho acadêmico.</small>
+
+    </div>
+
+    <section class="bg-branco w-75 shadow">
+        <div class="container h-100 p-5 d-flex align-items-center justify-content-center">
+            <div class="row row-cols-1 w-100">
+                <div class="d-flex align-items-center flex-column">
+                    <h3 class="text-center">Primeiro Login</h3>
+                    <img src="/static/img/step2.svg" alt="" class="w-50 img-fluid mt-3">
+                </div>
+
+                <form method="post" action="/cadastro/aluno/{{ idUser }}" class="d-flex flex-column"
+                    enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-8">
+                            <label for="nome" class="mt-3">Nome:</label>
+                            <input type="text" id="nome" name="nome" class="form-control borda bg-cinza mt-1"
+                                placeholder="Digite seu nome" required>
+
+                            <label for="ano" class="mt-3">Série:</label>
+                            <input type="number" id="ano" name="ano" class="form-control borda bg-cinza mt-1"
+                                placeholder="Digite sua série" required>
+
+                            <label for="curso" class="mt-3">Curso:</label>
+                            <select id="curso" name="curso" class="form-select borda bg-cinza mt-1" required>
+                                <option value="">Selecione seu curso</option>
+                                <option value="Redes de Computadores">Redes de Computadores</option>
+                                <option value="Agropecuária">Agropecuária</option>
+                            </select>
+
+                            <label for="zona" class="mt-3">Zona:</label>
+                            <select id="zona" name="zona" class="form-select borda bg-cinza mt-1" required>
+                                <option value="">Selecione a zona</option>
+                                <option value="urbana">Urbana</option>
+                                <option value="rural">Rural</option>
+                            </select>
+
+                            <label for="origem_escolar" class="mt-3">Origem Escolar:</label>
+                            <select id="origem_escolar" name="origem_escolar" class="form-select borda bg-cinza mt-1"
+                                required>
+                                <option value="">Selecione a origem</option>
+                                <option value="publica">Pública</option>
+                                <option value="privada">Privada</option>
+                            </select>
+                        </div>
+
+                        <div class="col-4">
+                            <input type="file" id="imagem" name="imagem" accept="image/*" class="d-none">
+                            <label for="imagem" class="mt-3">Foto de perfil</label>
+                            <label for="imagem"
+                                class="bg-cinza mt-1 rounded-3 py-4 d-flex flex-column justify-content-center align-items-center borda">
+                                <img src="/static/img/foto.png" width="100px" alt="">
+                                <h5 class="m-0 mt-4">Adicionar foto</h5>
+                            </label>
+                            <label for="idade" class="mt-3">Idade:</label>
+                            <input type="number" id="idade" name="idade" class="form-control borda bg-cinza mt-1"
+                                placeholder="Digite sua idade" required>
+
+                            <label for="municipio" class="mt-3">Município:</label>
+                            <input type="text" id="municipio" name="municipio"
+                                class="form-control borda bg-cinza mt-1" placeholder="Digite o município onde mora"
+                                required>
+
+
+                        </div>
+                    </div>
+                    <div class="w-100 d-flex justify-content-end">
+                        <button type="submit"
+                            class="btn btn-padrao ativo col-50 mt-4 fs-4 fw-bold c-black">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

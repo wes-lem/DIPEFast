@@ -1,0 +1,39 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.db
+*.sqlite3
+*.log
+
+# Virtual Environment
+venv/
+env/
+.env/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Mypy
+.mypy_cache/
+
+# Coverage reports
+.coverage
+*.coveragerc
+
+# mypy, pytypes
+.mypy_cache/
+.dmypy.json
+.darglint
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# FastAPI
+instance/
+*.db
+*.sqlite3

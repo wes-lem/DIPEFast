@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --green-50: #f2fbf2;
+    --green-100: #e2f6e3;
+    --green-200: #c6ecc8;
+    --green-300: #98dd9c;
+    --green-400: #64c46a;
+    --green-500: #3fa846;
+    --green-600: #2f8a35;
+    --green-700: #286d2d;
+    --green-800: #245728;
+    --green-900: #1f4823;
+    --green-950: #0c270f;
+}
+
+* { font-family: "Poppins", sans-serif; color: #3F3D56; }
+p { font-size: 12px; margin: 0;}
+h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
+
+/* Fontes */
+.fs-7 { font-size: 14px !important; }
+.f-size { font-size: 12px !important; }
+.fw-semi { font-weight: 500; }
+.f-libre { font-family: "Libre Bodoni", serif; }
+.f-dipe { font-family: "Bungee", serif; }
+
+/* Colors */
+.c-padrao { color: var(--green-400) !important; }
+.c-secundaria { color: var(--green-950) !important; }
+.c-hover { color: var(--green-800) !important; }
+.c-nota { color: var(--green-500) !important; }
+.c-black { color: #3F3D56 !important; }
+.c-pot { color: #7E78D2; }
+.c-mat { color: #0FA3B1; }
+.c-cie { color: #FE938C; }
+
+/* Fundos */
+.bg-padrao { background-color: var(--green-500) !important; }
+.bg-padrao-claro { background-color: var(--green-400) !important; }
+.bg-secundaria { background-color: var(--green-200); }
+.bg-branco { background-color: white; }
+.bg-fundo { background-color: #F9F8FA; }
+.bg-cinza { background-color: #F1F1F1; }
+.bg-cinza1 { background-color: #F1F1F1; }
+.bg-gradiente { background: linear-gradient(172.513deg, var(--green-200) 0%, var(--green-500) 100%); }
+.bg-pattern {
+    background-image: url('../img/pattern.png');
+    background-size: 100px;
+}
+
+.borda { border: #D9D9D9 solid 1px; }
+.borda-padrao { border: var(--green-500) solid 2px; }
+.rounded { border-radius: 8px; }
+
+/* Botões */
+.btn-padrao {
+    background-color: var(--green-500);
+    border-color: var(--green-500);
+    color: var(--green-800);
+}
+
+.btn-padrao:hover {
+    background-color: var(--green-600) !important;
+    border-color: var(--green-600) !important;
+    color: var(--green-800);
+}
+
+.btn-padrao:active {
+    background-color: var(--green-700) !important;
+    border-color: var(--green-700) !important;
+    color: var(--green-50) !important;
+}
+
+.btn-padrao.ativo {
+    background-color: var(--green-500);
+    border-color: var(--green-500);
+    color: var(--green-800);
+}
+
+.btn-secundario {
+    background-color: var(--green-200);
+    border-color: var(--green-200);
+}.btn-secundario:hover {
+    background-color: var(--green-300) !important;
+    border-color: var(--green-300) !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 5px 2px var(--green-300);
+}
+
+/* Padronizando os tamanhos do body, header e main */
+body {
+    background-color: #f9f8fa;
+    width: 100%;
+    height: 100vh;
+}
+
+main {
+    width: calc(100% - 32px);
+    height: calc(100vh - 32px);
+    margin-top: 16px;
+    margin-left: calc(25%);
+}
+
+header {
+    height: calc(100vh);
+    position: fixed;
+    float: left;
+}
+
+/* Tamanho dos botões do menu */
+header .btn-padrao {
+    width: calc(100% - 32px);
+}
+
+/* Largura dos cards para ter espaçamento entre eles de 16px */
+.col-50 {
+    width: calc(50% - 8px);
+}
+
+.rounded-tl {
+    border-radius: .5rem 0 0 0 !important;
+}
+
+.rounded-tr {
+    border-radius: 0 .5rem 0 0 !important;
+}
+
+/* Botão da opção Aluno/Professor do login */
+.button-box {
+    width: 259px;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 30px;
+    background: #fff;
+}
+
+.toggle-btn {
+    padding: 10px 35px;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    outline: none;
+    position: relative;
+    text-align: center;
+}
+
+#btnAluno {
+    color: white;
+    transition: .7s;
+}
+
+#btnProfessor {
+    transition: .7s;
+}
+
+#btn {
+    left: 2%;
+    top: 10%;
+    position: absolute;
+    width: 105px;
+    height: 80%;
+    background: var(--green-800);
+    border-radius: 30px;
+    transition: .5s;
+}
+
+::after,
+::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.wrapper {
+    display: flex;
+}
+
+.main {
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+    background-color: #fafbfe;
+}
+
+#sidebar {
+    width: 70px;
+    min-width: 70px;
+    z-index: 1000;
+    transition: all .25s ease-in-out;
+    background: linear-gradient(172.513deg, #C6ECC8 0%, #64C46A 100%);
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
+
+#sidebar.expand {
+    width: 260px;
+    min-width: 260px;
+}
+
+.toggle-btn {
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    padding: 1rem 1.5rem;
+}
+
+.toggle-btn i {
+    font-size: 1.5rem;
+    color: #3F3D56;
+}
+
+.sidebar-logo {
+    margin: auto 0;
+}
+
+.sidebar-logo a {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.sidebar-logo button {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+#sidebar:not(.expand) .sidebar-logo,
+#sidebar:not(.expand) a.sidebar-link span,
+#sidebar:not(.expand) button.sidebar-link span {
+    display: none;
+}
+
+.sidebar-nav {
+    padding: 2rem 0;
+    flex: 1 1 auto;
+}
+
+a.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #3F3D56;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+}
+
+button.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #3F3D56;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    margin-right: .75rem;
+}
+
+a.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, .3);
+    border-left: 3px solid var(--green-400);
+}
+
+a.sidebar-link.active {
+    background-color: rgba(255, 255, 255, .3);
+}
+
+button.sidebar-link:hover {
+    background: none;
+    border: none;
+    background-color: rgba(255, 255, 255, .3) !important;
+    border-left: 3px solid var(--green-400) !important;
+}
+
+button.sidebar-link.active {
+    background-color: rgba(255, 255, 255, .3);
+}
+
+.sidebar-item {
+    position: relative;
+}
+
+.menu-resultados .bg-branco {
+    width: calc(33% - 8px) !important;
+}
+
+input[type="radio"] {
+    appearance: none; /* Remove o estilo padrão */
+    width: 40px;
+    height: 40px;
+    border: 1px solid #D9D9D9;
+    border-radius: 6px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Criando um ícone centralizado dentro do radio button */
+input[type="radio"]::before {
+    content: "\F633"; /* Ícone de check-circle do Bootstrap Icons */
+    font-family: "Bootstrap-icons";
+    font-size: 24px;
+    color: transparent; /* Esconde o ícone quando não estiver selecionado */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Quando o radio estiver selecionado, exibe o ícone */
+input[type="radio"]:checked {
+    background: var(--green-500); /* Cor quando selecionado */
+    border-color: var(--green-500);
+}
+
+input[type="radio"]:checked::before {
+    color: white;
+}
+
+/* Quando os inputs estão preenchidos eles ficam da cor branca */
+input:not(:placeholder-shown) { background-color: white; }
+textarea:not(:placeholder-shown) { background-color: white; }
+
+/* Cor do divisor da tabela */
+.table-group-divider { border-top: 2px solid var(--green-500) !important; }

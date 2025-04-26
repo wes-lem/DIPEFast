@@ -1,75 +1,102 @@
-# DIPEFast - Sistema de Diagnóstico e Intervenção Pedagógica e Educacional
+# DIPE - Sistema de Diagnóstico e Intervenção Pedagógica e Educacional
 
 ## 📌 Visão Geral
-O DIPEFast é um sistema web desenvolvido em FastAPI e tecnologias modernas para o acompanhamento pedagógico de alunos, permitindo coleta, organização e análise de dados acadêmicos e socioeconômicos. O sistema foi projetado para identificar dificuldades individuais e coletivas, proporcionando uma gestão eficaz de intervenções pedagógicas.
+O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o acompanhamento pedagógico de alunos, permitindo coleta, organização e análise de dados acadêmicos e socioeconômicos. O sistema foi projetado para identificar dificuldades individuais e coletivas, proporcionando uma gestão eficaz de intervenções pedagógicas.
 
 ## ✨ Funcionalidades Principais
 
 ### 👨‍🎓 Área do Aluno
-- Cadastro individual com informações pessoais e socioeconômicas  
-- Realização de provas diagnósticas online  
-- Feedback imediato sobre desempenho  
-- Acesso privado ao histórico acadêmico  
-- Atualização de dados pessoais  
+- Cadastro individual com informações pessoais e socioeconômicas
+- Realização de provas diagnósticas online
+- Visualização de desempenho por disciplina
+- Acompanhamento da progressão individual
+- Atualização de dados pessoais
 
 ### 👨‍🏫 Área do Gestor
-- Dashboard analítico com métricas de desempenho  
-- Filtros avançados por turma, ano e curso  
-- Registro de intervenções pedagógicas  
-- Exportação de relatórios em PDF/Excel  
-- Acompanhamento de progresso dos alunos  
+- Dashboard analítico com métricas de desempenho
+- Visualização de desempenho por disciplina
+- Análise de distribuição de notas
+- Comparação entre turmas
+- Acompanhamento da progressão dos alunos
+- Análise do perfil dos alunos
+- Monitoramento da taxa de participação
 
 ## 🛠 Tecnologias Utilizadas
 
 ### Backend
-- Python 3.10+  
-- FastAPI  
-- SQLAlchemy (ORM)  
-- Uvicorn (ASGI server)  
+- Python 3.10+
+- FastAPI
+- SQLAlchemy (ORM)
+- Uvicorn (ASGI server)
 
 ### Frontend
-- Jinja2 (templates)  
-- Bootstrap 5  
-- Chart.js (gráficos)  
-- Vanilla JavaScript  
+- Jinja2 (templates)
+- Bootstrap 5
+- Chart.js (gráficos)
+- Vanilla JavaScript
 
 ### Banco de Dados
-- PostgreSQL (produção)  
-- SQLite (desenvolvimento)  
-
-### Segurança
-- Autenticação JWT  
-- Criptografia AES-256  
-- Proteção LGPD  
+- MySQL
 
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
-- Python 3.10 ou superior  
+- Python 3.10 ou superior
+- MySQL
+
+### Instalação
+1. Clone o repositório
+2. Instale as dependências:
+```bash
+pip install -r requirements.txt
+```
+3. Configure o banco de dados MySQL
+4. Execute o servidor:
+```bash
+uvicorn main:app --reload
+```
 
 ## 📊 Estrutura do Projeto
-DIPEFast/
-├── alembic/              # Migrações do banco de dados
-├── app/
-│   ├── core/             # Configurações principais
-│   ├── db/               # Conexão com banco de dados
-│   ├── models/           # Modelos de dados
-│   ├── routes/           # Rotas da aplicação
-│   │   ├── auth.py       # Autenticação
-│   │   ├── alunos.py     # Gestão de alunos
-│   │   ├── provas.py     # Provas diagnósticas
-│   │   └── gestao.py     # Dashboard gerencial
-│   ├── schemas/          # Validação de dados
-│   └── static/           # Arquivos estáticos
-├── templates/            # Templates HTML
-│   ├── base.html         # Layout principal
-│   ├── aluno/            # Área do aluno
-│   └── gestor/           # Área do gestor
-├── tests/                # Testes automatizados
-├── .env.example          # Exemplo de variáveis de ambiente
-├── alembic.ini           # Configuração do Alembic
-├── main.py               # Ponto de entrada
-└── requirements.txt      # Dependências do projeto
+```
+DIPE/
+├── controllers/          # Controladores da aplicação
+│   ├── aluno_controller.py    # Rotas do aluno
+│   ├── gestor_controller.py   # Rotas do gestor
+│   ├── prova_controller.py    # Rotas das provas
+│   ├── questao_controller.py  # Rotas das questões
+│   ├── resposta_controller.py # Rotas das respostas
+│   └── usuario_controller.py  # Rotas de usuários
+├── dao/                  # Data Access Objects
+│   ├── aluno_dao.py     # Operações com alunos
+│   ├── database.py      # Configuração do banco
+│   └── usuario_dao.py   # Operações com usuários
+├── models/              # Modelos de dados
+│   ├── aluno.py        # Modelo de aluno
+│   ├── prova.py        # Modelo de prova
+│   ├── questao.py      # Modelo de questão
+│   ├── resposta.py     # Modelo de resposta
+│   ├── resultado.py    # Modelo de resultado
+│   └── usuario.py      # Modelo de usuário
+├── templates/           # Templates HTML
+│   ├── static/         # Arquivos estáticos
+│   │   ├── css/        # Estilos CSS
+│   │   ├── js/         # Scripts JavaScript
+│   │   ├── img/        # Imagens
+│   │   └── uploads/    # Uploads de imagens
+│   ├── cadastro.html           # Página de cadastro
+│   ├── cadastro_aluno.html     # Cadastro de aluno
+│   ├── cadastro_prova.html     # Cadastro de prova
+│   ├── dashboard.html          # Dashboard do gestor
+│   ├── dashboard_aluno.html    # Dashboard do aluno
+│   ├── dashboard_gestor.html   # Dashboard do gestor
+│   ├── gestor_alunos.html      # Lista de alunos
+│   ├── gestor_cadastro.html    # Cadastro pelo gestor
+│   ├── index.html             # Página inicial
+│   ├── login.html             # Página de login
+│   └── perfil.html            # Perfil do aluno
+├── main.py              # Ponto de entrada
+└── requirements.txt     # Dependências do projeto
+```
 
 ## 📄 Licença
 Este projeto é de uso acadêmico, sem fins lucrativos.

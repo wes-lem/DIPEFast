@@ -6,6 +6,8 @@ from dao.usuario_dao import UsuarioDAO
 from dao.database import get_db
 from fastapi.templating import Jinja2Templates
 from models.aluno import Aluno
+from models.usuario import Usuario
+from datetime import datetime, timedelta
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -14,44 +16,45 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/login")
 def login_page(request: Request):
     erro = request.query_params.get("erro", None)
-    return templates.TemplateResponse("login.html", {"request": request, "erro": erro})
+    return templates.TemplateResponse("aluno/login.html", {"request": request, "erro": erro})
 
 @router.get("/index")
 def index_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("gestor/dashboard_gestor.html", {"request": request})
 
 @router.post("/login")
-def login(
+async def login(
     request: Request,
     email: str = Form(...),
     senha: str = Form(...),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
-    usuario = UsuarioDAO.get_by_email(db, email)
-    if usuario and bcrypt.verify(senha, usuario.senha_hash):
-
-        # Se o usuário for do tipo "aluno", verificar se está cadastrado em "alunos"
-        if usuario.tipo == "aluno":
-            aluno = db.query(Aluno).filter(Aluno.idUser == usuario.id).first()
-            if not aluno:
-                print("Aluno não cadastrado ainda")
-                return RedirectResponse(
-                    url=f"/cadastro/aluno/{usuario.id}", status_code=303
-                )
-            
-        print(
-            f"✅ Login bem-sucedido! Usuário ID: {usuario.id} - Cookie de sessão criado."
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    
+    if not usuario or not bcrypt.verify(senha, usuario.senha_hash):
+        return templates.TemplateResponse(
+            "aluno/login.html",
+            {"request": request, "error": "Email ou senha inválidos"}
         )
-        response = RedirectResponse(
-            url="/dashboard" if usuario.tipo == "gestor" else "/perfil", status_code=303
-        )
-        response.set_cookie(
-            key="session_user", value=str(usuario.id), httponly=True
-        )
-        return response
-
-    # Se o login falhar, redireciona para a página de login com um erro
-    return RedirectResponse(url="/login?erro=Credenciais inválidas", status_code=303)
+    
+    # Se o usuário for do tipo "aluno", verificar se está cadastrado em "alunos"
+    if usuario.tipo == "aluno":
+        aluno = db.query(Aluno).filter(Aluno.idUser == usuario.id).first()
+        if not aluno:
+            return RedirectResponse(
+                url=f"/cadastro/aluno/{usuario.id}", status_code=303
+            )
+    
+    # Criar sessão
+    response = RedirectResponse(
+        url="/gestor/dashboard" if usuario.tipo == "gestor" else "/perfil",
+        status_code=303
+    )
+    response.set_cookie(
+        key="session_user", value=str(usuario.id), httponly=True
+    )
+    
+    return response
 
 
 @router.post("/sair")
@@ -101,5 +104,6 @@ def dashboard(request: Request, user_id: str = Depends(verificar_sessao)):
         return RedirectResponse(url="/login", status_code=303)
     
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "user_id": user_id}
+        "gestor/dashboard_gestor.html",
+        {"request": request, "user_id": user_id}
     )

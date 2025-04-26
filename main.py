@@ -4,8 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from controllers.usuario_controller import router as usuario_router
 from controllers.aluno_controller import router as aluno_router
 from controllers.prova_controller import router as prova_router
-from controllers.questao_controller import router as questao_router
-from controllers.resposta_controller import router as resposta_router
 from controllers.gestor_controller import router as gestor_router
 
 app = FastAPI()
@@ -16,12 +14,10 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.get("/")
 def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("gestor/dashboard_gestor.html", {"request": request})
 
 # Inclui as rotas do controller de usuários
 app.include_router(aluno_router)
 app.include_router(usuario_router)
 app.include_router(prova_router)
-app.include_router(resposta_router)
-app.include_router(questao_router)
 app.include_router(gestor_router)

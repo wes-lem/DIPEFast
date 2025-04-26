@@ -13,6 +13,9 @@ from models.resultado import Resultado
 from fastapi import File, UploadFile
 import os
 import shutil
+import json
+from sqlalchemy import func
+from fastapi.responses import HTMLResponse
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -31,7 +34,7 @@ def verificar_sessao(request: Request):
 
 @router.get("/cadastro")
 def cadastro_page(request: Request):
-    return templates.TemplateResponse("cadastro.html", {"request": request})
+    return templates.TemplateResponse("aluno/cadastro.html", {"request": request})
 
 # Cadastro de usuário
 @router.post("/cadastro")
@@ -52,7 +55,7 @@ def cadastro(
 @router.get("/cadastro/aluno/{idUser}")
 def cadastro_aluno_page(request: Request, idUser: int):
     return templates.TemplateResponse(
-        "cadastro_aluno.html", {"request": request, "idUser": idUser}
+        "aluno/cadastro_aluno.html", {"request": request, "idUser": idUser}
     )
 
 @router.post("/cadastro/aluno/{idUser}")
@@ -79,7 +82,7 @@ def cadastrar_aluno(
     # Salvar imagem (se houver)
     imagem_path = None
     if imagem:
-        upload_dir = os.path.join("templates", "static", "uploads")
+        upload_dir = os.path.join("templates", "static", "uploads", "alunos")
         os.makedirs(upload_dir, exist_ok=True)
 
         # Cria o caminho absoluto da imagem a ser salva
@@ -165,7 +168,7 @@ def perfil(
 
     # Retorna as informações para o template
     return templates.TemplateResponse(
-        "perfil.html",
+        "aluno/perfil.html",
         {
             "request": request,
             "id": aluno.idAluno,
@@ -177,4 +180,48 @@ def perfil(
             "curso": aluno.curso,
             "materias": materias,
         },
+    )
+
+@router.get("/aluno/dashboard/{aluno_id}", response_class=HTMLResponse)
+async def dashboard_aluno(request: Request, aluno_id: int, db: Session = Depends(get_db)):
+    # Buscar dados do aluno
+    aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
+    if not aluno:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado")
+
+    # Buscar resultados do aluno por disciplina
+    resultados_por_disciplina = db.query(
+        Prova.materia,
+        func.avg(Resultado.acertos).label('media_acertos')
+    ).join(Resultado).filter(
+        Resultado.aluno_id == aluno_id
+    ).group_by(Prova.materia).all()
+
+    # Buscar progressão do aluno
+    progressao = db.query(
+        Prova.data_criacao,
+        Resultado.acertos
+    ).join(Resultado).filter(
+        Resultado.aluno_id == aluno_id
+    ).order_by(Prova.data_criacao).all()
+
+    # Preparar dados para os gráficos
+    dados_disciplina = {
+        'labels': [r.materia for r in resultados_por_disciplina],
+        'data': [float(r.media_acertos) for r in resultados_por_disciplina]
+    }
+
+    dados_progressao = {
+        'labels': [str(r.data_criacao) for r in progressao],
+        'data': [r.acertos for r in progressao]
+    }
+
+    return templates.TemplateResponse(
+        "aluno/dashboard_aluno.html",
+        {
+            "request": request,
+            "aluno": aluno,
+            "dados_disciplina": json.dumps(dados_disciplina),
+            "dados_progressao": json.dumps(dados_progressao)
+        }
     )

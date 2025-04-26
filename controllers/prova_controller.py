@@ -30,13 +30,23 @@ def listar_provas(request: Request, user_id: int = Depends(verificar_sessao), db
 
 # Página para o aluno responder a prova
 @router.get("/prova/{prova_id}")
-def responder_prova(request: Request, prova_id: int, user_id: int = Depends(verificar_sessao), db: Session = Depends(get_db)):
+def responder_prova(request: Request, prova_id: int, db: Session = Depends(get_db)):
     prova = db.query(Prova).filter(Prova.id == prova_id).first()
     if not prova:
         raise HTTPException(status_code=404, detail="Prova não encontrada")
-    
+
     questoes = db.query(Questao).filter(Questao.prova_id == prova_id).all()
-    return templates.TemplateResponse("responder_prova.html", {"request": request, "prova": prova, "questoes": questoes})
+    if not questoes:
+        raise HTTPException(status_code=404, detail="Questões não encontradas")
+
+    return templates.TemplateResponse(
+        "aluno/responder_prova.html",
+        {
+            "request": request,
+            "prova": prova,
+            "questoes": questoes
+        }
+    )
 
 @router.post("/prova/{prova_id}/responder")
 async def enviar_respostas(
@@ -98,3 +108,55 @@ async def enviar_respostas(
     )
 
     return RedirectResponse(url="/perfil", status_code=303)
+
+# Listar questões de uma prova
+@router.get("/provas/{prova_id}/questoes")
+def listar_questoes(request: Request, prova_id: int, db: Session = Depends(get_db)):
+    questoes = db.query(Questao).filter(Questao.prova_id == prova_id).all()
+    return templates.TemplateResponse("listar_questoes.html", {"request": request, "questoes": questoes})
+
+# Adicionar questão a uma prova
+@router.post("/provas/{prova_id}/questoes")
+def adicionar_questao(
+    prova_id: int,
+    enunciado: str = Form(...),
+    alternativa_a: str = Form(...),
+    alternativa_b: str = Form(...),
+    alternativa_c: str = Form(...),
+    alternativa_d: str = Form(...),
+    alternativa_e: str = Form(...),
+    resposta_correta: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    QuestaoDAO.create(
+        db, prova_id, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, resposta_correta
+    )
+    return RedirectResponse(url=f"/provas/{prova_id}/questoes", status_code=303)
+
+# Ver resultado das provas de um aluno
+@router.get("/perfil/{aluno_id}/resultado")
+def resultado_provas(request: Request, aluno_id: int, db: Session = Depends(get_db)):
+    respostas = db.query(Resposta).filter(Resposta.aluno_id == aluno_id).all()
+    
+    pontuacao = {"Português": 0, "Matemática": 0, "Ciências": 0}
+    total_questoes = {"Português": 0, "Matemática": 0, "Ciências": 0}
+
+    for resposta in respostas:
+        questao = db.query(Questao).filter(Questao.id == resposta.questao_id).first()
+        if questao:
+            total_questoes[questao.materia] += 1
+            if resposta.resposta == questao.resposta_correta:
+                pontuacao[questao.materia] += 1
+
+    situacoes = {}
+    for materia, acertos in pontuacao.items():
+        if acertos <= 5:
+            situacoes[materia] = "Insuficiente"
+        elif acertos <= 10:
+            situacoes[materia] = "Regular"
+        else:
+            situacoes[materia] = "Suficiente"
+
+    return templates.TemplateResponse(
+        "aluno/resultado.html", {"request": request, "pontuacao": pontuacao, "situacoes": situacoes}
+    )

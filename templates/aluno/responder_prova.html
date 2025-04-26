@@ -75,16 +75,17 @@
                         <p class="fs-5">{{ questao.enunciado }}</p> 
                         
                         {% if questao.imagem %}
-                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" width="300px">
+                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" width="400px">
                         {% endif %}
                         <div class="opcoes">
                             {% for opcao in ['a', 'b', 'c', 'd', 'e'] %}
                             <div class="d-flex gap-2 mb-2">
                                 <input type="radio" tabindex="-1" name="resposta_{{ questao.id }}" value="{{ opcao }}"
-                                    required>
-                                    <label class="form-check-label bg-cinza p-2 text-dark w-100 rounded-3 h-100 m-0 borda" >
-                                        {{ opcao + ') ' + questao['opcao_' + opcao] }}
-                                    </label>
+                                    id="resposta_{{ questao.id }}_{{ opcao }}" required>
+                                <label class="form-check-label bg-branco p-2 text-dark w-100 rounded-3 h-100 m-0 borda" 
+                                       for="resposta_{{ questao.id }}_{{ opcao }}">
+                                    {{ opcao + ') ' + questao['opcao_' + opcao] }}
+                                </label>
                             </div>
                             {% endfor %}
                         </div>

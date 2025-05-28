@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Configuração do banco de dados MySQL
-DATABASE_URL = "mysql+pymysql://root@localhost/dipe"
+DATABASE_URL = "mysql://root:ExbwVtQWJYneeCoMQqoJCymtxtZvDoIP@ballast.proxy.rlwy.net:59540/railway"
 
 # Criação do engine do SQLAlchemy
 engine = create_engine(DATABASE_URL, connect_args={"charset": "utf8mb4"})

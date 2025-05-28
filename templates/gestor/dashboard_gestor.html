@@ -96,8 +96,8 @@
                 </div>
 
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
+                    <div class="card border-0">
+                        <div class="card-body rounded-3 borda">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 me-3" style="background-color: rgba(255, 99, 132, 0.2);">
                                     <i class="bi bi-people-fill text-danger fs-4"></i>
@@ -111,8 +111,8 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
+                    <div class="card border-0">
+                        <div class="card-body rounded-3 borda">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 me-3" style="background-color: rgba(54, 162, 235, 0.2);">
                                     <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
@@ -126,8 +126,8 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
+                    <div class="card border-0">
+                        <div class="card-body rounded-3 borda">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 me-3" style="background-color: rgba(255, 206, 86, 0.2);">
                                     <i class="bi bi-graph-up text-warning fs-4"></i>
@@ -141,8 +141,8 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
+                    <div class="card border-0">
+                        <div class="card-body borda rounded-3">
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle p-3 me-3" style="background-color: rgba(75, 192, 192, 0.2);">
                                     <i class="bi bi-check-circle-fill text-success fs-4"></i>
@@ -155,99 +155,139 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 mb-2 mt-3">
-                    <div class="bg-padrao rounded-4 p-3 text-light">
-                        Desempenho Acadêmico
+
+                <!-- Accordion de Desempenho Acadêmico -->
+                <div class="accordion mt-3" id="accordionDesempenho">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button bg-padrao text-light" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true"
+                                aria-controls="collapseOne">
+                                Desempenho Acadêmico
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show"
+                            data-bs-parent="#accordionDesempenho">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <!-- Desempenho por Disciplina -->
+                                    <div class="col-md-6 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Desempenho por Disciplina</h6>
+                                            <canvas id="graficoDisciplina" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Progressão dos Alunos -->
+                                    <div class="col-md-6 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Progressão dos Alunos</h6>
+                                            <canvas id="graficoProgressao" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Comparação entre Turmas -->
+                                    <div class="col-md-6 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Comparação entre Turmas</h6>
+                                            <canvas id="graficoTurmas" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Distribuição das Notas -->
+                                    <div class="col-md-6 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
+                                            <canvas id="graficoDistribuicao" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Desempenho por Disciplina -->
-                <div class="col-md-6 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Desempenho por Disciplina</h6>
-                        <canvas id="graficoDisciplina" width="400" height="200"></canvas>
+                <!-- Accordion de Perfil dos Alunos-->
+                <div class="accordion mt-3" id="accordionPerfil">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button bg-padrao text-light" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseDois" aria-expanded="true"
+                                aria-controls="collapseDois">
+                                Perfil dos Alunos
+                            </button>
+                        </h2>
+                        <div id="collapseDois" class="accordion-collapse collapse show"
+                            data-bs-parent="#accordionPerfil">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <!-- Perfil dos Alunos -->
+                                    <div class="col-md-4 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Alunos por Idade</h6>
+                                            <canvas id="graficoPerfil" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Distribuição por Zona -->
+                                    <div class="col-md-4 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Distribuição por Zona</h6>
+                                            <canvas id="graficoZona" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Distribuição por Cidade -->
+                                    <div class="col-md-4 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Municípios</h6>
+                                            <canvas id="graficoCidade" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Progressão dos Alunos -->
-                <div class="col-md-6 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Progressão dos Alunos</h6>
-                        <canvas id="graficoProgressao" width="400" height="200"></canvas>
-                    </div>
-                </div>
+                <!-- Accordion de Organização das Turmas-->
+                <div class="accordion mt-3" id="accordionOrganizacao">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button bg-padrao text-light" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseTres" aria-expanded="true"
+                                aria-controls="collapseTres">
+                                Organização das Turmas
+                            </button>
+                        </h2>
+                        <div id="collapseTres" class="accordion-collapse collapse show"
+                            data-bs-parent="#accordionOrganizacao">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <!-- Número de Alunos por Turma -->
+                                    <div class="col-md-6 mb-2">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Número de Alunos por Turma</h6>
+                                            <canvas id="graficoAlunosTurma" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
 
-                <!-- Comparação entre Turmas -->
-                <div class="col-md-6 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Comparação entre Turmas</h6>
-                        <canvas id="graficoTurmas" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- Distribuição das Notas -->
-                <div class="col-md-6 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
-                        <canvas id="graficoDistribuicao" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <div class="col-12 mb-2 mt-2">
-                    <div class="bg-padrao rounded-4 p-3 text-light">
-                        Perfil dos Alunos
-                    </div>
-                </div>
-
-                <!-- Perfil dos Alunos -->
-                <div class="col-md-4 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Alunos por Idade</h6>
-                        <canvas id="graficoPerfil" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- Distribuição por Zona -->
-                <div class="col-md-4 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Distribuição por Zona</h6>
-                        <canvas id="graficoZona" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- Distribuição por Cidade -->
-                <div class="col-md-4 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Municípios</h6>
-                        <canvas id="graficoCidade" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <div class="col-12 mb-2 mt-2">
-                    <div class="bg-padrao rounded-4 p-3 text-light">
-                        Organização das Turmas
-                    </div>
-                </div>
-
-                <!-- Número de Alunos por Turma -->
-                <div class="col-md-6 mb-2">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Número de Alunos por Turma</h6>
-                        <canvas id="graficoAlunosTurma" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- Taxa de Participação -->
-                <div class="col-md-6 mb-4">
-                    <div class="bg-branco borda rounded-4 p-3">
-                        <h6 class="m-0 fw-semi">Taxa de Participação</h6>
-                        <canvas id="graficoParticipacao" width="400" height="200"></canvas>
+                                    <!-- Taxa de Participação -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="bg-branco borda rounded-4 p-3">
+                                            <h6 class="m-0 fw-semi">Taxa de Participação</h6>
+                                            <canvas id="graficoParticipacao" width="400" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Top 10 Alunos -->
-                <div class="col-12 mb-4">
-                    <div class="bg-branco borda rounded-4 p-3">
+                <div class="col-12 mb-4 mt-3">
+                    <div class="bg-branco borda rounded-3 p-3">
                         <h6 class="m-0 fw-semi mb-3">Top 10 Alunos</h6>
                         <div class="table-responsive">
                             <table class="table table-hover">

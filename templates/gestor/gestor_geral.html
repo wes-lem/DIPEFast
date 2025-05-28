@@ -77,7 +77,7 @@
                         </select>
                         <select name="situacao" id="filtro-situacao" class="form-select">
                             <option value="">Situacao</option>
-                            <option value="suficiente">Suficiente</option>
+                            <option value="aatisfatorio">Suficiente</option>
                             <option value="regular">Regular</option>
                             <option value="insuficiente">Insuficiente</option>
                         </select>
@@ -108,20 +108,20 @@
                             {% set cor = "success" %}
                         {% endif %}
                 
-                        <div class="col-md-2 col-sm-6">
-                            <a class="card text-center shadow h-100 border-{{cor}}" href="/alunos/{{ aluno.idAluno }}">
-                                <div>
-                                    <img src="{{ aluno.imagem }}" class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
-                                </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card text-center shadow h-100">
+                                <a href="/alunos/{{ aluno.idAluno }}">
+                                    <img src="{{ aluno.imagem }}" class="card-img-top p-3 rounded-circle" alt="Foto de {{ aluno.nome }}">
+                                </a>
                                 <div class="card-body">
-                                    <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
+                                    <h5 class="card-title">{{ aluno.nome }}</h5>
+                                    <p class="card-text text-{{ cor }} fw-bold">{{ situacao }}</p>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
-            </div>
             <div class="w-100 d-flex justify-content-end mt-4">
                 <div class="w-25">
                     <a href="/alunos/cadastrar" class="btn btn-padrao text-light w-100 fs-5">Cadastrar Aluno <i

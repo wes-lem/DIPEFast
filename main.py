@@ -14,7 +14,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.get("/")
 def home(request: Request):
-    return templates.TemplateResponse("gestor/dashboard_gestor.html", {"request": request})
+    return templates.TemplateResponse("aluno/login.html", {"request": request})
 
 # Inclui as rotas do controller de usuários
 app.include_router(aluno_router)

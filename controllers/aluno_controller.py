@@ -16,6 +16,7 @@ import shutil
 import json
 from sqlalchemy import func
 from fastapi.responses import HTMLResponse
+from pathlib import Path
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -225,3 +226,64 @@ async def dashboard_aluno(request: Request, aluno_id: int, db: Session = Depends
             "dados_progressao": json.dumps(dados_progressao)
         }
     )
+
+@router.get("/aluno/dados")
+def editar_dados_page(request: Request, db: Session = Depends(get_db)):
+    # Buscar dados do aluno logado
+    aluno = db.query(Aluno).filter(Aluno.idAluno == request.session.get('aluno_id')).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    return templates.TemplateResponse(
+        "aluno/editar_dados.html",
+        {
+            "request": request,
+            "aluno": aluno
+        }
+    )
+
+@router.post("/aluno/dados")
+async def editar_dados(
+    request: Request,
+    nome: str = Form(...),
+    idade: int = Form(...),
+    municipio: str = Form(...),
+    zona: str = Form(...),
+    origem_escolar: str = Form(...),
+    curso: str = Form(...),
+    ano: int = Form(...),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    aluno = db.query(Aluno).filter(Aluno.idAluno == request.session.get('aluno_id')).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Atualizar dados básicos
+    aluno.nome = nome
+    aluno.idade = idade
+    aluno.municipio = municipio
+    aluno.zona = zona
+    aluno.origem_escolar = origem_escolar
+    aluno.curso = curso
+    aluno.ano = ano
+    
+    # Atualizar foto se fornecida
+    if foto and foto.filename:
+        # Deletar foto antiga se existir
+        if aluno.imagem and os.path.exists(os.path.join("templates", aluno.imagem)):
+            os.remove(os.path.join("templates", aluno.imagem))
+        
+        # Salvar nova foto
+        filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
+        file_location = os.path.join("templates", "static", "uploads", "alunos", filename)
+        os.makedirs(os.path.dirname(file_location), exist_ok=True)
+        
+        conteudo = await foto.read()
+        with open(file_location, "wb") as buffer:
+            buffer.write(conteudo)
+        
+        aluno.imagem = f"static/uploads/alunos/{filename}"
+    
+    db.commit()
+    return RedirectResponse(url="/aluno/dados", status_code=303)

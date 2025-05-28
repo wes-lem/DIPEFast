@@ -45,10 +45,12 @@
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link fw-normal"><i class="bi bi-mortarboard-fill me-3"></i>Redes de Computadores</a>
+                            <a href="#" class="sidebar-link fw-normal"><i class="bi bi-mortarboard-fill me-3"></i>Redes
+                                de Computadores</a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link fw-normal"><i class="bi bi-mortarboard-fill me-3"></i>Agropecuária</a>
+                            <a href="#" class="sidebar-link fw-normal"><i
+                                    class="bi bi-mortarboard-fill me-3"></i>Agropecuária</a>
                         </li>
                     </ul>
                 </li>
@@ -83,7 +85,7 @@
 
         <div class="main p-4 bg-pattern">
             <div class="row px-2">
-                <div class="col-12 d-flex bg-secundaria rounded-4 borda justify-content-around">
+                <div class="col-6 mb-2 offset-6 d-flex bg-secundaria rounded-4 borda justify-content-around">
                     <div class="d-flex flex-column justify-content-center">
                         <h4 class="fs-4 f-libre">Bem-vindo(a) Gestor,</h4>
                         <p class="fs-6 m-0">Acompanhe o desempenho geral dos alunos e as estatísticas do sistema.</p>
@@ -93,67 +95,190 @@
                     </div>
                 </div>
 
-                <!-- <div class="col-12 p-0 m-0 mt-4 gap-5 d-flex">
-                    <a href="/alunos" class="btn btn-secundario py-5 w-50 fs-4">Relatório de alunos</a>
-                    <a href="/provas/cadastrar" class="btn btn-padrao text-light py-5 w-50 fs-4">Cadastrar provas</a>
-                </div> -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="background-color: rgba(255, 99, 132, 0.2);">
+                                    <i class="bi bi-people-fill text-danger fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">Total de Alunos</h6>
+                                    <h3 class="card-title mb-0">{{ dados.cards.total_alunos }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="background-color: rgba(54, 162, 235, 0.2);">
+                                    <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">Provas Realizadas</h6>
+                                    <h3 class="card-title mb-0">{{ dados.cards.total_provas }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="background-color: rgba(255, 206, 86, 0.2);">
+                                    <i class="bi bi-graph-up text-warning fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">Média Geral</h6>
+                                    <h3 class="card-title mb-0">{{ dados.cards.media_geral }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="background-color: rgba(75, 192, 192, 0.2);">
+                                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">% Suficiente</h6>
+                                    <h3 class="card-title mb-0">{{ dados.cards.percentual_suficiente }}%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mb-2 mt-3">
+                    <div class="bg-padrao rounded-4 p-3 text-light">
+                        Desempenho Acadêmico
+                    </div>
+                </div>
 
-                <div class="col-12 mt-4">
-                    <div class="row">
-                        <!-- Desempenho por Disciplina -->
-                        <div class="col-md-4 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Desempenho por Disciplina</h6>
-                                <canvas id="graficoDisciplina"></canvas>
-                            </div>
-                        </div>
+                <!-- Desempenho por Disciplina -->
+                <div class="col-md-6 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Desempenho por Disciplina</h6>
+                        <canvas id="graficoDisciplina" width="400" height="200"></canvas>
+                    </div>
+                </div>
 
-                        
-                        <!-- Progressão dos Alunos -->
-                        <div class="col-md-4 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Progressão dos Alunos</h6>
-                                <canvas id="graficoProgressao"></canvas>
-                            </div>
-                        </div>
-                        
-                        <!-- Perfil dos Alunos -->
-                        <div class="col-md-4 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Perfil dos Alunos por Idade</h6>
-                                <canvas id="graficoPerfil"></canvas>
-                            </div>
-                        </div>
-                        
-                        <!-- Distribuição das Notas -->
-                        <div class="col-md-6 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
-                                <canvas id="graficoDistribuicao"></canvas>
-                            </div>
-                        </div>
+                <!-- Progressão dos Alunos -->
+                <div class="col-md-6 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Progressão dos Alunos</h6>
+                        <canvas id="graficoProgressao" width="400" height="200"></canvas>
+                    </div>
+                </div>
 
-                        <!-- Comparação entre Turmas -->
-                        <div class="col-md-6 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Comparação entre Turmas</h6>
-                                <canvas id="graficoTurmas"></canvas>
-                            </div>
-                        </div>
-                        <!-- Número de Alunos por Turma -->
-                        <div class="col-md-6 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Número de Alunos por Turma</h6>
-                                <canvas id="graficoAlunosTurma"></canvas>
-                            </div>
-                        </div>
+                <!-- Comparação entre Turmas -->
+                <div class="col-md-6 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Comparação entre Turmas</h6>
+                        <canvas id="graficoTurmas" width="400" height="200"></canvas>
+                    </div>
+                </div>
 
-                        <!-- Taxa de Participação -->
-                        <div class="col-md-6 mb-4">
-                            <div class="bg-branco borda rounded-4 p-3">
-                                <h6 class="m-0 fw-semi">Taxa de Participação</h6>
-                                <canvas id="graficoParticipacao"></canvas>
-                            </div>
+                <!-- Distribuição das Notas -->
+                <div class="col-md-6 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
+                        <canvas id="graficoDistribuicao" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-2 mt-2">
+                    <div class="bg-padrao rounded-4 p-3 text-light">
+                        Perfil dos Alunos
+                    </div>
+                </div>
+
+                <!-- Perfil dos Alunos -->
+                <div class="col-md-4 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Alunos por Idade</h6>
+                        <canvas id="graficoPerfil" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribuição por Zona -->
+                <div class="col-md-4 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Distribuição por Zona</h6>
+                        <canvas id="graficoZona" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribuição por Cidade -->
+                <div class="col-md-4 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Municípios</h6>
+                        <canvas id="graficoCidade" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-2 mt-2">
+                    <div class="bg-padrao rounded-4 p-3 text-light">
+                        Organização das Turmas
+                    </div>
+                </div>
+
+                <!-- Número de Alunos por Turma -->
+                <div class="col-md-6 mb-2">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Número de Alunos por Turma</h6>
+                        <canvas id="graficoAlunosTurma" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Taxa de Participação -->
+                <div class="col-md-6 mb-4">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi">Taxa de Participação</h6>
+                        <canvas id="graficoParticipacao" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top 10 Alunos -->
+                <div class="col-12 mb-4">
+                    <div class="bg-branco borda rounded-4 p-3">
+                        <h6 class="m-0 fw-semi mb-3">Top 10 Alunos</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Foto</th>
+                                        <th>Nome</th>
+                                        <th>Turma</th>
+                                        <th>Português</th>
+                                        <th>Matemática</th>
+                                        <th>Ciências</th>
+                                        <th>Média</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for aluno in dados.top_alunos %}
+                                    <tr>
+                                        <td>
+                                            <img src="{{ aluno.foto }}" alt="{{ aluno.nome }}" class="rounded-circle"
+                                                style="width: 40px; height: 40px; object-fit: cover;">
+                                        </td>
+                                        <td>{{ aluno.nome }}</td>
+                                        <td>{{ aluno.turma }}</td>
+                                        <td>{{ aluno.nota_portugues }}</td>
+                                        <td>{{ aluno.nota_matematica }}</td>
+                                        <td>{{ aluno.nota_ciencias }}</td>
+                                        <td>{{ aluno.media }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -163,92 +288,133 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Parsear os dados do backend
-        const dados = JSON.parse('{{ dados | safe }}');
+        // Dados do backend
+        const dados = {{ dados | tojson | safe }};
 
-        // Função para criar gráficos de barra
-        function criarGraficoBarra(id, labels, data, label, cor) {
-            new Chart(document.getElementById(id), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        backgroundColor: cor,
-                        borderColor: cor.replace('0.5', '1'),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
+        // Desempenho por Disciplina
+        new Chart(document.getElementById('graficoDisciplina'), {
+            type: 'bar',
+            data: {
+                labels: dados.desempenho_disciplina.labels,
+                datasets: [{
+                    label: 'Média de Acertos',
+                    data: dados.desempenho_disciplina.data,
+                    backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
 
-        // Função para criar gráficos de linha
-        function criarGraficoLinha(id, labels, data, label, cor) {
-            new Chart(document.getElementById(id), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        fill: false,
-                        borderColor: cor,
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
+        // Distribuição por Zona (Barra Horizontal)
+        new Chart(document.getElementById('graficoZona'), {
+            type: 'bar',
+            data: {
+                labels: dados.zona_distribuicao.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.zona_distribuicao.data,
+                    backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true } }
+            }
+        });
 
-        // Função para criar gráficos de pizza
-        function criarGraficoPizza(id, labels, data, cores) {
-            new Chart(document.getElementById(id), {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: cores
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-        }
+        // Municípios (Barra Horizontal)
+        new Chart(document.getElementById('graficoCidade'), {
+            type: 'bar',
+            data: {
+                labels: dados.cidade_distribuicao.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.cidade_distribuicao.data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true } }
+            }
+        });
 
-        // Criar os gráficos
-        criarGraficoBarra('graficoDisciplina', 
-            dados.desempenho_disciplina.labels, 
-            dados.desempenho_disciplina.data, 
-            'Média de Acertos', 
-            'rgba(54, 162, 235, 0.5)'
-        );
+        // Alunos por Idade
+        new Chart(document.getElementById('graficoPerfil'), {
+            type: 'bar',
+            data: {
+                labels: dados.perfil_idade.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.perfil_idade.data,
+                    backgroundColor: 'rgba(255, 159, 64, 0.8)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
 
-        criarGraficoBarra('graficoDistribuicao', 
-            dados.distribuicao_notas.labels, 
-            dados.distribuicao_notas.data, 
-            'Quantidade de Alunos', 
-            'rgba(255, 99, 132, 0.5)'
-        );
+        // Distribuição das Notas
+        new Chart(document.getElementById('graficoDistribuicao'), {
+            type: 'bar',
+            data: {
+                labels: dados.distribuicao_notas.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.distribuicao_notas.data,
+                    backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
 
-        // Gráfico de Comparação entre Turmas
+        // Progressão dos Alunos
+        new Chart(document.getElementById('graficoProgressao'), {
+            type: 'line',
+            data: {
+                labels: dados.progressao_alunos.labels,
+                datasets: [{
+                    label: 'Média de Acertos',
+                    data: dados.progressao_alunos.data,
+                    fill: false,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Comparação entre Turmas
         new Chart(document.getElementById('graficoTurmas'), {
             type: 'bar',
             data: {
@@ -256,67 +422,57 @@
                 datasets: [{
                     label: 'Média de Acertos',
                     data: dados.comparacao_turmas.data,
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.5)',
-                        'rgba(54, 162, 235, 0.5)',
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(255, 206, 86, 0.5)',
-                        'rgba(153, 102, 255, 0.5)'
-                    ],
-                    borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(153, 102, 255, 1)'
-                    ],
+                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
 
-        criarGraficoLinha('graficoProgressao', 
-            dados.progressao_alunos.labels, 
-            dados.progressao_alunos.data, 
-            'Média de Acertos', 
-            'rgba(153, 102, 255, 1)'
-        );
+        // Número de Alunos por Turma
+        new Chart(document.getElementById('graficoAlunosTurma'), {
+            type: 'bar',
+            data: {
+                labels: dados.alunos_por_turma.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.alunos_por_turma.data,
+                    backgroundColor: 'rgba(255, 206, 86, 0.8)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
 
-        criarGraficoPizza('graficoAlunosTurma', 
-            dados.alunos_por_turma.labels, 
-            dados.alunos_por_turma.data, 
-            [
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(255, 99, 132, 0.5)',
-                'rgba(255, 206, 86, 0.5)',
-                'rgba(153, 102, 255, 0.5)'
-            ]
-        );
-
-        criarGraficoBarra('graficoPerfil', 
-            dados.perfil_idade.labels, 
-            dados.perfil_idade.data, 
-            'Quantidade de Alunos', 
-            'rgba(255, 159, 64, 0.5)'
-        );
-
-        criarGraficoPizza('graficoParticipacao', 
-            dados.taxa_participacao.labels, 
-            dados.taxa_participacao.data, 
-            [
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(255, 99, 132, 0.5)'
-            ]
-        );
+        // Taxa de Participação (Barra Vertical)
+        new Chart(document.getElementById('graficoParticipacao'), {
+            type: 'bar',
+            data: {
+                labels: dados.taxa_participacao.labels,
+                datasets: [{
+                    label: 'Quantidade de Alunos',
+                    data: dados.taxa_participacao.data,
+                    backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
     </script>
     <script src="/static/js/menu.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
@@ -324,4 +480,4 @@
         crossorigin="anonymous"></script>
 </body>
 
-</html> 
+</html>

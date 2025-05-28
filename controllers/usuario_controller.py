@@ -97,7 +97,7 @@ def verificar_sessao(request: Request):
         )
     return session_user  # Retorna o ID do usuário para uso na rota
 
-@router.get("/dashboard")
+@router.get("gestor/dashboard")
 def dashboard(request: Request, user_id: str = Depends(verificar_sessao)):
     # Se não for verificado o id do usuário, desfaz o login
     if not user_id:

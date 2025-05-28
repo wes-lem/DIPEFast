@@ -86,9 +86,12 @@
                                 <div class="col-50 bg-branco rounded-4 p-3 borda">
                                     <label for="materia">Matéria:</label>
                                     <select class="form-select" id="materia" name="materia" required>
-                                        <option value="Português" {% if prova.materia == 'Português' %}selected{% endif %}>Português</option>
-                                        <option value="Matemática" {% if prova.materia == 'Matemática' %}selected{% endif %}>Matemática</option>
-                                        <option value="Ciências" {% if prova.materia == 'Ciências' %}selected{% endif %}>Ciências</option>
+                                        <option value="Português" {% if prova.materia=='Português' %}selected{% endif
+                                            %}>Português</option>
+                                        <option value="Matemática" {% if prova.materia=='Matemática' %}selected{% endif
+                                            %}>Matemática</option>
+                                        <option value="Ciências" {% if prova.materia=='Ciências' %}selected{% endif %}>
+                                            Ciências</option>
                                     </select>
                                 </div>
                             </div>
@@ -99,6 +102,7 @@
                             <small>Obs: sempre marque a alternativa correta</small>
                             <div id="questoes">
                                 {% for questao in questoes %}
+                                {% set idx = loop.index %}
                                 <div class="questao">
                                     <h4 class="c-nota mt-3 d-flex align-items-end gap-2">
                                         <span
@@ -106,39 +110,41 @@
                                             style="width: 35px; height: 35px; font-size: 20px;">{{ loop.index }}</span>
                                         Questão
                                     </h4>
-
+                            
                                     <label>Enunciado:</label>
                                     <textarea class="form-control bg-cinza" placeholder="Digite o enunciado da questão"
                                         name="enunciados" required>{{ questao.enunciado }}</textarea>
-
+                            
                                     {% if questao.imagem %}
                                     <div class="mt-2">
                                         <label>Imagem atual:</label>
-                                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" class="img-fluid mb-2" style="max-height: 200px;">
+                                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" class="img-fluid mb-2"
+                                            style="max-height: 200px;">
                                     </div>
                                     {% endif %}
-
+                            
                                     <label class="mt-2">Nova imagem (opcional):</label>
                                     <input type="file" name="imagens" accept="image/*" class="form-control">
-
+                            
                                     <label class="mt-2">Alternativas:</label>
                                     {% for opcao in ["A", "B", "C", "D", "E"] %}
                                     <div class="d-flex gap-2 mb-2">
-                                        <input type="radio" tabindex="-1" name="corretas_{{ loop.index }}" value="{{ opcao }}"
-                                            {% if questao.resposta_correta == opcao %}checked{% endif %} required>
-                                        <input type="text" class="form-control bg-cinza" name="alternativas_{{ opcao }}"
-                                            placeholder="Digite a alternativa {{ opcao }}" value="{{ questao['opcao_' + opcao|lower] }}" required>
+                                        <input type="radio" tabindex="-1" name="corretas_{{ idx }}" value="{{ opcao }}"
+                                            {% if questao.resposta_correta==opcao %}checked{% endif %} required>
+                                        <input type="text" class="form-control bg-cinza"
+                                            name="alternativas_{{ opcao }}"
+                                            placeholder="Digite a alternativa {{ opcao }}"
+                                            value="{{ questao['opcao_' ~ opcao|lower] }}" required>
                                     </div>
                                     {% endfor %}
                                 </div>
                                 {% endfor %}
                             </div>
-
+                            
                             <div class="w-100 d-flex justify-content-end mt-4">
                                 <button type="submit" class="btn btn-padrao text-light w-50 fs-5">Salvar Alterações</button>
                             </div>
-                        </div>
-                    </form>
+                            </form>
                 </div>
             </div>
         </div>
@@ -150,4 +156,4 @@
         crossorigin="anonymous"></script>
 </body>
 
-</html> 
+</html>

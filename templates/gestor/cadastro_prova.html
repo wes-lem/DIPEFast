@@ -73,44 +73,44 @@
                     <div class="row">
                         {% for materia in ['Português', 'Matemática', 'Ciências'] %}
                         <div class="col-md-4">
-                            {% set prova_atual = none %}
-                            {% for prova in provas_info %}
-                                {% if prova.materia == materia %}
-                                    {% set prova_atual = prova %}
-                                {% endif %}
-                            {% endfor %}
-                            
+                            {% set prova_filtrada = provas_info | selectattr("materia", "equalto", materia) | list %}
+                            {% set prova_atual = prova_filtrada[0] if prova_filtrada else None %}
+
                             <div class="card h-100 borda">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <h5 class="card-title">{{ materia }}</h5>
-                                        {% for prova in provas_info %}
-                                            {% if prova.materia == materia %}
-                                            <div class="btn-group">
-                                                <a href="/provas/editar/{{ prova.id }}" class="btn btn-sm btn-primary">
-                                                    <i class="bi bi-pencil-fill text-light"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger" 
-                                                        onclick="confirmarExclusao('{{ prova.id }}', '{{ materia }}')">
-                                                    <i class="bi bi-trash-fill text-light"></i>
-                                                </button>
-                                            </div>
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if prova_atual %}
+                                        <div class="btn-group">
+                                            <a href="/provas/editar/{{ prova_atual.id }}"
+                                                class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil-fill text-light"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="confirmarExclusao('{{ prova_atual.id }}', '{{ materia }}')">
+                                                <i class="bi bi-trash-fill text-light"></i>
+                                            </button>
+                                        </div>
+                                        {% endif %}
                                     </div>
+
                                     <p class="card-text">
-                                        {% for prova in provas_info %}
-                                            {% if prova.materia == materia %}
-                                                <span class="text-success"><i class="bi bi-check-circle-fill text-success fs-6"></i> Prova cadastrada</span>
-                                            {% else %}
-                                                <span class="text-warning"><i class="bi bi-exclamation-circle-fill text-warning fs-6"></i> Prova não cadastrada</span>
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if prova_atual %}
+                                        <span class="text-success">
+                                            <i class="bi bi-check-circle-fill text-success fs-6"></i> Prova cadastrada
+                                        </span>
+                                        {% else %}
+                                        <span class="text-warning">
+                                            <i class="bi bi-exclamation-circle-fill text-warning fs-6"></i> Prova não
+                                            cadastrada
+                                        </span>
+                                        {% endif %}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+
                     </div>
                 </div>
 
@@ -164,7 +164,8 @@
                                     <label class="mt-2">Alternativas:</label>
                                     {% for opcao in ["A", "B", "C", "D", "E"] %}
                                     <div class="d-flex gap-2 mb-2">
-                                        <input type="radio" tabindex="-1" name="corretas_{{ i }}" value="{{ opcao }}" required>
+                                        <input type="radio" tabindex="-1" name="corretas_{{ i }}" value="{{ opcao }}"
+                                            required>
                                         <input type="text" class="form-control bg-cinza" name="alternativas_{{ opcao }}"
                                             placeholder="Digite a alternativa {{ opcao }}" required>
                                     </div>
@@ -174,25 +175,29 @@
                             </div>
 
                             <div class="w-100 d-flex justify-content-end mt-4">
-                                <button type="submit" class="btn btn-padrao text-light w-50 fs-5">Cadastrar Prova</button>
+                                <button type="submit" class="btn btn-padrao text-light w-50 fs-5">Cadastrar
+                                    Prova</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
                 <!-- Modal de Confirmação de Exclusão -->
-                <div class="modal fade" id="modalExclusao" tabindex="-1" aria-labelledby="modalExclusaoLabel" aria-hidden="true">
+                <div class="modal fade" id="modalExclusao" tabindex="-1" aria-labelledby="modalExclusaoLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="modalExclusaoLabel">Confirmar Exclusão</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 Tem certeza que deseja excluir a prova de <span id="materiaExclusao"></span>?
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
                                 <form id="formExclusao" method="post">
                                     <button type="submit" class="btn btn-danger">Excluir</button>
                                 </form>

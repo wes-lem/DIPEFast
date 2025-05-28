@@ -53,6 +53,8 @@ pip install -r requirements.txt
 3. Configure o banco de dados MySQL
 4. Execute o servidor:
 ```bash
+cd "C:\Users\Weslem\Desktop\Versões DIPE\DIPEFast"
+.\venv\Scripts\activate
 uvicorn main:app --reload
 ```
 

@@ -1,6 +1,4 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from models.resposta import Resposta
 from dao.database import Base
 
 class Aluno(Base):

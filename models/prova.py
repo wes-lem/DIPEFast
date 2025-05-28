@@ -1,6 +1,4 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from dao.database import engine  # Importe o engine
 from sqlalchemy import TIMESTAMP, func
 
 from dao.database import Base

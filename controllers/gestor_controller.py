@@ -1,6 +1,6 @@
 import os
 from fastapi import APIRouter, Depends, Form, Request, UploadFile, File, Query
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,15 +10,16 @@ from typing import Optional
 from pathlib import Path
 from sqlalchemy import func, distinct, and_
 from sqlalchemy.orm import aliased
+from passlib.hash import bcrypt
 import shutil
-import json
-import random
 
 from models.resultado import Resultado
 from models.questao import Questao
 from models.prova import Prova
 from models.aluno import Aluno
 from models.resposta import Resposta
+from models.gestor import Gestor
+from models.usuario import Usuario
 
 
 
@@ -295,13 +296,13 @@ async def dashboard_gestor(request: Request, db: Session = Depends(get_db)):
             'data': [i[1] for i in idades]
         }
 
-        # Desempenho por disciplina
+        # Desempenho por disciplina (corrigido)
         desempenho_disciplina = {
             'labels': ['Português', 'Matemática', 'Ciências'],
             'data': [
-                float(db.query(func.avg(Resultado.acertos)).filter(Resultado.prova_id == portugues.id).scalar() or 0),
-                float(db.query(func.avg(Resultado.acertos)).filter(Resultado.prova_id == matematica.id).scalar() or 0),
-                float(db.query(func.avg(Resultado.acertos)).filter(Resultado.prova_id == ciencias.id).scalar() or 0)
+                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Português").scalar() or 0),
+                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Matemática").scalar() or 0),
+                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Ciências").scalar() or 0)
             ]
         }
 
@@ -616,3 +617,41 @@ async def editar_aluno(
     
     db.commit()
     return RedirectResponse(url=f"/alunos/{aluno_id}", status_code=303)
+
+@router.get("/gestor/cadastrar")
+def cadastrar_gestor_page(request: Request):
+    return templates.TemplateResponse("gestor/cadastrar_gestor.html", {"request": request})
+
+@router.post("/gestor/cadastrar")
+async def cadastrar_gestor(
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    # Verifica se já existe usuário com o mesmo email
+    if db.query(Usuario).filter(Usuario.email == email).first():
+        return templates.TemplateResponse("gestor/cadastrar_gestor.html", {"request": request, "erro": "E-mail já cadastrado."})
+    # Cria o usuário
+    senha_hash = bcrypt.hash(senha)
+    novo_usuario = Usuario(email=email, senha_hash=senha_hash, tipo='gestor')
+    db.add(novo_usuario)
+    db.commit()
+    db.refresh(novo_usuario)
+    # Lida com upload de imagem
+    imagem_path = None
+    if foto and foto.filename:
+        upload_dir = os.path.join("templates", "static", "uploads", "gestores")
+        os.makedirs(upload_dir, exist_ok=True)
+        filename = f"gestor_{novo_usuario.id}_{foto.filename}"
+        file_location = os.path.join(upload_dir, filename)
+        with open(file_location, "wb") as buffer:
+            buffer.write(await foto.read())
+        imagem_path = f"static/uploads/gestores/{filename}"
+    # Cria o gestor
+    novo_gestor = Gestor(id=novo_usuario.id, nome=nome, imagem=imagem_path)
+    db.add(novo_gestor)
+    db.commit()
+    return RedirectResponse(url="/gestor/dashboard", status_code=303)

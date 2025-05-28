@@ -1,7 +1,4 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
-from sqlalchemy.orm import relationship
-from dao.database import engine 
-
 from dao.database import Base
 
 class Questao(Base):

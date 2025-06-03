@@ -3,6 +3,8 @@
 ## 📌 Visão Geral
 O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o acompanhamento pedagógico de alunos, permitindo coleta, organização e análise de dados acadêmicos e socioeconômicos. O sistema foi projetado para identificar dificuldades individuais e coletivas, proporcionando uma gestão eficaz de intervenções pedagógicas.
 
+![Tela Aluno](ladingAluno.png)
+
 ## ✨ Funcionalidades Principais
 
 ### 👨‍🎓 Área do Aluno

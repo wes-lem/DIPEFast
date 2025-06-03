@@ -96,14 +96,3 @@ def verificar_sessao(request: Request):
             headers={"Location": "/login?erro=Usuario nao autenticado"},
         )
     return session_user  # Retorna o ID do usuário para uso na rota
-
-@router.get("gestor/dashboard")
-def dashboard(request: Request, user_id: str = Depends(verificar_sessao)):
-    # Se não for verificado o id do usuário, desfaz o login
-    if not user_id:
-        return RedirectResponse(url="/login", status_code=303)
-    
-    return templates.TemplateResponse(
-        "gestor/dashboard_gestor.html",
-        {"request": request, "user_id": user_id}
-    )

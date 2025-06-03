@@ -25,7 +25,7 @@
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/aluno/dashboard" class="sidebar-link">
+                    <a href="/perfil" class="sidebar-link">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
@@ -68,66 +68,87 @@
         <div class="main p-4 bg-pattern">
             <div class="row px-2">
                 <div class="col-12">
+                    <div class="col-12 bg-padrao rounded-2">
+                        <h4 class="text-light p-2 mb-3">Editar seus dados pessoais</h4>
+                    </div>
                     <div class="bg-branco borda rounded-4 p-4">
-                        <h4 class="mb-4">Editar Dados Pessoais</h4>
                         <form action="/aluno/dados" method="post" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-4 text-center mb-4">
                                     <div class="position-relative d-inline-block">
-                                        <img src="{{ aluno.imagem or '/static/img/default-avatar.png' }}" 
-                                             alt="Foto de perfil" 
-                                             class="rounded-circle mb-3"
-                                             style="width: 200px; height: 200px; object-fit: cover;">
-                                        <label for="foto" class="position-absolute bottom-0 end-0 bg-padrao text-white rounded-circle p-2 cursor-pointer">
-                                            <i class="bi bi-camera-fill"></i>
-                                        </label>
-                                        <input type="file" id="foto" name="foto" class="d-none" accept="image/*">
+                                        <img src="{{ aluno.imagem or '/static/img/default-avatar.png' }}"
+                                            alt="Foto de perfil" class="rounded-2 mb-3"
+                                            style="width: 200px; height: 200px; object-fit: cover;">
                                     </div>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="nome" name="nome" value="{{ aluno.nome }}" required>
+                                            <label for="nome" class="form-label">Nome Completo <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="nome" name="nome"
+                                                value="{{ aluno.nome }}" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="idade" class="form-label">Idade <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="idade" name="idade" value="{{ aluno.idade }}" required>
+                                            <label for="idade" class="form-label">Idade <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="idade" name="idade"
+                                                value="{{ aluno.idade }}" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="municipio" class="form-label">Município <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="municipio" name="municipio" value="{{ aluno.municipio }}" required>
+                                            <label for="municipio" class="form-label">Município <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="municipio" name="municipio"
+                                                value="{{ aluno.municipio }}" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="zona" class="form-label">Zona <span class="text-danger">*</span></label>
+                                            <label for="zona" class="form-label">Zona <span
+                                                    class="text-danger">*</span></label>
                                             <select class="form-select" id="zona" name="zona" required>
-                                                <option value="urbana" {% if aluno.zona == 'urbana' %}selected{% endif %}>Urbana</option>
-                                                <option value="rural" {% if aluno.zona == 'rural' %}selected{% endif %}>Rural</option>
+                                                <option value="urbana" {% if aluno.zona=='urbana' %}selected{% endif %}>
+                                                    Urbana</option>
+                                                <option value="rural" {% if aluno.zona=='rural' %}selected{% endif %}>
+                                                    Rural</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="ano" class="form-label">Ano <span class="text-danger">*</span></label>
-                                            <input type="number" class="form-control" id="ano" name="ano" value="{{ aluno.ano }}" required>
+                                            <label for="ano" class="form-label">Ano <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="ano" name="ano"
+                                                value="{{ aluno.ano }}" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="origem_escolar" class="form-label">Origem Escolar <span class="text-danger">*</span></label>
-                                            <select class="form-select" id="origem_escolar" name="origem_escolar" required>
-                                                <option value="publica" {% if aluno.origem_escolar == 'publica' %}selected{% endif %}>Pública</option>
-                                                <option value="particular" {% if aluno.origem_escolar == 'particular' %}selected{% endif %}>Particular</option>
+                                            <label for="origem_escolar" class="form-label">Origem Escolar <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select" id="origem_escolar" name="origem_escolar"
+                                                required>
+                                                <option value="publica" {% if aluno.origem_escolar=='publica'
+                                                    %}selected{% endif %}>Pública</option>
+                                                <option value="particular" {% if aluno.origem_escolar=='particular'
+                                                    %}selected{% endif %}>Particular</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
+                                            <label for="curso" class="form-label">Curso <span
+                                                    class="text-danger">*</span></label>
                                             <select class="form-select" id="curso" name="curso" required>
-                                                <option value="Redes de Computadores" {% if aluno.curso == 'Redes de Computadores' %}selected{% endif %}>Redes de Computadores</option>
-                                                <option value="Agropecuária" {% if aluno.curso == 'Agropecuária' %}selected{% endif %}>Agropecuária</option>
+                                                <option value="Redes de Computadores" {% if
+                                                    aluno.curso=='Redes de Computadores' %}selected{% endif %}>Redes de
+                                                    Computadores</option>
+                                                <option value="Agropecuária" {% if aluno.curso=='Agropecuária'
+                                                    %}selected{% endif %}>Agropecuária</option>
                                             </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="foto" class="form-label">Foto de Perfil</label>
+                                            <input type="file" class="form-control" id="foto" name="foto">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="text-end mt-4">
-                                <button type="submit" class="btn btn-padrao">Salvar Alterações</button>
+                                <a href="/perfil" class="btn btn-secondary me-2"><i class="bi bi-x-circle text-light"></i> Cancelar</a>
+                                <button type="submit" class="btn btn-padrao text-light"><i class="bi bi-pencil-square text-light"></i> Salvar Alterações</button>
                             </div>
                         </form>
                     </div>
@@ -142,10 +163,10 @@
         crossorigin="anonymous"></script>
     <script>
         // Preview da imagem selecionada
-        document.getElementById('foto').addEventListener('change', function(e) {
+        document.getElementById('foto').addEventListener('change', function (e) {
             if (e.target.files && e.target.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     document.querySelector('img[alt="Foto de perfil"]').src = e.target.result;
                 }
                 reader.readAsDataURL(e.target.files[0]);
@@ -154,4 +175,4 @@
     </script>
 </body>
 
-</html> 
+</html>

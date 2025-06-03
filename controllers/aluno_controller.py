@@ -130,6 +130,34 @@ def perfil(
     # Lista fixa de matérias
     materias_fixas = ["Português", "Matemática", "Ciências"]
     materias = []
+    
+    # Dados para os gráficos
+    dados_grafico_pizza = {
+        'labels': materias_fixas,
+        'data': [],
+        'cores': ['#FF6384', '#36A2EB', '#FFCE56']
+    }
+    
+    dados_grafico_barra = {
+        'labels': materias_fixas,
+        'datasets': [
+            {
+                'label': 'Sua média',
+                'data': [],
+                'backgroundColor': '#FF6384'
+            },
+            {
+                'label': 'Média da turma',
+                'data': [],
+                'backgroundColor': '#36A2EB'
+            },
+            {
+                'label': 'Média geral',
+                'data': [],
+                'backgroundColor': '#FFCE56'
+            }
+        ]
+    }
 
     for materia in materias_fixas:
         # Busca a prova correspondente no banco
@@ -145,18 +173,51 @@ def perfil(
                 Resultado.prova_id == prova.id
             ).first()
             
+            # Calcular média da turma do aluno
+            media_turma = db.query(func.avg(Resultado.acertos)).join(
+                Aluno, Resultado.aluno_id == Aluno.idAluno
+            ).filter(
+                Aluno.curso == aluno.curso,
+                Resultado.prova_id == prova.id
+            ).scalar() or 0
+
+            # Calcular média geral
+            media_geral = db.query(func.avg(Resultado.acertos)).filter(
+                Resultado.prova_id == prova.id
+            ).scalar() or 0
+            
             if resultado:
-                nota = resultado.acertos
+                nota = float(resultado.acertos)
                 status = resultado.situacao
+                # Adiciona nota para os gráficos
+                dados_grafico_pizza['data'].append(nota)
+                dados_grafico_barra['datasets'][0]['data'].append(nota)
+                dados_grafico_barra['datasets'][1]['data'].append(float(media_turma))
+                dados_grafico_barra['datasets'][2]['data'].append(float(media_geral))
+                
+                # Define a URL para o resultado detalhado se a prova foi respondida
+                url_prova = f"/prova/{prova.id}/resultado-detalhado"
             else:
                 nota = None
                 status = "Não realizada"
+                # Adiciona 0 para os gráficos quando não há nota
+                dados_grafico_pizza['data'].append(0)
+                dados_grafico_barra['datasets'][0]['data'].append(0)
+                dados_grafico_barra['datasets'][1]['data'].append(float(media_turma) if media_turma is not None else 0)
+                dados_grafico_barra['datasets'][2]['data'].append(float(media_geral) if media_geral is not None else 0)
+                
+                # Define a URL para responder a prova se não foi respondida
+                url_prova = f"/prova/{prova.id}"
             
-            url_prova = f"/prova/{prova.id}"
         else:
             nota = None
             status = "Ainda não há provas disponíveis"
             url_prova = "#"
+            # Adiciona 0 para os gráficos quando não há prova
+            dados_grafico_pizza['data'].append(0)
+            dados_grafico_barra['datasets'][0]['data'].append(0)
+            dados_grafico_barra['datasets'][1]['data'].append(0)
+            dados_grafico_barra['datasets'][2]['data'].append(0)
 
         # Adiciona a matéria na lista com a chave prova_disponivel
         materias.append({
@@ -164,7 +225,7 @@ def perfil(
             "nota": nota,
             "status": status,
             "url_prova": url_prova,
-            "prova_disponivel": prova_disponivel  # Apenas verifica se a prova existe
+            "prova_disponivel": prova_disponivel
         })
 
     # Retorna as informações para o template
@@ -180,6 +241,8 @@ def perfil(
             "ano": aluno.ano,
             "curso": aluno.curso,
             "materias": materias,
+            "dados_grafico_pizza": dados_grafico_pizza,
+            "dados_grafico_barra": dados_grafico_barra
         },
     )
 
@@ -228,9 +291,13 @@ async def dashboard_aluno(request: Request, aluno_id: int, db: Session = Depends
     )
 
 @router.get("/aluno/dados")
-def editar_dados_page(request: Request, db: Session = Depends(get_db)):
-    # Buscar dados do aluno logado
-    aluno = db.query(Aluno).filter(Aluno.idAluno == request.session.get('aluno_id')).first()
+def editar_dados_page(
+    request: Request,
+    user_id: str = Depends(verificar_sessao),
+    db: Session = Depends(get_db)
+):
+    # Buscar dados do aluno logado usando o user_id
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
     
@@ -245,6 +312,7 @@ def editar_dados_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/aluno/dados")
 async def editar_dados(
     request: Request,
+    user_id: str = Depends(verificar_sessao),
     nome: str = Form(...),
     idade: int = Form(...),
     municipio: str = Form(...),
@@ -255,7 +323,7 @@ async def editar_dados(
     foto: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
-    aluno = db.query(Aluno).filter(Aluno.idAluno == request.session.get('aluno_id')).first()
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
     
@@ -271,8 +339,16 @@ async def editar_dados(
     # Atualizar foto se fornecida
     if foto and foto.filename:
         # Deletar foto antiga se existir
-        if aluno.imagem and os.path.exists(os.path.join("templates", aluno.imagem)):
-            os.remove(os.path.join("templates", aluno.imagem))
+        if aluno.imagem:
+            # Remove a barra inicial se existir para construir o caminho correto
+            caminho_antigo = aluno.imagem.lstrip('/')
+            caminho_completo = os.path.join("templates", caminho_antigo)
+            if os.path.exists(caminho_completo):
+                try:
+                    os.remove(caminho_completo)
+                    print(f"Foto antiga removida: {caminho_completo}")
+                except Exception as e:
+                    print(f"Erro ao remover foto antiga: {e}")
         
         # Salvar nova foto
         filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
@@ -283,7 +359,7 @@ async def editar_dados(
         with open(file_location, "wb") as buffer:
             buffer.write(conteudo)
         
-        aluno.imagem = f"static/uploads/alunos/{filename}"
+        aluno.imagem = f"/static/uploads/alunos/{filename}"
     
     db.commit()
-    return RedirectResponse(url="/aluno/dados", status_code=303)
+    return RedirectResponse(url="/perfil", status_code=303)

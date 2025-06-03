@@ -12,6 +12,7 @@ from sqlalchemy import func, distinct, and_
 from sqlalchemy.orm import aliased
 from passlib.hash import bcrypt
 import shutil
+from controllers.usuario_controller import verificar_sessao
 
 from models.resultado import Resultado
 from models.questao import Questao
@@ -236,6 +237,13 @@ def upload_imagem(aluno_id: int, file: UploadFile = File(...), db: Session = Dep
 @router.get("/gestor/dashboard", response_class=HTMLResponse)
 async def dashboard_gestor(request: Request, db: Session = Depends(get_db)):
     try:
+        # Buscar informações do gestor logado usando a sessão
+        session_user = request.cookies.get("session_user")
+        if session_user:
+            gestor = db.query(Gestor).filter(Gestor.id == session_user).first()
+        else:
+            gestor = None
+
         # Criando alias para as provas
         portugues = aliased(Prova)
         matematica = aliased(Prova)
@@ -408,13 +416,14 @@ async def dashboard_gestor(request: Request, db: Session = Depends(get_db)):
             'top_alunos': top_alunos
         }
 
-        print("Dados sendo enviados para o template:", dados)  # Log para debug
+        # print("Dados sendo enviados para o template:", dados)  # Log para debug
 
         return templates.TemplateResponse(
             "gestor/dashboard_gestor.html",
             {
                 "request": request,
-                "dados": dados
+                "dados": dados,
+                "gestor": gestor
             }
         )
     except SQLAlchemyError as e:

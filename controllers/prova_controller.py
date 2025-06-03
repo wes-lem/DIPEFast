@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 from dao.database import get_db
 from models.prova import Prova
@@ -12,6 +12,7 @@ from dao.resposta_dao import RespostaDAO
 from dao.questao_dao import QuestaoDAO
 from dao.resultados_dao import ResultadoDAO
 from fastapi.templating import Jinja2Templates
+from controllers.usuario_controller import verificar_sessao
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -132,6 +133,84 @@ def adicionar_questao(
         db, prova_id, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, resposta_correta
     )
     return RedirectResponse(url=f"/provas/{prova_id}/questoes", status_code=303)
+
+# Nova rota para exibir o resultado detalhado da prova
+@router.get("/prova/{prova_id}/resultado-detalhado", response_class=HTMLResponse)
+def resultado_detalhado_prova(
+    request: Request,
+    prova_id: int,
+    user_id: int = Depends(verificar_sessao),
+    db: Session = Depends(get_db)
+):
+    # Verifica se o aluno existe
+    aluno = db.query(Aluno).filter_by(idUser=user_id).first()
+    if not aluno:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado")
+
+    # Busca a prova
+    prova = db.query(Prova).filter(Prova.id == prova_id).first()
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+
+    # Busca as questões da prova
+    questoes = db.query(Questao).filter(Questao.prova_id == prova_id).all()
+    if not questoes:
+        raise HTTPException(status_code=404, detail="Questões não encontradas")
+        
+    # Busca as respostas do aluno para esta prova
+    respostas_aluno = db.query(Resposta).filter(
+        Resposta.aluno_id == aluno.idAluno,
+        Resposta.questao_id.in_([q.id for q in questoes])
+    ).all()
+    
+    # Cria um dicionário de respostas do aluno para fácil acesso
+    respostas_dict = {resposta.questao_id: resposta.resposta_aluno for resposta in respostas_aluno}
+
+    # Buscar resultados do aluno nas matérias fixas
+    materias_fixas = ["Português", "Matemática", "Ciências"]
+    resumos_materias = []
+
+    for materia_nome in materias_fixas:
+        prova_materia = db.query(Prova).filter(Prova.materia == materia_nome).first()
+        prova_disponivel = prova_materia is not None
+        nota = None
+        status = "Ainda não há provas disponíveis"
+        url_prova = "#"
+
+        if prova_materia:
+            resultado_materia = db.query(Resultado).filter(
+                Resultado.aluno_id == aluno.idAluno,
+                Resultado.prova_id == prova_materia.id
+            ).first()
+            
+            if resultado_materia:
+                nota = float(resultado_materia.acertos)
+                status = resultado_materia.situacao
+                # Se a prova foi realizada, o link leva para o resultado detalhado
+                url_prova = f"/prova/{prova_materia.id}/resultado-detalhado"
+            else:
+                # Se a prova está disponível mas não realizada, o link leva para a prova
+                url_prova = f"/prova/{prova_materia.id}"
+
+        resumos_materias.append({
+            "nome": materia_nome,
+            "nota": nota,
+            "status": status,
+            "url_prova": url_prova,
+            "prova_disponivel": prova_disponivel
+        })
+
+    return templates.TemplateResponse(
+        "aluno/resultado_detalhado_prova.html",
+        {
+            "request": request,
+            "prova": prova,
+            "questoes": questoes,
+            "respostas": respostas_dict,
+            "resumos_materias": resumos_materias, # Passa os resumos das matérias para o template
+            "aluno_id": aluno.idAluno # Passa o aluno_id para o link do dashboard
+        }
+    )
 
 # Ver resultado das provas de um aluno
 @router.get("/perfil/{aluno_id}/resultado")

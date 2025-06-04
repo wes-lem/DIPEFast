@@ -37,19 +37,19 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/formularios" class="sidebar-link">
+                    <a href="/aluno/formularios" class="sidebar-link active">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link active">
+                    <a href="/provas" class="sidebar-link">
                         <i class="bi bi-file-earmark-text-fill"></i>
                         <span>Provas Diagnósticas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link">
+                    <a href="/aluno/dashboard/{{ id }}" class="sidebar-link">
                         <i class="bi bi-bar-chart-fill"></i>
                         <span>Resultados</span>
                     </a>
@@ -72,33 +72,45 @@
         </aside>
 
         <div class="main p-4 bg-branco">
-            <div class="container">
-                <h2 class="mb-4 text-center">Prova de {{ prova.materia }}</h2>
-                <form action="/prova/{{ prova.id }}/responder" method="post">
-                    {% for questao in questoes %}
-                    <div class="questao mb-4 p-0">
-                        <h5> Questão {{ loop.index }}:</h5>
-                        <p class="fs-5">{{ questao.enunciado }}</p> 
-                        
-                        {% if questao.imagem %}
-                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" width="400px">
-                        {% endif %}
-                        <div class="opcoes">
-                            {% for opcao in ['a', 'b', 'c', 'd', 'e'] %}
-                            <div class="d-flex gap-2 mb-2">
-                                <input type="radio" tabindex="-1" name="resposta_{{ questao.id }}" value="{{ opcao }}"
-                                    id="resposta_{{ questao.id }}_{{ opcao }}" required>
-                                <label class="form-check-label bg-branco p-2 text-dark w-100 rounded-3 h-100 m-0 borda" 
-                                       for="resposta_{{ questao.id }}_{{ opcao }}">
-                                    {{ opcao + ') ' + questao['opcao_' + opcao] }}
-                                </label>
+            <div class="col-12">
+                <h4 class="bg-padrao p-2 px-3 borda text-light rounded-2 mb-2">Formulários Socioeconômicos</h4>
+
+                {% if formularios %}
+                <div class="row">
+                    {% for item in formularios %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.formulario.titulo }}</h5>
+                                <p class="card-text">{{ item.formulario.descricao }}</p>
+
+                                {% if item.formulario.data_expiracao %}
+                                <p class="text-muted">
+                                    <small>Expira em: {{ item.formulario.data_expiracao.strftime('%d/%m/%Y') }}</small>
+                                </p>
+                                {% endif %}
+
+                                <div class="d-flex justify-content-end">
+                                    {% if item.ja_respondeu %}
+                                    <button class="btn btn-outline-secondary" disabled>
+                                        <i class="bi bi-check-lg"></i> Já Respondido
+                                    </button>
+                                    {% else %}
+                                    <a href="/aluno/formularios/{{ item.formulario.id }}" class="btn btn-padrao text-light mt-1">
+                                        <i class="bi bi-pencil text-light"></i> Responder
+                                    </a>
+                                    {% endif %}
+                                </div>
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-padrao w-100">Enviar Respostas</button>
-                </form>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    Não há formulários disponíveis no momento.
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

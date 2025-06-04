@@ -1,57 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
-    <title>Aluno - Perfil</title>
+    <title>Gestor - Formulários</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-
-<body id="topo">
+<body id="topo" class="bg-fundo">
     <div class="wrapper">
         <aside id="sidebar" class="shadow-lg">
             <div class="d-flex justify-content-center">
                 <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
                     <img src="/static/img/DipePreta.svg" width="40px" alt="">
                 </button>
-                <div class="sidebar-logo me-4">
-                </div>
+                <div class="sidebar-logo me-4"></div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/perfil" class="sidebar-link">
+                    <a href="/gestor/dashboard" class="sidebar-link">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/dados" class="sidebar-link">
+                    <a href="/alunos" class="sidebar-link">
                         <i class="bi bi-person-fill"></i>
-                        <span>Dados Pessoais</span>
+                        <span>Alunos</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/formularios" class="sidebar-link">
+                    <a href="/provas/cadastrar" class="sidebar-link">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios" class="sidebar-link active">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link active">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link">
+                    <a href="#" class="sidebar-link">
                         <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
+                        <span>Relatórios</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -71,42 +68,50 @@
             </div>
         </aside>
 
-        <div class="main p-4 bg-branco">
-            <div class="container">
-                <h2 class="mb-4 text-center">Prova de {{ prova.materia }}</h2>
-                <form action="/prova/{{ prova.id }}/responder" method="post">
-                    {% for questao in questoes %}
-                    <div class="questao mb-4 p-0">
-                        <h5> Questão {{ loop.index }}:</h5>
-                        <p class="fs-5">{{ questao.enunciado }}</p> 
-                        
-                        {% if questao.imagem %}
-                        <img src="/{{ questao.imagem }}" alt="Imagem da questão" width="400px">
-                        {% endif %}
-                        <div class="opcoes">
-                            {% for opcao in ['a', 'b', 'c', 'd', 'e'] %}
-                            <div class="d-flex gap-2 mb-2">
-                                <input type="radio" tabindex="-1" name="resposta_{{ questao.id }}" value="{{ opcao }}"
-                                    id="resposta_{{ questao.id }}_{{ opcao }}" required>
-                                <label class="form-check-label bg-branco p-2 text-dark w-100 rounded-3 h-100 m-0 borda" 
-                                       for="resposta_{{ questao.id }}_{{ opcao }}">
-                                    {{ opcao + ') ' + questao['opcao_' + opcao] }}
-                                </label>
-                            </div>
+        <div class="main p-4 bg-pattern">
+            <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
+                <h4 class="text-light">Formulários Cadastrados</h4>
+            </div>
+            <div class="container-fluid bg-branco rounded-2 borda p-4">
+                
+                <a href="/gestor/formularios/cadastrar" class="btn btn-padrao ativo mb-4 text-light "><i class="bi bi-plus-circle me-2 text-light"></i>Novo Formulário</a>
+
+                {% if formularios %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Data de Criação</th>
+                                <th>Respostas</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formularios %}
+                            <tr>
+                                <td>{{ form.titulo }}</td>
+                                <td>{{ form.descricao if form.descricao else 'N/A' }}</td>
+                                <td>{{ form.data_criacao }}</td>
+                                <td>{{ form.total_respondedores }}</td>
+                                <td>
+                                    <a href="/gestor/formularios/{{ form.id }}/respostas" class="btn btn-sm btn-info me-2"><i class="bi bi-eye"></i> Ver Respostas</a>
+                                </td>
+                            </tr>
                             {% endfor %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-padrao w-100">Enviar Respostas</button>
-                </form>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>Nenhum formulário cadastrado ainda.</p>
+                {% endif %}
             </div>
         </div>
     </div>
-
-    <script src="/static/js/menu.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
+    <script src="/static/js/menu.js"></script>
 </body>
-
-</html>
+</html> 

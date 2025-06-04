@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+    <title>Gestor - DIPE</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body id="topo">
+    <div class="wrapper">
+        <aside id="sidebar" class="shadow-lg">
+            <div class="d-flex justify-content-center">
+                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
+                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
+                </button>
+                <div class="sidebar-logo me-4">
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/gestor/dashboard"
+                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Início</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Alunos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios"
+                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                        <i class="bi bi-clipboard2-fill"></i>
+                        <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="#" class="sidebar-link">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <div class="sidebar-item mt-3">
+                    <form action="/sair" method="post" style="display: inline;">
+                        <button type="submit" class="sidebar-link w-100 text-start">
+                            <i class="bi bi-door-open-fill"></i>
+                            <span class="fw-bold">Sair</span>
+                        </button>
+                    </form>
+                </div>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#topo" class="sidebar-link">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>Voltar ao topo</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="main p-4 bg-branco">
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="mb-0">Novo Formulário Socioeconômico</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="formularioForm" method="POST" action="/gestor/formularios/novo">
+                                    <div class="mb-3">
+                                        <label for="titulo" class="form-label">Título do Formulário</label>
+                                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="descricao" class="form-label">Descrição</label>
+                                        <textarea class="form-control" id="descricao" name="descricao"
+                                            rows="3"></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="data_expiracao" class="form-label">Data de Expiração
+                                            (opcional)</label>
+                                        <input type="date" class="form-control" id="data_expiracao"
+                                            name="data_expiracao">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h4>Perguntas</h4>
+                                            <button type="button" class="btn btn-padrao" onclick="adicionarPergunta()">
+                                                <i class="bi bi-plus-lg"></i> Adicionar Pergunta
+                                            </button>
+                                        </div>
+
+                                        <div id="perguntasContainer">
+                                            <!-- As perguntas serão adicionadas aqui dinamicamente -->
+                                        </div>
+
+                                        <input type="hidden" name="perguntas_json" id="perguntas_json">
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="/gestor/formularios" class="btn btn-secondary">Cancelar</a>
+                                        <button type="submit" class="btn btn-padrao">Salvar Formulário</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                let perguntas = [];
+
+                function adicionarPergunta() {
+                    const perguntaId = Date.now();
+                    const perguntaHtml = `
+        <div class="card mb-3" id="pergunta_${perguntaId}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">Nova Pergunta</h5>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerPergunta(${perguntaId})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Enunciado</label>
+                    <input type="text" class="form-control pergunta-enunciado" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Pergunta</label>
+                    <select class="form-select pergunta-tipo" onchange="atualizarOpcoes(${perguntaId})">
+                        <option value="texto">Texto Livre</option>
+                        <option value="sim_nao">Sim/Não</option>
+                        <option value="selecao">Seleção Única</option>
+                        <option value="multipla_escolha">Múltipla Escolha</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3 opcoes-container" style="display: none;">
+                    <label class="form-label">Opções</label>
+                    <div class="opcoes-lista">
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control opcao-input" placeholder="Digite uma opção">
+                            <button type="button" class="btn btn-outline-danger" onclick="removerOpcao(this)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-padrao" onclick="adicionarOpcao(${perguntaId})">
+                        <i class="bi bi-plus-lg"></i> Adicionar Opção
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+                    document.getElementById('perguntasContainer').insertAdjacentHTML('beforeend', perguntaHtml);
+                    perguntas.push({
+                        id: perguntaId,
+                        tipo: 'texto',
+                        enunciado: '',
+                        opcoes: []
+                    });
+                }
+
+                function removerPergunta(perguntaId) {
+                    document.getElementById(`pergunta_${perguntaId}`).remove();
+                    perguntas = perguntas.filter(p => p.id !== perguntaId);
+                }
+
+                function atualizarOpcoes(perguntaId) {
+                    const pergunta = perguntas.find(p => p.id === perguntaId);
+                    const container = document.querySelector(`#pergunta_${perguntaId} .opcoes-container`);
+                    const tipo = document.querySelector(`#pergunta_${perguntaId} .pergunta-tipo`).value;
+
+                    pergunta.tipo = tipo;
+                    container.style.display = ['selecao', 'multipla_escolha'].includes(tipo) ? 'block' : 'none';
+                }
+
+                function adicionarOpcao(perguntaId) {
+                    const opcoesLista = document.querySelector(`#pergunta_${perguntaId} .opcoes-lista`);
+                    const opcaoHtml = `
+        <div class="input-group mb-2">
+            <input type="text" class="form-control opcao-input" placeholder="Digite uma opção">
+            <button type="button" class="btn btn-outline-danger" onclick="removerOpcao(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+                    opcoesLista.insertAdjacentHTML('beforeend', opcaoHtml);
+                }
+
+                function removerOpcao(button) {
+                    button.closest('.input-group').remove();
+                }
+
+                document.getElementById('formularioForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Atualizar perguntas com os valores atuais
+                    perguntas.forEach(pergunta => {
+                        const perguntaElement = document.getElementById(`pergunta_${pergunta.id}`);
+                        pergunta.enunciado = perguntaElement.querySelector('.pergunta-enunciado').value;
+                        pergunta.tipo = perguntaElement.querySelector('.pergunta-tipo').value;
+
+                        if (['selecao', 'multipla_escolha'].includes(pergunta.tipo)) {
+                            pergunta.opcoes = Array.from(perguntaElement.querySelectorAll('.opcao-input'))
+                                .map(input => input.value)
+                                .filter(value => value.trim() !== '');
+                        }
+                    });
+
+                    // Validar formulário
+                    if (perguntas.length === 0) {
+                        alert('Adicione pelo menos uma pergunta ao formulário.');
+                        return;
+                    }
+
+                    if (perguntas.some(p => !p.enunciado)) {
+                        alert('Todas as perguntas devem ter um enunciado.');
+                        return;
+                    }
+
+                    if (perguntas.some(p => ['selecao', 'multipla_escolha'].includes(p.tipo) && p.opcoes.length === 0)) {
+                        alert('Perguntas de seleção ou múltipla escolha devem ter pelo menos uma opção.');
+                        return;
+                    }
+
+                    // Enviar formulário
+                    document.getElementById('perguntas_json').value = JSON.stringify(perguntas);
+                    this.submit();
+                });
+            </script>
+        </div>
+    </div>
+
+    <script src="/static/js/menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+
+</html>

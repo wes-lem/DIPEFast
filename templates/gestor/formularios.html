@@ -1,0 +1,52 @@
+{% extends "gestor/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Formulários Socioeconômicos</h2>
+        <a href="/gestor/formularios/novo" class="btn btn-padrao">
+            <i class="bi bi-plus-lg"></i> Novo Formulário
+        </a>
+    </div>
+
+    {% if formularios %}
+    <div class="row">
+        {% for formulario in formularios %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ formulario.titulo }}</h5>
+                    <p class="card-text">{{ formulario.descricao }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            Criado em: {{ formulario.data_criacao.strftime('%d/%m/%Y') }}
+                        </small>
+                        <div>
+                            <a href="/gestor/formularios/{{ formulario.id }}/respostas" class="btn btn-sm btn-outline-padrao">
+                                <i class="bi bi-eye"></i> Ver Respostas
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ formulario.id }})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Nenhum formulário cadastrado ainda.
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function confirmarExclusao(formularioId) {
+    if (confirm('Tem certeza que deseja excluir este formulário? Esta ação não pode ser desfeita.')) {
+        window.location.href = `/gestor/formularios/${formularioId}/excluir`;
+    }
+}
+</script>
+{% endblock %} 

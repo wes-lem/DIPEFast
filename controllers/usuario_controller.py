@@ -34,7 +34,7 @@ async def login(
     if not usuario or not bcrypt.verify(senha, usuario.senha_hash):
         return templates.TemplateResponse(
             "aluno/login.html",
-            {"request": request, "error": "Email ou senha inválidos"}
+            {"request": request, "erro": "Email ou senha inválidos"}
         )
     
     # Se o usuário for do tipo "aluno", verificar se está cadastrado em "alunos"

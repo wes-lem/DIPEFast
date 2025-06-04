@@ -39,13 +39,19 @@
                 <li class="sidebar-item mt-3">
                     <a href="/provas/cadastrar" class="sidebar-link active">
                         <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Cadastrar Prova</span>
+                        <span>Provas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios" class="sidebar-link">
+                        <i class="bi bi-clipboard2-fill"></i>
+                        <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
                     <a href="#" class="sidebar-link">
                         <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
+                        <span>Relatórios</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -67,13 +73,10 @@
 
         <div class="main p-4 bg-branco">
             <div class="row px-2">
-                <div class="col-12 d-flex bg-secundaria rounded-4 borda justify-content-around mb-4">
-                    <div class="d-flex flex-column justify-content-center">
-                        <h4 class="fs-4 f-libre">Editar Prova - {{ prova.materia }}</h4>
-                        <p class="fs-6 m-0">Edite as informações da prova e suas questões.</p>
-                    </div>
-                    <div>
-                        <img src="/static/img/welcome.svg" alt="" class="h-100">
+                <div class="col-12 d-flex mb-2">
+                    <div class="col-12 flex-column borda bg-branco rounded-2">
+                        <h4 class="fs-4 f-libre text-light bg-padrao rounded-2 px-3 py-2">Editar Prova - {{ prova.materia }}</h4>
+                        <p class="fs-6 m-0 px-3 py-2">Edite as informações da prova e suas questões.</p>
                     </div>
                 </div>
 

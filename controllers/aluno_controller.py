@@ -1,43 +1,41 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, Form
-from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
-from dao.database import get_db
-from fastapi.templating import Jinja2Templates
-from models.usuario import Usuario
-from models.aluno import Aluno
-from dao.aluno_dao import AlunoDAO
-from dao.usuario_dao import UsuarioDAO
-from datetime import datetime
-from models.prova import Prova
-from models.resultado import Resultado
-from fastapi import File, UploadFile
 import os
 import shutil
 import json
-from sqlalchemy import func
-from fastapi.responses import HTMLResponse
+from datetime import datetime
 from pathlib import Path
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Depends, Request, Form, File, UploadFile
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+
+from dao.database import get_db
+from dao.aluno_dao import AlunoDAO
+from dao.usuario_dao import UsuarioDAO
+from models.aluno import Aluno
+from models.usuario import Usuario
+from models.prova import Prova
+from models.resultado import Resultado
+from models.resposta import Resposta
+
+
+from controllers.usuario_controller import verificar_sessao
+
+from services.graficos_service import AnalyticsService
+from dao.notificacao_dao import NotificacaoDAO
+
+UPLOAD_DIR = Path("templates/static/uploads") # Pode ser definido globalmente se usado em outros controllers/DAOs
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True) # Garante que o diretório existe
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
-
-def verificar_sessao(request: Request):
-    session_user = request.cookies.get("session_user")
-    if not session_user:
-        print("❌ Tentativa de acesso sem sessão ativa!")
-        # Redireciona para o login com o erro de "Usuário não autenticado"
-        raise HTTPException(
-            status_code=303,
-            detail="Usuário não autenticado",
-            headers={"Location": "/login?erro=Usuario nao autenticado"},
-        )
-    return session_user  # Retorna o ID do usuário para uso na rota
 
 @router.get("/cadastro")
 def cadastro_page(request: Request):
     return templates.TemplateResponse("aluno/cadastro.html", {"request": request})
 
-# Cadastro de usuário
 @router.post("/cadastro")
 def cadastro(
     request: Request,
@@ -45,14 +43,10 @@ def cadastro(
     senha: str = Form(...),
     db: Session = Depends(get_db),
 ):
-
     usuario_criado = UsuarioDAO.create(db, email, senha)
-
-    # Redireciona para a página de cadastro do aluno com o id do usuário
     return RedirectResponse(url=f"/cadastro/aluno/{usuario_criado.id}", status_code=303)
 
-
-# Rota para a página de cadastro de aluno, onde o aluno preenche seus dados
+# --- Rota /cadastro/aluno/{idUser} (mantida como está, pois o AlunoDAO já lida com a criação) ---
 @router.get("/cadastro/aluno/{idUser}")
 def cadastro_aluno_page(request: Request, idUser: int):
     return templates.TemplateResponse(
@@ -60,7 +54,7 @@ def cadastro_aluno_page(request: Request, idUser: int):
     )
 
 @router.post("/cadastro/aluno/{idUser}")
-def cadastrar_aluno(
+async def cadastrar_aluno(
     idUser: int,
     nome: str = Form(...),
     ano: int = Form(...),
@@ -69,35 +63,40 @@ def cadastrar_aluno(
     municipio: str = Form(...),
     zona: str = Form(...),
     origem_escolar: str = Form(...),
-    imagem: UploadFile = File(None),  # Opcional
+    escola: Optional[str] = Form(None),
+    forma_ingresso: Optional[str] = Form(None),
+    acesso_internet: Optional[str] = Form(None),
+    imagem: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
     usuario = db.query(Usuario).filter(Usuario.id == idUser).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-    # Validação básica
     if curso not in ["Redes de Computadores", "Agropecuária"]:
         raise HTTPException(status_code=400, detail="Curso inválido")
 
-    # Salvar imagem (se houver)
-    imagem_path = None
-    if imagem:
-        upload_dir = os.path.join("templates", "static", "uploads", "alunos")
-        os.makedirs(upload_dir, exist_ok=True)
+    imagem_relativa = None
+    if imagem and imagem.filename:
+        upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
+        os.makedirs(upload_dir_aluno, exist_ok=True)
 
-        # Cria o caminho absoluto da imagem a ser salva
-        imagem_path = os.path.join(upload_dir, f"{idUser}_{imagem.filename}")
+        filename = f"{idUser}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(imagem.filename).suffix}"
+        file_location = os.path.join(upload_dir_aluno, filename)
 
-        with open(imagem_path, "wb") as buffer:
-            shutil.copyfileobj(imagem.file, buffer)
+        conteudo = await imagem.read()
+        with open(file_location, "wb") as buffer:
+            buffer.write(conteudo)
 
-        # Caminho relativo para salvar no banco (para uso em HTML)
-        imagem_relativa = imagem_path.replace("templates/", "/")
-    else:
-        imagem_relativa = None
+        imagem_relativa = f"/static/uploads/alunos/{filename}"
 
-    # Criação do aluno
+    # Converter acesso_internet para booleano
+    acesso_internet_bool = None
+    if acesso_internet == "true":
+        acesso_internet_bool = True
+    elif acesso_internet == "false":
+        acesso_internet_bool = False
+
     AlunoDAO.create(
         db,
         idUser=idUser,
@@ -108,132 +107,48 @@ def cadastrar_aluno(
         municipio=municipio,
         zona=zona,
         origem_escolar=origem_escolar,
-        imagem=imagem_relativa
+        imagem=imagem_relativa,
+        escola=escola,
+        forma_ingresso=forma_ingresso,
+        acesso_internet=acesso_internet_bool
     )
 
     return RedirectResponse(url="/login", status_code=303)
 
+# --- Rota /perfil (AGORA REFATORADA) ---
 @router.get("/perfil")
 def perfil(
     request: Request,
     user_id: str = Depends(verificar_sessao),
     db: Session = Depends(get_db),
 ):
-    if not user_id:
-        return RedirectResponse(url="/login", status_code=303)
+    """
+    Exibe o perfil do aluno com dados e gráficos de desempenho.
+    A lógica de coleta de dados é delegada ao AnalyticsService.
+    """
+    # user_id já foi validado pela dependência verificar_sessao
+    # Converte user_id para int, pois o serviço espera int
+    aluno_profile_data = AnalyticsService.get_aluno_profile_data(db, int(user_id))
 
-    # Obtém os dados do aluno
-    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
-    if not aluno:
-        return {"erro": "Aluno não cadastrado"}
+    if not aluno_profile_data:
+        # Se o serviço retornar None (aluno não encontrado apesar do user_id válido),
+        # redireciona para o login ou uma página de erro.
+        return RedirectResponse(url="/login?erro=aluno_nao_cadastrado", status_code=303)
 
-    # Lista fixa de matérias
-    materias_fixas = ["Português", "Matemática", "Ciências"]
-    materias = []
-    
-    # Dados para os gráficos
-    dados_grafico_pizza = {
-        'labels': materias_fixas,
-        'data': [],
-        'cores': ['#FF6384', '#36A2EB', '#FFCE56']
-    }
-    
-    dados_grafico_barra = {
-        'labels': materias_fixas,
-        'datasets': [
-            {
-                'label': 'Sua média',
-                'data': [],
-                'backgroundColor': '#FF6384'
-            },
-            {
-                'label': 'Média da turma',
-                'data': [],
-                'backgroundColor': '#36A2EB'
-            },
-            {
-                'label': 'Média geral',
-                'data': [],
-                'backgroundColor': '#FFCE56'
-            }
-        ]
-    }
+    # Desempacota os dados retornados pelo serviço para passar ao template
+    aluno = aluno_profile_data['aluno']
+    materias = aluno_profile_data['materias']
+    dados_grafico_pizza = aluno_profile_data['dados_grafico_pizza']
+    dados_grafico_barra = aluno_profile_data['dados_grafico_barra']
 
-    for materia in materias_fixas:
-        # Busca a prova correspondente no banco
-        prova = db.query(Prova).filter(Prova.materia == materia).first()
-        
-        # A prova está disponível se existir no banco
-        prova_disponivel = prova is not None  
+    # Busca as notificações não lidas do aluno
+    notificacoes = NotificacaoDAO.get_notificacoes_by_aluno(db, aluno.idAluno, lida=False)
 
-        if prova:
-            # Obter o resultado da prova do aluno
-            resultado = db.query(Resultado).filter(
-                Resultado.aluno_id == aluno.idAluno,
-                Resultado.prova_id == prova.id
-            ).first()
-            
-            # Calcular média da turma do aluno
-            media_turma = db.query(func.avg(Resultado.acertos)).join(
-                Aluno, Resultado.aluno_id == Aluno.idAluno
-            ).filter(
-                Aluno.curso == aluno.curso,
-                Resultado.prova_id == prova.id
-            ).scalar() or 0
-
-            # Calcular média geral
-            media_geral = db.query(func.avg(Resultado.acertos)).filter(
-                Resultado.prova_id == prova.id
-            ).scalar() or 0
-            
-            if resultado:
-                nota = float(resultado.acertos)
-                status = resultado.situacao
-                # Adiciona nota para os gráficos
-                dados_grafico_pizza['data'].append(nota)
-                dados_grafico_barra['datasets'][0]['data'].append(nota)
-                dados_grafico_barra['datasets'][1]['data'].append(float(media_turma))
-                dados_grafico_barra['datasets'][2]['data'].append(float(media_geral))
-                
-                # Define a URL para o resultado detalhado se a prova foi respondida
-                url_prova = f"/prova/{prova.id}/resultado-detalhado"
-            else:
-                nota = None
-                status = "Não realizada"
-                # Adiciona 0 para os gráficos quando não há nota
-                dados_grafico_pizza['data'].append(0)
-                dados_grafico_barra['datasets'][0]['data'].append(0)
-                dados_grafico_barra['datasets'][1]['data'].append(float(media_turma) if media_turma is not None else 0)
-                dados_grafico_barra['datasets'][2]['data'].append(float(media_geral) if media_geral is not None else 0)
-                
-                # Define a URL para responder a prova se não foi respondida
-                url_prova = f"/prova/{prova.id}"
-            
-        else:
-            nota = None
-            status = "Ainda não há provas disponíveis"
-            url_prova = "#"
-            # Adiciona 0 para os gráficos quando não há prova
-            dados_grafico_pizza['data'].append(0)
-            dados_grafico_barra['datasets'][0]['data'].append(0)
-            dados_grafico_barra['datasets'][1]['data'].append(0)
-            dados_grafico_barra['datasets'][2]['data'].append(0)
-
-        # Adiciona a matéria na lista com a chave prova_disponivel
-        materias.append({
-            "nome": materia,
-            "nota": nota,
-            "status": status,
-            "url_prova": url_prova,
-            "prova_disponivel": prova_disponivel
-        })
-
-    # Retorna as informações para o template
     return templates.TemplateResponse(
         "aluno/perfil.html",
         {
             "request": request,
-            "id": aluno.idAluno,
+            "id": aluno.idAluno, # Passa o id do aluno para links internos
             "nome": aluno.nome,
             "imagem": aluno.imagem,
             "idade": aluno.idade,
@@ -242,61 +157,59 @@ def perfil(
             "curso": aluno.curso,
             "materias": materias,
             "dados_grafico_pizza": dados_grafico_pizza,
-            "dados_grafico_barra": dados_grafico_barra
+            "dados_grafico_barra": dados_grafico_barra,
+            "notificacoes": notificacoes
         },
     )
 
+# --- Rota /aluno/dashboard/{aluno_id} (AGORA REFATORADA) ---
 @router.get("/aluno/dashboard/{aluno_id}", response_class=HTMLResponse)
-async def dashboard_aluno(request: Request, aluno_id: int, db: Session = Depends(get_db)):
-    # Buscar dados do aluno
-    aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
-    if not aluno:
-        raise HTTPException(status_code=404, detail="Aluno não encontrado")
+async def dashboard_aluno(
+    request: Request,
+    aluno_id: int,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao) # Protege o dashboard do aluno
+):
+    """
+    Exibe o dashboard detalhado de um aluno específico.
+    A lógica de coleta de dados é delegada ao AnalyticsService.
+    """
+    # Embora a rota receba aluno_id, usamos user_id para garantir que o usuário logado
+    # tenha permissão para ver este dashboard (se essa for a regra de negócio).
+    # Caso contrário, se qualquer um puder ver o dashboard de qualquer aluno, remova user_id Depends(verificar_sessao).
+    # Para simplicidade e consistência, a lógica aqui é para o aluno ver SEU PRÓPRIO dashboard.
+    if int(user_id) != aluno_id and db.query(Usuario).filter(Usuario.id == int(user_id)).first().tipo != "gestor":
+        # Se o ID na URL não corresponde ao usuário logado E o usuário não é gestor
+        # Isso é uma regra de negócio, ajuste conforme a necessidade.
+        raise HTTPException(
+            status_code=403,
+            detail="Acesso não autorizado ao dashboard de outro aluno.",
+            headers={"Location": "/perfil"}, # Redireciona para o próprio perfil
+        )
 
-    # Buscar resultados do aluno por disciplina
-    resultados_por_disciplina = db.query(
-        Prova.materia,
-        func.avg(Resultado.acertos).label('media_acertos')
-    ).join(Resultado).filter(
-        Resultado.aluno_id == aluno_id
-    ).group_by(Prova.materia).all()
+    # A lógica de busca de dados foi movida para o serviço
+    dashboard_data = AnalyticsService.get_aluno_dashboard_data(db, aluno_id) # NOVO MÉTODO NO SERVIÇO
 
-    # Buscar progressão do aluno
-    progressao = db.query(
-        Prova.data_criacao,
-        Resultado.acertos
-    ).join(Resultado).filter(
-        Resultado.aluno_id == aluno_id
-    ).order_by(Prova.data_criacao).all()
-
-    # Preparar dados para os gráficos
-    dados_disciplina = {
-        'labels': [r.materia for r in resultados_por_disciplina],
-        'data': [float(r.media_acertos) for r in resultados_por_disciplina]
-    }
-
-    dados_progressao = {
-        'labels': [str(r.data_criacao) for r in progressao],
-        'data': [r.acertos for r in progressao]
-    }
+    if not dashboard_data:
+        raise HTTPException(status_code=404, detail="Dados do dashboard não encontrados para este aluno.")
 
     return templates.TemplateResponse(
         "aluno/dashboard_aluno.html",
         {
             "request": request,
-            "aluno": aluno,
-            "dados_disciplina": json.dumps(dados_disciplina),
-            "dados_progressao": json.dumps(dados_progressao)
+            "aluno": dashboard_data['aluno'],
+            "dados_disciplina": json.dumps(dashboard_data['dados_disciplina']),
+            "dados_progressao": json.dumps(dashboard_data['dados_progressao'])
         }
     )
 
+# --- Rotas /aluno/dados (mantidas, pois a lógica é de atualização direta) ---
 @router.get("/aluno/dados")
 def editar_dados_page(
     request: Request,
     user_id: str = Depends(verificar_sessao),
     db: Session = Depends(get_db)
 ):
-    # Buscar dados do aluno logado usando o user_id
     aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
@@ -338,9 +251,7 @@ async def editar_dados(
     
     # Atualizar foto se fornecida
     if foto and foto.filename:
-        # Deletar foto antiga se existir
         if aluno.imagem:
-            # Remove a barra inicial se existir para construir o caminho correto
             caminho_antigo = aluno.imagem.lstrip('/')
             caminho_completo = os.path.join("templates", caminho_antigo)
             if os.path.exists(caminho_completo):
@@ -350,9 +261,8 @@ async def editar_dados(
                 except Exception as e:
                     print(f"Erro ao remover foto antiga: {e}")
         
-        # Salvar nova foto
         filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
-        file_location = os.path.join("templates", "static", "uploads", "alunos", filename)
+        file_location = os.path.join(UPLOAD_DIR, "alunos", filename)
         os.makedirs(os.path.dirname(file_location), exist_ok=True)
         
         conteudo = await foto.read()

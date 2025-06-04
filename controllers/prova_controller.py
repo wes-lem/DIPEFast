@@ -17,17 +17,29 @@ from controllers.usuario_controller import verificar_sessao
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-def verificar_sessao(request: Request):
-    session_user = request.cookies.get("session_user")
-    if not session_user:
-        raise HTTPException(status_code=303, detail="Usuário não autenticado", headers={"Location": "/login"})
-    return session_user
+# def verificar_sessao(request: Request):
+#     session_user = request.cookies.get("session_user")
+#     if not session_user:
+#         raise HTTPException(status_code=303, detail="Usuário não autenticado", headers={"Location": "/login"})
+#     return session_user
 
 # Listar provas disponíveis para o aluno
 @router.get("/provas")
 def listar_provas(request: Request, user_id: int = Depends(verificar_sessao), db: Session = Depends(get_db)):
-    provas = db.query(Prova).all()
-    return templates.TemplateResponse("listar_provas.html", {"request": request, "provas": provas})
+    # Busca a primeira prova cadastrada
+    primeira_prova = db.query(Prova).order_by(Prova.id).first()
+    
+    if not primeira_prova:
+        raise HTTPException(
+            status_code=404,
+            detail="Nenhuma prova cadastrada no sistema"
+        )
+    
+    # Redireciona para a rota de resultado detalhado da primeira prova
+    return RedirectResponse(
+        url=f"/prova/{primeira_prova.id}/resultado-detalhado",
+        status_code=303
+    )
 
 # Página para o aluno responder a prova
 @router.get("/prova/{prova_id}")
@@ -238,4 +250,26 @@ def resultado_provas(request: Request, aluno_id: int, db: Session = Depends(get_
 
     return templates.TemplateResponse(
         "aluno/resultado.html", {"request": request, "pontuacao": pontuacao, "situacoes": situacoes}
+    )
+
+# Rota para redirecionar para o resultado detalhado da primeira prova
+@router.get("/prova/1/resultado-detalhado")
+def primeira_prova_resultado(
+    request: Request,
+    user_id: int = Depends(verificar_sessao),
+    db: Session = Depends(get_db)
+):
+    # Busca a primeira prova cadastrada
+    primeira_prova = db.query(Prova).order_by(Prova.id).first()
+    
+    if not primeira_prova:
+        raise HTTPException(
+            status_code=404,
+            detail="Nenhuma prova cadastrada no sistema"
+        )
+    
+    # Redireciona para a rota de resultado detalhado da primeira prova
+    return RedirectResponse(
+        url=f"/prova/{primeira_prova.id}/resultado-detalhado",
+        status_code=303
     )

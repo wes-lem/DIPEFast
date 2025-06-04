@@ -31,9 +31,9 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .c-hover { color: var(--green-800) !important; }
 .c-nota { color: var(--green-500) !important; }
 .c-black { color: #3F3D56 !important; }
-.c-pot { color: #7E78D2; }
-.c-mat { color: #0FA3B1; }
-.c-cie { color: #FE938C; }
+.c-portugues { color: #7E78D2; }
+.c-matematica { color: #0FA3B1; }
+.c-ciencias { color: #FE938C; }
 
 /* Fundos */
 .bg-padrao { background-color: var(--green-500) !important; }
@@ -42,7 +42,6 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .bg-branco { background-color: white; }
 .bg-fundo { background-color: #F9F8FA; }
 .bg-cinza { background-color: #F1F1F1; }
-.bg-cinza1 { background-color: #F1F1F1; }
 .bg-gradiente { background: linear-gradient(172.513deg, var(--green-200) 0%, var(--green-500) 100%); }
 .bg-pattern {
     background-image: url('../img/pattern.png');

@@ -63,43 +63,71 @@ uvicorn main:app --reload
 ## 📊 Estrutura do Projeto
 ```
 DIPE/
-├── controllers/          # Controladores da aplicação
-│   ├── aluno_controller.py    # Rotas do aluno
-│   ├── gestor_controller.py   # Rotas do gestor
-│   ├── prova_controller.py    # Rotas das provas
-│   ├── questao_controller.py  # Rotas das questões
-│   ├── resposta_controller.py # Rotas das respostas
-│   └── usuario_controller.py  # Rotas de usuários
-├── dao/                  # Data Access Objects
-│   ├── aluno_dao.py     # Operações com alunos
-│   ├── database.py      # Configuração do banco
-│   └── usuario_dao.py   # Operações com usuários
-├── models/              # Modelos de dados
-│   ├── aluno.py        # Modelo de aluno
-│   ├── prova.py        # Modelo de prova
-│   ├── questao.py      # Modelo de questão
-│   ├── resposta.py     # Modelo de resposta
-│   ├── resultado.py    # Modelo de resultado
-│   └── usuario.py      # Modelo de usuário
-├── templates/           # Templates HTML
-│   ├── static/         # Arquivos estáticos
-│   │   ├── css/        # Estilos CSS
-│   │   ├── js/         # Scripts JavaScript
-│   │   ├── img/        # Imagens
-│   │   └── uploads/    # Uploads de imagens
-│   ├── cadastro.html           # Página de cadastro
-│   ├── cadastro_aluno.html     # Cadastro de aluno
-│   ├── cadastro_prova.html     # Cadastro de prova
-│   ├── dashboard.html          # Dashboard do gestor
-│   ├── dashboard_aluno.html    # Dashboard do aluno
-│   ├── dashboard_gestor.html   # Dashboard do gestor
-│   ├── gestor_alunos.html      # Lista de alunos
-│   ├── gestor_cadastro.html    # Cadastro pelo gestor
-│   ├── index.html             # Página inicial
-│   ├── login.html             # Página de login
-│   └── perfil.html            # Perfil do aluno
-├── main.py              # Ponto de entrada
-└── requirements.txt     # Dependências do projeto
+├── controllers/
+│   ├── aluno_controller.py
+│   ├── gestor_controller.py
+│   ├── prova_controller.py
+│   └── usuario_controller.py
+├── dao/
+│   ├── aluno_dao.py
+│   ├── banco.sql
+│   ├── cadastrarAdmin.py
+│   ├── database.py
+│   ├── prova_dao.py
+│   ├── questao_dao.py
+│   ├── resposta_dao.py
+│   ├── resultados_dao.py
+│   ├── senha.py
+│   └── usuario_dao.py
+├── models/
+│   ├── aluno.py
+│   ├── gestor.py
+│   ├── prova.py
+│   ├── questao.py
+│   ├── resposta.py
+│   ├── resultado.py
+│   └── usuario.py
+├── templates/
+│   ├── aluno/
+│   │   ├── cadastro.html
+│   │   ├── cadastro_aluno.html
+│   │   ├── dashboard_aluno.html
+│   │   ├── editar_dados.html
+│   │   ├── login.html
+│   │   ├── perfil.html
+│   │   ├── responder_prova.html
+│   │   └── resultado_detalhado_prova.html
+│   ├── gestor/
+│   │   ├── cadastrar_gestor.html
+│   │   ├── cadastro_prova.html
+│   │   ├── dashboard_gestor.html
+│   │   ├── detalhes_aluno.html
+│   │   ├── editar_prova.html
+│   │   ├── gestor_alunos.html
+│   │   ├── gestor_cadastro.html
+│   │   └── gestor_geral.html
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   ├── img/
+│   │   │   ├── # Imagens do sistema
+│   │   ├── js/
+│   │   │   └── menu.js
+│   │   └── uploads/
+│   │       ├── alunos/
+│   │       │   ├── # Imagens dos alunos
+│   │       └── gestores/
+│   │       │   └── # Imagens dos provas
+│   │       └── provas/
+│   │           ├── # Imagens das provas
+│   └── index.html
+├── teste/
+│   └── teste.py
+├── .gitignore
+├── ladingAluno.png
+├── main.py
+├── readme.md
+└── requirements.txt
 ```
 
 ## 📄 Licença

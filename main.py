@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from controllers.usuario_controller import router as usuario_router
 from controllers.aluno_controller import router as aluno_router
@@ -8,19 +7,11 @@ from controllers.gestor_controller import router as gestor_router
 from controllers.formulario_controller import router as formulario_router
 import os
 import uvicorn
-import json
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+# Importar a instância 'templates' do arquivo de configuração
+from app_config import templates
 
 app = FastAPI()
-
-# Configuração do Jinja2 para templates com filtro 'fromjson'
-env = Environment(
-    loader=FileSystemLoader("templates"),
-    autoescape=select_autoescape(["html", "xml"])
-)
-env.filters['fromjson'] = json.loads  # Registra o filtro 'fromjson'
-
-templates = Jinja2Templates(env=env)  # Passa o ambiente personalizado para o Jinja2Templates
 
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 

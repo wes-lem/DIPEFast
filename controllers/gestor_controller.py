@@ -7,10 +7,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Form, Request, UploadFile, File, Query, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session, aliased # aliased é necessário para algumas consultas de alunos
-from sqlalchemy import func, distinct, and_ # func, distinct, and_ também são necessários
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import func, distinct, and_
 
 # Importações dos seus DAOs e Models
 from dao.database import get_db
@@ -33,12 +32,15 @@ from dao.notificacao_dao import NotificacaoDAO
 
 from utils.auth import verificar_gestor_sessao
 
+# Importar a instância templates do app_config
+from app_config import templates
+
 def verificar_gestor_sessao(request: Request, db: Session = Depends(get_db)):
     """
     Dependência para verificar se o usuário na sessão é um gestor.
     Redireciona para a página de login se não for.
     """
-    session_user_id = verificar_sessao(request) # Reutiliza a verificação de sessão básica
+    session_user_id = verificar_sessao(request)
     usuario = db.query(Usuario).filter(Usuario.id == int(session_user_id)).first()
     if not usuario or usuario.tipo != "gestor":
         raise HTTPException(
@@ -53,16 +55,15 @@ UPLOAD_DIR = Path("templates/static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 # --- Funções Auxiliares (mantidas, mas podem ser movidas para um utilitário se usadas em mais lugares) ---
 async def salvar_imagem(imagem: UploadFile, nome_arquivo: str):
     """Salva uma imagem no diretório de uploads e retorna o caminho relativo."""
-    upload_path = os.path.join(UPLOAD_DIR, "provas", nome_arquivo) # Assumindo que é para provas
+    upload_path = os.path.join(UPLOAD_DIR, "provas", nome_arquivo)
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
     with open(upload_path, "wb") as buffer:
         buffer.write(await imagem.read())
-    return f"/static/uploads/provas/{nome_arquivo}" # Caminho relativo para o frontend
+    return f"/static/uploads/provas/{nome_arquivo}"
 
 # --- Rotas de Gerenciamento de Provas ---
 @router.get("/provas/cadastrar")
@@ -533,6 +534,20 @@ def remover_aluno(
 
         # Notificações do aluno
         db.query(Notificacao).filter(Notificacao.aluno_id == aluno_id).delete(synchronize_session=False)
+
+        # Deletar o usuário correspondente ao aluno
+        db.query(Usuario).filter(Usuario.id == aluno_id).delete(synchronize_session=False)
+
+        # Deletar a imagem do aluno se existir
+        if aluno.imagem:
+            caminho_imagem = aluno.imagem.lstrip('/')
+            caminho_completo = os.path.join("static", caminho_imagem)
+            if os.path.exists(caminho_completo):
+                try:
+                    os.remove(caminho_completo)
+                    print(f"Imagem do aluno removida: {caminho_completo}")
+                except Exception as e:
+                    print(f"Erro ao remover imagem do aluno: {e}")
 
         # Deletar o aluno
         db.delete(aluno)

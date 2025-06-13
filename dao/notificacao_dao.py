@@ -122,13 +122,24 @@ class NotificacaoDAO:
                 if not RespostaFormularioDAO.has_aluno_responded_formulario(db, aluno.idAluno, formulario.id):
                     # Verifica se já existe uma notificação não lida para este formulário
                     notificacao_existente = db.query(Notificacao).filter(
-                        Notificacao.aluno_id == aluno.idAluno,
-                        Notificacao.link == f"/aluno/formularios/{formulario.id}",
-                        Notificacao.lida == False
+                        and_(
+                            Notificacao.aluno_id == aluno.idAluno,
+                            Notificacao.link == f"/aluno/formularios/{formulario.id}",
+                            Notificacao.lida == False
+                        )
                     ).first()
                     
-                    # Se não existe notificação, cria uma nova
+                    # Se não existe notificação ou se a notificação existente está lida, cria uma nova
                     if not notificacao_existente:
+                        # Remove qualquer notificação antiga (lida ou não) para este formulário
+                        db.query(Notificacao).filter(
+                            and_(
+                                Notificacao.aluno_id == aluno.idAluno,
+                                Notificacao.link == f"/aluno/formularios/{formulario.id}"
+                            )
+                        ).delete()
+                        
+                        # Cria uma nova notificação
                         NotificacaoDAO.create_notificacao(
                             db=db,
                             aluno_id=aluno.idAluno,
@@ -136,3 +147,4 @@ class NotificacaoDAO:
                             mensagem=f"Você ainda não respondeu o formulário '{formulario.titulo}'. Clique para respondê-lo.",
                             link=f"/aluno/formularios/{formulario.id}"
                         )
+                        db.commit()

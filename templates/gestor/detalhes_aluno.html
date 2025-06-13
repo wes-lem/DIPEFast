@@ -350,12 +350,10 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="curso" class="form-label">Curso <span
                                                 class="text-danger">*</span></label>
-                                        <select class="form-select" id="curso" name="curso" required>
-                                            <option value="Redes de Computadores" {% if
-                                                aluno.curso=='Redes de Computadores' %}selected{% endif %}>Redes de
-                                                Computadores</option>
-                                            <option value="Agropecuária" {% if aluno.curso=='Agropecuária' %}selected{%
-                                                endif %}>Agropecuária</option>
+                                        <select name="curso" class="form-select border-0 bg-cinza" required>
+                                            <option value="Redes de Computadores" {% if aluno.curso=='Redes de Computadores' %}selected{% endif %}>Redes de Computadores</option>
+                                            <option value="Agropecuária" {% if aluno.curso=='Agropecuária' %}selected{% endif %}>Agropecuária</option>
+                                            <option value="Partiu IF" {% if aluno.curso=='Partiu IF' %}selected{% endif %}>Partiu IF</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">

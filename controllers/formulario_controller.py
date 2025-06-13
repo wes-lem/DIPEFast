@@ -21,10 +21,10 @@ from models.notificacao import Notificacao
 from controllers.usuario_controller import verificar_sessao
 from controllers.gestor_controller import verificar_gestor_sessao 
 
-from fastapi.templating import Jinja2Templates
+# Importar a instância templates do app_config
+from app_config import templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/gestor/formularios", response_class=HTMLResponse)
@@ -344,3 +344,30 @@ async def enviar_respostas(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/registrar")
+def registrar_formulario(
+    request: Request,
+    titulo: str = Form(...),
+    descricao: str = Form(...),
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """
+    Registra um novo formulário no sistema.
+    """
+    try:
+        # Cria o formulário
+        formulario = FormularioDAO.create(db, titulo, descricao)
+        
+        # Redireciona para a página de sucesso
+        return RedirectResponse(
+            url=f"/formularios/sucesso?id={formulario.id}",
+            status_code=303
+        )
+    except Exception as e:
+        # Em caso de erro, redireciona para a página de erro
+        return RedirectResponse(
+            url=f"/formularios/erro?mensagem={str(e)}",
+            status_code=303
+        )

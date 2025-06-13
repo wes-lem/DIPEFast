@@ -42,21 +42,27 @@
                                 placeholder="Digite seu nome" required>
 
                             <label for="ano" class="mt-3">Série:</label>
-                            <input type="number" id="ano" name="ano" class="form-control borda bg-cinza mt-1"
-                                placeholder="Digite sua série" required>
+                            <select id="ano" name="ano" class="form-select borda bg-cinza mt-1"
+                                required>
+                                <option value="">Selecione seu ano</option>
+                                <option value="1">1 ano</option>
+                                <option value="2">2 ano</option>
+                                <option value="3">3 ano</option>
+                            </select>
 
                             <label for="curso" class="mt-3">Curso:</label>
                             <select id="curso" name="curso" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione seu curso</option>
                                 <option value="Redes de Computadores">Redes de Computadores</option>
                                 <option value="Agropecuária">Agropecuária</option>
+                                <option value="Partiu IF">Partiu IF</option>
                             </select>
 
                             <label for="zona" class="mt-3">Zona:</label>
                             <select id="zona" name="zona" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione a zona</option>
-                                <option value="urbana">Urbana</option>
-                                <option value="rural">Rural</option>
+                                <option value="Urbana">Urbana</option>
+                                <option value="Rural">Rural</option>
                             </select>
 
                             <label for="origem_escolar" class="mt-3">Origem Escolar:</label>
@@ -81,9 +87,12 @@
                                 placeholder="Digite sua idade" required>
 
                             <label for="municipio" class="mt-3">Município:</label>
-                            <input type="text" id="municipio" name="municipio"
-                                class="form-control borda bg-cinza mt-1" placeholder="Digite o município onde mora"
+                            <select id="municipio" name="municipio" class="form-select borda bg-cinza mt-1"
                                 required>
+                                <option value="">Selecione município</option>
+                                <option value="Boa Viagem">Boa Viagem</option>
+                                <option value="Madalena">Madalena</option>
+                            </select>
 
 
                         </div>

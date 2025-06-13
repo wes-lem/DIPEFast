@@ -26,7 +26,7 @@ CREATE TABLE alunos (
     matricula VARCHAR(20),                    -- Número de matrícula (agora opcional)
     nome VARCHAR(100) NOT NULL,               -- Nome do aluno
     ano INT NOT NULL,                         -- Ano do curso
-    curso ENUM('Redes de Computadores', 'Agropecuária') NOT NULL, -- Cursos permitidos
+    curso ENUM('Redes de Computadores', 'Agropecuária', 'Partiu IF') NOT NULL, -- Cursos permitidos
     media DECIMAL(4,2),                       -- Média do aluno
     situacao ENUM('Insuficiente', 'Regular', 'Suficiente'), -- Definida pelo servidor
     CONSTRAINT fk_idUser FOREIGN KEY (idUser) REFERENCES usuarios(id) ON DELETE CASCADE

@@ -11,11 +11,12 @@ from dao.prova_dao import ProvaDAO
 from dao.resposta_dao import RespostaDAO
 from dao.questao_dao import QuestaoDAO
 from dao.resultados_dao import ResultadoDAO
-from fastapi.templating import Jinja2Templates
 from controllers.usuario_controller import verificar_sessao
 
+# Importar a instância templates do app_config
+from app_config import templates
+
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 # def verificar_sessao(request: Request):
 #     session_user = request.cookies.get("session_user")

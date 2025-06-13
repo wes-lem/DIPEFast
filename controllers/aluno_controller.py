@@ -7,7 +7,6 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends, Request, Form, File, UploadFile
 from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -20,17 +19,20 @@ from models.prova import Prova
 from models.resultado import Resultado
 from models.resposta import Resposta
 
-
 from controllers.usuario_controller import verificar_sessao
 
 from services.graficos_service import AnalyticsService
 from dao.notificacao_dao import NotificacaoDAO
+from dao.formulario_dao import FormularioDAO
+from dao.resposta_formulario_dao import RespostaFormularioDAO
+
+# Importar a instância templates do app_config
+from app_config import templates
 
 UPLOAD_DIR = Path("templates/static/uploads") # Pode ser definido globalmente se usado em outros controllers/DAOs
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True) # Garante que o diretório existe
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 @router.get("/cadastro")
 def cadastro_page(request: Request):
@@ -43,7 +45,31 @@ def cadastro(
     senha: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    usuario_criado = UsuarioDAO.create(db, email, senha)
+    """
+    Processa o cadastro de um novo usuário.
+    Verifica se o e-mail já existe antes de criar.
+    """
+    # Verificar se o e-mail já está em uso
+    usuario_existente = UsuarioDAO.get_by_email(db, email)
+    if usuario_existente:
+        # Se o e-mail já existe, retorna para a página de cadastro com uma mensagem de erro
+        return templates.TemplateResponse(
+            "aluno/cadastro.html",
+            {"request": request, "erro": "E-mail já cadastrado. Por favor, use outro e-mail."}
+        )
+
+    # Se o e-mail não existe, procede com a criação do usuário
+    try:
+        usuario_criado = UsuarioDAO.create(db, email, senha)
+    except Exception as e:
+        # Captura qualquer outro erro que possa ocorrer durante a criação
+        print(f"Erro ao criar usuário: {e}")
+        return templates.TemplateResponse(
+            "aluno/cadastro.html",
+            {"request": request, "erro": "Ocorreu um erro ao tentar cadastrar. Tente novamente mais tarde."}
+        )
+
+    # Redireciona para a página de cadastro do aluno com o id do usuário recém-criado
     return RedirectResponse(url=f"/cadastro/aluno/{usuario_criado.id}", status_code=303)
 
 # --- Rota /cadastro/aluno/{idUser} (mantida como está, pois o AlunoDAO já lida com a criação) ---
@@ -73,7 +99,7 @@ async def cadastrar_aluno(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-    if curso not in ["Redes de Computadores", "Agropecuária"]:
+    if curso not in ["Redes de Computadores", "Agropecuária", "Partiu IF"]:
         raise HTTPException(status_code=400, detail="Curso inválido")
 
     imagem_relativa = None
@@ -141,6 +167,24 @@ def perfil(
     dados_grafico_pizza = aluno_profile_data['dados_grafico_pizza']
     dados_grafico_barra = aluno_profile_data['dados_grafico_barra']
 
+    # Verifica formulários não respondidos e cria notificações
+    NotificacaoDAO.verificar_formularios_nao_respondidos(db)
+
+    # Busca todos os formulários e verifica quais o aluno ainda não respondeu
+    formularios_pendentes = []
+    todos_formularios = FormularioDAO.get_all(db)
+    
+    for form in todos_formularios:
+        # Verifica se o aluno já respondeu este formulário
+        ja_respondeu = RespostaFormularioDAO.has_aluno_responded_formulario(db, aluno.idAluno, form.id)
+        if not ja_respondeu:
+            # Se o aluno não respondeu, adiciona à lista de pendências
+            formularios_pendentes.append({
+                "id": form.id,
+                "titulo": form.titulo,
+                "link": f"/formularios/{form.id}"
+            })
+
     # Busca as notificações não lidas do aluno
     notificacoes = NotificacaoDAO.get_notificacoes_by_aluno(db, aluno.idAluno, lida=False)
 
@@ -148,7 +192,7 @@ def perfil(
         "aluno/perfil.html",
         {
             "request": request,
-            "id": aluno.idAluno, # Passa o id do aluno para links internos
+            "id": aluno.idAluno,
             "nome": aluno.nome,
             "imagem": aluno.imagem,
             "idade": aluno.idade,
@@ -158,6 +202,7 @@ def perfil(
             "materias": materias,
             "dados_grafico_pizza": dados_grafico_pizza,
             "dados_grafico_barra": dados_grafico_barra,
+            "formularios_pendentes": formularios_pendentes,
             "notificacoes": notificacoes
         },
     )

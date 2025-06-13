@@ -266,32 +266,41 @@ def excluir_prova(
 ):
     """Exclui uma prova, suas questões, respostas e resultados associados."""
     try:
-        # Buscar a prova
+        # Buscar a prova para garantir que ela existe antes de tentar deletar
         prova = db.query(Prova).filter(Prova.id == prova_id).first()
         if not prova:
-            # Já redireciona no GET, mas bom para ter um fallback
             return RedirectResponse(url="/provas/cadastrar", status_code=303)
         
-        # Deletar respostas das questões associadas à prova
-        db.query(Resposta).join(Questao).filter(Questao.prova_id == prova_id).delete(synchronize_session=False)
+        # 1. Deletar Respostas de Prova associadas às questões desta prova
+        # Precisamos dos IDs das questões para filtrar corretamente
+        questoes_ids = db.query(Questao.id).filter(Questao.prova_id == prova_id).all()
+        # Converte a lista de tuplas (ex: [(1,), (2,)]) para uma lista simples de IDs (ex: [1, 2])
+        questoes_ids = [q[0] for q in questoes_ids] 
 
-        # Deletar os resultados associados à prova
+        if questoes_ids: # Só tenta deletar se houver questões para a prova
+            # Delete diretamente da tabela Resposta, filtrando pelos IDs das questões
+            db.query(Resposta).filter(Resposta.questao_id.in_(questoes_ids)).delete(synchronize_session=False)
+            print(f"Respostas para questões da prova {prova_id} removidas.")
+
+        # 2. Deletar os Resultados associados à prova
+        # Delete diretamente da tabela Resultado
         db.query(Resultado).filter(Resultado.prova_id == prova_id).delete(synchronize_session=False)
-        
-        # Deletar as questões da prova (deletar a prova antes das questões pode causar erro)
-        # As imagens das questões NÃO são removidas do disco aqui. Considere uma limpeza futura.
-        db.query(Questao).filter(Questao.prova_id == prova_id).delete(synchronize_session=False)
+        print(f"Resultados da prova {prova_id} removidos.")
 
-        # Agora sim, deletar a prova
-        db.delete(prova)
-        db.commit()
+        # 3. Deletar as Questões da prova
+        # Delete diretamente da tabela Questao
+        db.query(Questao).filter(Questao.prova_id == prova_id).delete(synchronize_session=False)
+        print(f"Questões da prova {prova_id} removidas.")
+
+        # 4. Finalmente, deletar a própria Prova
+        db.delete(prova) # Use o objeto 'prova' que já foi carregado
+        db.commit() # Comita todas as deleções de uma vez
         print(f"Prova {prova_id} e seus dados relacionados excluídos com sucesso.")
             
     except SQLAlchemyError as e:
-        db.rollback() # Em caso de erro, desfaz a transação
+        db.rollback() # Desfaz todas as operações em caso de qualquer erro
         print(f"Erro ao excluir prova {prova_id}: {e}")
-        # Poderia retornar um HTMLResponse com erro ou redirecionar com mensagem
-        raise HTTPException(status_code=500, detail="Erro ao excluir a prova e dados relacionados.")
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor ao excluir a prova: {e}")
             
     return RedirectResponse(url="/provas/cadastrar", status_code=303)
 

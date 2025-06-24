@@ -131,7 +131,7 @@ DIPE/
 ```
 
 ## 📄 Licença
-Este projeto é de uso acadêmico, sem fins lucrativos.
+Este projeto é de uso acadêmico.
 
 ## ✉️ Equipe de Desenvolvimento
 Desenvolvido por Weslem Rodrigues e Iasmin Azevedo, como projeto de Arquitetura de Sistemas do IFCE - Campus Boa Viagem, demonstrando a aplicação de padrões arquiteturais modernos em soluções educacionais.

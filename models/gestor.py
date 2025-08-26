@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from dao.database import Base
+from sqlalchemy.orm import relationship
 
 class Gestor(Base):
     __tablename__ = 'gestores'
@@ -7,3 +8,5 @@ class Gestor(Base):
     id = Column(Integer, ForeignKey('usuarios.id'), primary_key=True)
     nome = Column(String(100), nullable=False)
     imagem = Column(String(255), nullable=True)  # Caminho para a foto de perfil 
+
+    usuario = relationship("Usuario", back_populates="gestor")

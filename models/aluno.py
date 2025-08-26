@@ -10,7 +10,7 @@ class Aluno(Base):
     nome = Column(String(255), nullable=False)
     ano = Column(Integer)
     curso = Column(String(100), nullable=False)
-    imagem = Column(String, nullable=True)
+    imagem = Column(String(255), nullable=True)
     idade = Column(Integer, nullable=False)
     municipio = Column(String(100), nullable=False)
     zona = Column(String(20), nullable=False)  # "urbana" ou "rural"
@@ -23,6 +23,8 @@ class Aluno(Base):
     observacoes = Column(Text, nullable=True)
 
     # Relacionamentos
-    # usuario = relationship("Usuario", back_populates="aluno")
-    # respostas_formulario = relationship("RespostaFormulario", back_populates="aluno", cascade="all, delete-orphan")
-
+    usuario = relationship("Usuario", back_populates="aluno")
+    respostas_formulario = relationship("RespostaFormulario", back_populates="aluno", cascade="all, delete-orphan")
+    notificacoes = relationship("Notificacao", back_populates="aluno", cascade="all, delete-orphan")
+    respostas = relationship("Resposta", back_populates="aluno", cascade="all, delete-orphan") ## -> ADICIONADO/CORRIGIDO
+    resultados = relationship("Resultado", back_populates="aluno", cascade="all, delete-orphan")

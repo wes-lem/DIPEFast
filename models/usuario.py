@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from dao.database import Base
+from sqlalchemy.orm import relationship
 
 class Usuario(Base):
     __tablename__ = "usuarios"
@@ -8,3 +9,6 @@ class Usuario(Base):
     email = Column(String(255), unique=True, nullable=False)
     senha_hash = Column(String(255), nullable=False)
     tipo = Column(String(50), nullable=False)  # Aluno, Gestor
+
+    aluno = relationship("Aluno", back_populates="usuario", uselist=False, cascade="all, delete-orphan")
+    gestor = relationship("Gestor", back_populates="usuario", uselist=False, cascade="all, delete-orphan")

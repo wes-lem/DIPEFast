@@ -13,7 +13,6 @@ class RespostaFormulario(Base):
     resposta_opcoes = Column(Text, nullable=True)  # JSON string para respostas de múltipla escolha
     data_resposta = Column(DateTime, server_default=func.now())
     
-    # Relacionamentos
-    # aluno = relationship("Aluno", back_populates="respostas_formulario")
-    # formulario = relationship("Formulario", back_populates="respostas")
-    # pergunta = relationship("PerguntaFormulario", back_populates="respostas") 
+    aluno = relationship("Aluno", back_populates="respostas_formulario") ## -> CORRIGIDO
+    formulario = relationship("Formulario", back_populates="respostas") ## -> CORRIGIDO
+    pergunta = relationship("PerguntaFormulario", back_populates="respostas")

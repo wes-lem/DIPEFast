@@ -10,6 +10,5 @@ class Formulario(Base):
     descricao = Column(Text, nullable=True)
     data_criacao = Column(DateTime, server_default=func.now())
     
-    # Relacionamentos
-    # perguntas = relationship("PerguntaFormulario", back_populates="formulario", cascade="all, delete-orphan")
-    # respostas = relationship("RespostaFormulario", back_populates="formulario", cascade="all, delete-orphan") 
+    perguntas = relationship("PerguntaFormulario", back_populates="formulario", cascade="all, delete-orphan") ## -> CORRIGIDO
+    respostas = relationship("RespostaFormulario", back_populates="formulario", cascade="all, delete-orphan") 

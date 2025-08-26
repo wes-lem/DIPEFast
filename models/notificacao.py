@@ -14,4 +14,4 @@ class Notificacao(Base):
     data_criacao = Column(DateTime, server_default=func.now())
     
     # Relacionamentos
-    # aluno = relationship("Aluno") 
+    aluno = relationship("Aluno", back_populates="notificacoes") ## -> CORRIGIDO

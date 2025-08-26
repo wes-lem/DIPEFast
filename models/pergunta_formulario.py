@@ -11,6 +11,5 @@ class PerguntaFormulario(Base):
     enunciado = Column(Text, nullable=False)
     opcoes = Column(Text, nullable=True)  # JSON string para opções de escolha
     
-    # Relacionamentos
-    # formulario = relationship("Formulario", back_populates="perguntas")
-    # respostas = relationship("RespostaFormulario", back_populates="pergunta") 
+    formulario = relationship("Formulario", back_populates="perguntas") ## -> CORRIGIDO
+    respostas = relationship("RespostaFormulario", back_populates="pergunta") 

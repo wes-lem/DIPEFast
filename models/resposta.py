@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from dao.database import Base
+from sqlalchemy.orm import relationship
 
 class Resposta(Base):
     __tablename__ = "respostas"
@@ -8,3 +9,6 @@ class Resposta(Base):
     aluno_id = Column(Integer, ForeignKey("alunos.idAluno"), nullable=False)
     questao_id = Column(Integer, ForeignKey("questoes.id"), nullable=False)
     resposta_aluno = Column(String(1), nullable=False)  # Ex: 'a', 'b', 'c', 'd', 'e'
+
+    aluno = relationship("Aluno", back_populates="respostas") ## -> ADICIONADO/CORRIGIDO
+    questao = relationship("Questao", back_populates="respostas") ## -> ADICIONADO/CORRIGIDO

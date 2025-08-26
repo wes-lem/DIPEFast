@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from dao.database import Base
+from sqlalchemy.orm import relationship
 
 class Resultado(Base):
     __tablename__ = 'resultados'
@@ -9,3 +10,6 @@ class Resultado(Base):
     prova_id = Column(Integer, ForeignKey('provas.id'), nullable=False)
     acertos = Column(Integer, nullable=False)
     situacao = Column(String(50), nullable=False)
+
+    aluno = relationship("Aluno", back_populates="resultados") ## -> ADICIONADO/CORRIGIDO
+    prova = relationship("Prova", back_populates="resultados") ## -> ADICIONADO/CORRIGIDO

@@ -371,3 +371,22 @@ def registrar_formulario(
             url=f"/formularios/erro?mensagem={str(e)}",
             status_code=303
         )
+    
+@router.post("/gestor/formularios/{formulario_id}/deletar", response_class=RedirectResponse)
+async def deletar_formulario(
+    request: Request,
+    formulario_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)  # Garante que apenas um gestor pode deletar
+):
+    """Deleta um formulário e todas as suas perguntas e respostas associadas."""
+    
+    # O método `delete` já busca o formulário e verifica se ele existe.
+    success = FormularioDAO.delete(db, formulario_id)
+    
+    if not success:
+        # Se o formulário não foi encontrado, lança um erro 404.
+        raise HTTPException(status_code=404, detail="Formulário não encontrado.")
+    
+    # Redireciona de volta para a lista de formulários após a exclusão.
+    return RedirectResponse(url="/gestor/formularios", status_code=303)

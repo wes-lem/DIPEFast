@@ -1,117 +1,213 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon" />
     <title>Gestor - Formulários</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body id="topo" class="bg-fundo">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body id="topo" class="bg-fundo">
     <div class="wrapper">
-        <aside id="sidebar" class="shadow-lg">
-            <div class="d-flex justify-content-center">
-                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
-                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
-                </button>
-                <div class="sidebar-logo me-4"></div>
-            </div>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link">
-                        <i class="bi bi-house-door-fill"></i>
-                        <span>Início</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/alunos" class="sidebar-link">
-                        <i class="bi bi-person-fill"></i>
-                        <span>Alunos</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/provas/cadastrar" class="sidebar-link">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link active">
-                        <i class="bi bi-clipboard2-fill"></i>
-                        <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="#" class="sidebar-link">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Relatórios</span>
-                    </a>
-                </li>
-                <div class="sidebar-item mt-3">
-                    <form action="/sair" method="post" style="display: inline;">
-                        <button type="submit" class="sidebar-link w-100 text-start">
-                            <i class="bi bi-door-open-fill"></i>
-                            <span class="fw-bold">Sair</span>
-                        </button>
-                    </form>
-                </div>
-            </ul>
-            <div class="sidebar-footer">
-                <a href="#topo" class="sidebar-link">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>Voltar ao topo</span>
-                </a>
-            </div>
-        </aside>
-
-        <div class="main p-4 bg-pattern">
-            <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
-                <h4 class="text-light">Formulários Cadastrados</h4>
-            </div>
-            <div class="container-fluid bg-branco rounded-2 borda p-4">
-                
-                <a href="/gestor/formularios/cadastrar" class="btn btn-padrao ativo mb-4 text-light "><i class="bi bi-plus-circle me-2 text-light"></i>Novo Formulário</a>
-
-                {% if formularios %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Descrição</th>
-                                <th>Data de Criação</th>
-                                <th>Respostas</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for form in formularios %}
-                            <tr>
-                                <td>{{ form.titulo }}</td>
-                                <td>{{ form.descricao if form.descricao else 'N/A' }}</td>
-                                <td>{{ form.data_criacao }}</td>
-                                <td>{{ form.total_respondedores }}</td>
-                                <td>
-                                    <a href="/gestor/formularios/{{ form.id }}/respostas" class="btn btn-sm btn-info me-2"><i class="bi bi-eye"></i> Ver Respostas</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p>Nenhum formulário cadastrado ainda.</p>
-                {% endif %}
-            </div>
+      <aside id="sidebar" class="shadow-lg">
+        <div class="d-flex justify-content-center">
+          <button
+            class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100"
+            type="button"
+          >
+            <img src="/static/img/DipePreta.svg" width="40px" alt="" />
+          </button>
+          <div class="sidebar-logo me-4"></div>
         </div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-item">
+            <a href="/gestor/dashboard" class="sidebar-link">
+              <i class="bi bi-house-door-fill"></i>
+              <span>Início</span>
+            </a>
+          </li>
+          <li class="sidebar-item mt-3">
+            <a href="/alunos" class="sidebar-link">
+              <i class="bi bi-person-fill"></i>
+              <span>Alunos</span>
+            </a>
+          </li>
+          <li class="sidebar-item mt-3">
+            <a href="/provas/cadastrar" class="sidebar-link">
+              <i class="bi bi-file-earmark-text-fill"></i>
+              <span>Provas</span>
+            </a>
+          </li>
+          <li class="sidebar-item mt-3">
+            <a href="/gestor/formularios" class="sidebar-link active">
+              <i class="bi bi-clipboard2-fill"></i>
+              <span>Formulários</span>
+            </a>
+          </li>
+          <li class="sidebar-item mt-3">
+            <a href="#" class="sidebar-link">
+              <i class="bi bi-bar-chart-fill"></i>
+              <span>Relatórios</span>
+            </a>
+          </li>
+          <div class="sidebar-item mt-3">
+            <form action="/sair" method="post" style="display: inline">
+              <button type="submit" class="sidebar-link w-100 text-start">
+                <i class="bi bi-door-open-fill"></i>
+                <span class="fw-bold">Sair</span>
+              </button>
+            </form>
+          </div>
+        </ul>
+        <div class="sidebar-footer">
+          <a href="#topo" class="sidebar-link">
+            <i class="bi bi-arrow-up"></i>
+            <span>Voltar ao topo</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="main p-4 bg-pattern">
+        <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
+          <h4 class="text-light">Formulários Cadastrados</h4>
+        </div>
+        <div class="container-fluid bg-branco rounded-2 borda p-4">
+          <a
+            href="/gestor/formularios/cadastrar"
+            class="btn btn-padrao ativo mb-4 text-light"
+            ><i class="bi bi-plus-circle me-2 text-light"></i>Novo Formulário</a
+          >
+
+          {% if formularios %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Descrição</th>
+                  <th>Data de Criação</th>
+                  <th>Respostas</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for form in formularios %}
+                <tr>
+                  <td>{{ form.titulo }}</td>
+                  <td>{{ form.descricao if form.descricao else 'N/A' }}</td>
+                  <td>{{ form.data_criacao }}</td>
+                  <td>{{ form.total_respondedores }}</td>
+                  <td>
+                    <a
+                      href="/gestor/formularios/{{ form.id }}/respostas"
+                      class="btn btn-sm btn-info me-2"
+                      ><i class="bi bi-eye"></i> Ver Respostas</a
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteConfirmationModal"
+                      data-form-action="/gestor/formularios/{{ form.id }}/deletar"
+                    >
+                      <i class="bi bi-trash"></i>
+                      Deletar
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p>Nenhum formulário cadastrado ainda.</p>
+          {% endif %}
+        </div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
+
+    <div
+      class="modal fade"
+      id="deleteConfirmationModal"
+      tabindex="-1"
+      aria-labelledby="modalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Confirmar Exclusão</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Tem certeza de que deseja deletar este formulário?
+            <br />
+            <strong>Esta ação não pode ser desfeita.</strong>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+
+            <form id="deleteForm" method="post" action="">
+              <button type="submit" class="btn btn-danger">Sim, Deletar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Pega a referência do elemento do modal
+      const deleteConfirmationModal = document.getElementById(
+        "deleteConfirmationModal"
+      );
+
+      // Adiciona um "ouvinte" que executa uma função sempre que o modal está prestes a ser exibido
+      deleteConfirmationModal.addEventListener(
+        "show.bs.modal",
+        function (event) {
+          // Identifica o botão que acionou o modal
+          const button = event.relatedTarget;
+
+          // Extrai a URL de exclusão do atributo 'data-form-action' do botão
+          const formAction = button.getAttribute("data-form-action");
+
+          // Encontra o formulário dentro do modal pelo seu ID
+          const deleteForm = document.getElementById("deleteForm");
+
+          // Define o atributo 'action' do formulário do modal com a URL correta
+          deleteForm.setAttribute("action", formAction);
+        }
+      );
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+      crossorigin="anonymous"
+    ></script>
     <script src="/static/js/menu.js"></script>
-</body>
-</html> 
+  </body>
+</html>

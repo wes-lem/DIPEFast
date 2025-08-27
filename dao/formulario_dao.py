@@ -58,5 +58,6 @@ class FormularioDAO:
         if formulario:
             db.delete(formulario)
             db.commit()
+            print("Formulario deletado com sucesso")
             return True
         return False 

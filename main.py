@@ -52,4 +52,8 @@ app.include_router(formulario_router)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    uvicorn.run("main:app", host="10.101.105.20", port=port)
+    uvicorn.run(
+        "main:app",
+        host="10.101.105.20",
+        port=port
+    )

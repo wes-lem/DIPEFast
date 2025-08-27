@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 # Configuração do banco de dados MySQL
 # Formato: mysql+pymysql://usuario:senha@host:porta/nome_banco
-DATABASE_URL="mysql+pymysql://user:b3CnpW9k@localhost:3306/dipefastdb"
+DATABASE_URL="mysql+pymysql://root:@localhost:3306/dipe" 
 # Criar engine e sessão
 engine = create_engine(DATABASE_URL, echo=False, future=True)
 SessionLocal = sessionmaker(bind=engine)

@@ -14,7 +14,7 @@
     --green-950: #0c270f;
 }
 
-* { font-family: "Poppins", sans-serif; color: #3F3D56; }
+* { font-family: "Poppins", sans-serif; color: #0B334C; }
 p { font-size: 12px; margin: 0;}
 h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 
@@ -30,7 +30,7 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .c-secundaria { color: var(--green-950) !important; }
 .c-hover { color: var(--green-800) !important; }
 .c-nota { color: var(--green-500) !important; }
-.c-black { color: #3F3D56 !important; }
+.c-black { color: #0B334C !important; }
 .c-portugues { color: #7E78D2; }
 .c-matematica { color: #0FA3B1; }
 .c-ciencias { color: #FE938C; }
@@ -218,7 +218,7 @@ li {
 
 .toggle-btn i {
     font-size: 1.5rem;
-    color: #3F3D56;
+    color: #0B334C;
 }
 
 .sidebar-logo {
@@ -248,7 +248,7 @@ li {
 
 a.sidebar-link {
     padding: .625rem 1.625rem;
-    color: #3F3D56;
+    color: #0B334C;
     display: block;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -257,7 +257,7 @@ a.sidebar-link {
 
 button.sidebar-link {
     padding: .625rem 1.625rem;
-    color: #3F3D56;
+    color: #0B334C;
     display: block;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -341,3 +341,12 @@ textarea:not(:placeholder-shown) { background-color: white; }
 
 /* Cor do divisor da tabela */
 .table-group-divider { border-top: 2px solid var(--green-500) !important; }
+
+/* Criando um circulo para os ícones do dashboard */
+.circulo-icon {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}

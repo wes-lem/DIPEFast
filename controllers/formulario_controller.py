@@ -74,7 +74,7 @@ async def cadastrar_formulario(
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Formato JSON inválido para perguntas.")
 
-    novo_formulario = FormularioDAO.create_formulario(
+    novo_formulario = FormularioDAO.create(
         db=db,
         titulo=titulo,
         descricao=descricao

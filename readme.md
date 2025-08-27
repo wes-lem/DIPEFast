@@ -60,6 +60,18 @@ cd "C:\Users\Weslem\Desktop\Versões DIPE\DIPEFast"
 uvicorn main:app --reload
 ```
 
+### Github commands
+```
+# 1. Busca as atualizações mais recentes do repositório remoto
+git fetch origin
+
+# 2. Reseta sua branch local para ser uma cópia exata da remota
+git reset --hard origin/main
+
+# 3. (Opcional) Remove todos os arquivos e diretórios não rastreados
+git clean -fd
+```
+
 ## 📊 Estrutura do Projeto
 ```
 DIPE/

@@ -31,10 +31,7 @@ def listar_provas(request: Request, user_id: int = Depends(verificar_sessao), db
     primeira_prova = db.query(Prova).order_by(Prova.id).first()
     
     if not primeira_prova:
-        raise HTTPException(
-            status_code=404,
-            detail="Nenhuma prova cadastrada no sistema"
-        )
+        return RedirectResponse(url="/perfil", status_code=303)
     
     # Redireciona para a rota de resultado detalhado da primeira prova
     return RedirectResponse(

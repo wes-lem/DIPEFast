@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 from models.aluno import Aluno
 
 class AlunoDAO:

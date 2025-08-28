@@ -2,11 +2,9 @@ from fastapi import APIRouter, Depends, Form, Request, Response, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from passlib.hash import bcrypt
-from dao.usuario_dao import UsuarioDAO
 from dao.database import get_db
 from models.aluno import Aluno
 from models.usuario import Usuario
-from datetime import datetime, timedelta
 
 # Importar a instância templates do app_config
 from app_config import templates

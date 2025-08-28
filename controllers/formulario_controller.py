@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, Form, Request, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
-from datetime import datetime
 import json
-from typing import List, Optional
+from typing import Optional
 
 # Importações dos seus DAOs e Models
 from dao.database import get_db
@@ -13,10 +12,6 @@ from dao.resposta_formulario_dao import RespostaFormularioDAO
 from dao.notificacao_dao import NotificacaoDAO
 
 from models.aluno import Aluno
-from models.usuario import Usuario
-from models.formulario import Formulario
-from models.pergunta_formulario import PerguntaFormulario
-from models.notificacao import Notificacao
 
 from controllers.usuario_controller import verificar_sessao
 from controllers.gestor_controller import verificar_gestor_sessao 

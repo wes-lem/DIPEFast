@@ -1,5 +1,3 @@
-# dao/resultados_dao.py
-
 from sqlalchemy.orm import Session
 from models.resultado import Resultado
 

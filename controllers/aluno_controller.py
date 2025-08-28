@@ -1,5 +1,4 @@
 import os
-import shutil
 import json
 from datetime import datetime
 from pathlib import Path
@@ -8,16 +7,12 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Request, Form, File, UploadFile
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from dao.database import get_db
 from dao.aluno_dao import AlunoDAO
 from dao.usuario_dao import UsuarioDAO
 from models.aluno import Aluno
 from models.usuario import Usuario
-from models.prova import Prova
-from models.resultado import Resultado
-from models.resposta import Resposta
 
 from controllers.usuario_controller import verificar_sessao
 

@@ -1,6 +1,5 @@
 import os
 import shutil
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -9,7 +8,8 @@ from fastapi import APIRouter, Depends, Form, Request, UploadFile, File, Query, 
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import func, distinct, and_
+from sqlalchemy import func
+from passlib.hash import bcrypt
 
 # Importações dos seus DAOs e Models
 from dao.database import get_db
@@ -26,9 +26,7 @@ from controllers.usuario_controller import verificar_sessao
 
 from services.graficos_service import AnalyticsService
 
-from dao.aluno_dao import AlunoDAO
 from dao.resposta_formulario_dao import RespostaFormularioDAO
-from dao.notificacao_dao import NotificacaoDAO
 
 from utils.auth import verificar_gestor_sessao
 

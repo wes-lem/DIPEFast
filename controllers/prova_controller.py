@@ -7,7 +7,6 @@ from models.questao import Questao
 from models.resultado import Resultado
 from models.resposta import Resposta
 from models.aluno import Aluno
-from dao.prova_dao import ProvaDAO
 from dao.resposta_dao import RespostaDAO
 from dao.questao_dao import QuestaoDAO
 from dao.resultados_dao import ResultadoDAO

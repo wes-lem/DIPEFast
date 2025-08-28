@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from sqlalchemy import func
 from models.resposta_formulario import RespostaFormulario
 from models.aluno import Aluno
-from models.formulario import Formulario
 from models.pergunta_formulario import PerguntaFormulario
 
 class RespostaFormularioDAO:

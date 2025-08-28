@@ -7,7 +7,6 @@ from controllers.gestor_controller import router as gestor_router
 from controllers.formulario_controller import router as formulario_router
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.exceptions import HTTPException
-from dao.database import SessionLocal
 import os
 import uvicorn
 
@@ -15,20 +14,6 @@ import uvicorn
 from app_config import templates
 
 from dao.database import engine, Base
-
-# 1. IMPORTAÇÃO DE TODOS OS MODELOS
-from models.usuario import Usuario
-from models.aluno import Aluno
-from models.gestor import Gestor
-from models.prova import Prova
-from models.questao import Questao
-from models.resposta import Resposta
-from models.resultado import Resultado
-from models.formulario import Formulario
-from models.pergunta_formulario import PerguntaFormulario
-from models.resposta_formulario import RespostaFormulario
-from models.notificacao import Notificacao
-
 
 # 2. CRIAÇÃO DAS TABELAS
 print("Verificando e criando tabelas no banco de dados, se necessário...")

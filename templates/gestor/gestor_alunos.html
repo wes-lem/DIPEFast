@@ -73,37 +73,125 @@
 
         <div class="main p-4 bg-branco">
             <div class="row px-2">
-                <div class="col-12 d-flex align-items-center justify-content-end p-0">
-                    <h5 class="me-4">Filtros:</h5>
-                    <div class="borda bg-branco rounded-3 p-2 d-flex w-75 gap-4">
-                        <select name="curso" id="filtro-curso" class="form-select">
-                            <option value="">Curso</option>
-                            <option value="Redes de Computadores">Redes de Computadores</option>
-                            <option value="Agropecuária">Agropecuária</option>
-                            <option value="Partiu IF">Partiu IF</option>
-                        </select>
-                        <select name="situacao" id="filtro-situacao" class="form-select">
-                            <option value="">Situacao</option>
-                            <option value="suficiente">Suficiente</option>
-                            <option value="regular">Regular</option>
-                            <option value="insuficiente">Insuficiente</option>
-                        </select>
-                        <select name="ano" id="filtro-ano" class="form-select">
-                            <option value="">Ano</option>
-                            <option value="1">1 ano</option>
-                            <option value="2">2 ano</option>
-                            <option value="3">3 ano</option>
-                        </select>
-                        <button class="btn btn-padrao text-light px-4 d-flex gap-3" id="btn-filtrar">
-                            <i class="bi bi-funnel-fill text-light"></i> Filtrar
-                        </button>
+                <div class="col-12 p-0">
+                    <div class="accordion" id="accordionFiltros">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button bg-padrao text-light" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="true"
+                                aria-controls="collapseFiltros">
+                                Filtros
+                                </button>
+                            </h2>
+                        <div id="collapseFiltros" class="accordion-collapse collapse show" data-bs-parent="#accordionFiltros">
+                            <div class="accordion-body">
+                                        <!-- Filtros principais -->
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-3 col-sm-6">
+                                                <label for="filtro-nome" class="form-label">Nome</label>
+                                                <input type="text" class="form-control" id="filtro-nome" placeholder="Buscar por nome">
+                                            </div>
+                                            <div class="col-md-3 col-sm-6">
+                                                <label for="filtro-curso" class="form-label">Curso</label>
+                                                <select name="curso" id="filtro-curso" class="form-select">
+                                                    <option value="">Todos os cursos</option>
+                                                    <option value="Redes de Computadores">Redes de Computadores</option>
+                                                    <option value="Agropecuária">Agropecuária</option>
+                                                    <option value="Partiu IF">Partiu IF</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2 col-sm-6">
+                                                <label for="filtro-situacao" class="form-label">Situação</label>
+                                                <select name="situacao" id="filtro-situacao" class="form-select">
+                                                    <option value="">Todas</option>
+                                                    <option value="suficiente">Suficiente</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="insuficiente">Insuficiente</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2 col-sm-6">
+                                                <label for="filtro-ano" class="form-label">Ano</label>
+                                                <select name="ano" id="filtro-ano" class="form-select">
+                                                    <option value="">Todos</option>
+                                                    <option value="1">1º ano</option>
+                                                    <option value="2">2º ano</option>
+                                                    <option value="3">3º ano</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2 col-sm-6 d-flex align-items-end">
+                                                <button class="btn btn-padrao text-light px-4 w-100" id="btn-filtrar">
+                                                    <i class="bi bi-funnel-fill text-light"></i> Filtrar
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Filtros avançados (colapsáveis) -->
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filtros-avancados">
+                                                    Filtros Avançados <i class="bi bi-chevron-down text-light"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="collapse" id="filtros-avancados">
+                                            <div class="row g-3 mt-2">
+                                                <div class="col-md-3 col-sm-6">
+                                                    <label for="filtro-idade-min" class="form-label">Idade Mínima</label>
+                                                    <input type="number" class="form-control" id="filtro-idade-min" min="10" max="100">
+                                                </div>
+                                                <div class="col-md-3 col-sm-6">
+                                                    <label for="filtro-idade-max" class="form-label">Idade Máxima</label>
+                                                    <input type="number" class="form-control" id="filtro-idade-max" min="10" max="100">
+                                                </div>
+                                                <div class="col-md-3 col-sm-6">
+                                                    <label for="filtro-municipio" class="form-label">Município</label>
+                                                    <select name="municipio" id="filtro-municipio" class="form-select">
+                                                        <option value="">Todos os municípios</option>
+                                                        {% for municipio in municipios_disponiveis %}
+                                                        <option value="{{ municipio }}">{{ municipio }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 col-sm-6">
+                                                    <label for="filtro-zona" class="form-label">Zona</label>
+                                                    <select name="zona" id="filtro-zona" class="form-select">
+                                                        <option value="">Todas</option>
+                                                        <option value="urbana">Urbana</option>
+                                                        <option value="rural">Rural</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 col-sm-6">
+                                                    <label for="filtro-origem-escolar" class="form-label">Origem Escolar</label>
+                                                    <select name="origem_escolar" id="filtro-origem-escolar" class="form-select">
+                                                        <option value="">Todas</option>
+                                                        <option value="publica">Pública</option>
+                                                        <option value="privada">Privada</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 col-sm-6 d-flex align-items-end">
+                                                    <button class="btn btn-danger me-2" id="btn-limpar-filtros">
+                                                        <i class="bi bi-trash3-fill text-light"></i> Limpar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Filtros aplicados -->
+                                        <div id="filtros-aplicados" class="mt-3" style="display: none;" {% if filtros_aplicados %}data-filtros='{{ filtros_aplicados|tojson }}'{% endif %}>
+                                            <small class="text-muted">Filtros aplicados:</small>
+                                            <div id="tags-filtros" class="d-flex flex-wrap gap-2 mt-1"></div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 p-0 mt-3">
                     <div class="row g-4">
-                        {% for aluno, nota_portugues, nota_matematica, nota_ciencias in alunos %}
-                        {% set media = ((nota_portugues or 0) + (nota_matematica or 0) + (nota_ciencias or 0)) / 3 %}
+                        {% for aluno, nota_portugues, nota_matematica, nota_ciencias, media_geral in alunos %}
+                        {% set media = media_geral %}
                         {% if media <= 5 %}
                             {% set situacao = "Insuficiente" %}
                             {% set cor = "danger" %}
@@ -120,7 +208,7 @@
                                 <div>
                                     <img src="{{ aluno.imagem }}" class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body pt-0">
                                     <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
                                 </div>
                             </a>
@@ -139,21 +227,254 @@
     </div>
 
     <script>
-        document.getElementById("btn-filtrar").addEventListener("click", function () {
-            const curso = document.getElementById("filtro-curso").value;
-            const situacao = document.getElementById("filtro-situacao").value;
-            const ano = document.getElementById("filtro-ano").value;
+        // Carregar filtros salvos do localStorage
+        function carregarFiltrosSalvos() {
+            try {
+                const filtrosSalvos = localStorage.getItem('filtros_alunos');
+                if (filtrosSalvos) {
+                    const filtros = JSON.parse(filtrosSalvos);
+                    // Filtros carregados do localStorage
 
-            const url = `/alunos?curso=${encodeURIComponent(curso)}&situacao=${encodeURIComponent(situacao)}&ano=${encodeURIComponent(ano)}`;
+                    // Aplicar valores salvos aos campos
+                    Object.keys(filtros).forEach(key => {
+                        const element = document.getElementById(`filtro-${key}`);
+                        if (element && filtros[key] !== null && filtros[key] !== undefined && filtros[key] !== '') {
+                            element.value = filtros[key];
+                        }
+                    });
 
+                    // Mostrar filtros aplicados
+                    mostrarFiltrosAplicados(filtros);
+                }
+            } catch (e) {
+                console.error('Erro ao carregar filtros salvos:', e);
+                // Limpar localStorage corrompido
+                localStorage.removeItem('filtros_alunos');
+            }
+        }
+
+        // Salvar filtros no localStorage
+        function salvarFiltros(filtros) {
+            try {
+                // Filtrar apenas valores válidos
+                const filtrosValidos = {};
+                Object.keys(filtros).forEach(key => {
+                    const value = filtros[key];
+                    if (value !== null && value !== undefined && value !== '' && value.toString().trim() !== '') {
+                        filtrosValidos[key] = value;
+                    }
+                });
+
+                if (Object.keys(filtrosValidos).length > 0) {
+                    localStorage.setItem('filtros_alunos', JSON.stringify(filtrosValidos));
+                } else {
+                    localStorage.removeItem('filtros_alunos');
+                }
+            } catch (e) {
+                console.error('Erro ao salvar filtros:', e);
+            }
+        }
+
+        // Mostrar filtros aplicados como tags
+        function mostrarFiltrosAplicados(filtros) {
+            const container = document.getElementById('tags-filtros');
+            const section = document.getElementById('filtros-aplicados');
+
+            // Limpar container completamente
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            const labels = {
+                'nome': 'Nome',
+                'curso': 'Curso',
+                'situacao': 'Situação',
+                'ano': 'Ano',
+                'idade_min': 'Idade mín.',
+                'idade_max': 'Idade máx.',
+                'municipio': 'Município',
+                'zona': 'Zona',
+                'origem_escolar': 'Origem escolar'
+            };
+
+            let hasFilters = false;
+            Object.keys(filtros).forEach(key => {
+                if (filtros[key] && filtros[key].toString().trim() !== '') {
+                    hasFilters = true;
+                    const tag = document.createElement('span');
+                    tag.className = 'badge bg-secundaria c-secundaria me-1 mb-1';
+                    tag.setAttribute('data-filtro-key', key);
+
+                    // Criar texto do label
+                    const labelText = document.createTextNode(`${labels[key] || key}: ${filtros[key]}`);
+                    tag.appendChild(labelText);
+
+                    // Criar botão de fechar
+                    const closeBtn = document.createElement('button');
+                    closeBtn.type = 'button';
+                    closeBtn.className = 'btn-close ms-1';
+                    closeBtn.style.fontSize = '10px';
+                    closeBtn.setAttribute('aria-label', 'Remover filtro');
+                    closeBtn.setAttribute('data-filtro-key', key);
+
+                    // Adicionar event listener específico
+                    closeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const filtroKey = this.getAttribute('data-filtro-key');
+                        removerFiltro(filtroKey);
+                    });
+
+                    tag.appendChild(closeBtn);
+                    container.appendChild(tag);
+                }
+            });
+
+            section.style.display = hasFilters ? 'block' : 'none';
+        }
+
+        // Remover filtro específico
+        function removerFiltro(key) {
+            // Prevenir eventos padrão e propagação
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            // Removendo filtro: ${key}
+
+            const filtrosSalvos = localStorage.getItem('filtros_alunos');
+            if (filtrosSalvos) {
+                const filtros = JSON.parse(filtrosSalvos);
+
+                // Verificar se o filtro existe antes de remover
+                if (filtros.hasOwnProperty(key)) {
+                    delete filtros[key];
+
+                    // Limpar campo do formulário
+                    const element = document.getElementById(`filtro-${key}`);
+                    if (element) {
+                        element.value = '';
+                    }
+
+                    // Salvar filtros atualizados
+                    salvarFiltros(filtros);
+
+                    // Atualizar exibição dos filtros
+                    mostrarFiltrosAplicados(filtros);
+
+                    // Aplicar filtros atualizados com delay para evitar conflitos
+                    setTimeout(() => {
+                        aplicarFiltros();
+                    }, 150);
+                }
+            }
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            const filtros = {
+                nome: document.getElementById("filtro-nome").value.trim(),
+                curso: document.getElementById("filtro-curso").value,
+                situacao: document.getElementById("filtro-situacao").value,
+                ano: document.getElementById("filtro-ano").value,
+                idade_min: document.getElementById("filtro-idade-min").value,
+                idade_max: document.getElementById("filtro-idade-max").value,
+                municipio: document.getElementById("filtro-municipio").value, // Agora é select, não precisa de trim()
+                zona: document.getElementById("filtro-zona").value,
+                origem_escolar: document.getElementById("filtro-origem-escolar").value
+            };
+
+            // Aplicando filtros
+
+            // Construir URL com parâmetros (apenas valores não vazios)
+            const params = new URLSearchParams();
+            Object.keys(filtros).forEach(key => {
+                const value = filtros[key];
+                if (value !== null && value !== undefined && value !== '' && value.toString().trim() !== '') {
+                    params.append(key, value);
+                }
+            });
+
+            const url = `/alunos?${params.toString()}`;
+
+            // Salvar apenas filtros com valores
+            const filtrosValidos = {};
+            Object.keys(filtros).forEach(key => {
+                const value = filtros[key];
+                if (value !== null && value !== undefined && value !== '' && value.toString().trim() !== '') {
+                    filtrosValidos[key] = value;
+                }
+            });
+
+            salvarFiltros(filtrosValidos);
             window.location.href = url;
+        }
+
+        // Limpar todos os filtros
+        function limparFiltros() {
+            // Limpar campos do formulário
+            const campos = [
+                'filtro-nome', 'filtro-curso', 'filtro-situacao', 'filtro-ano',
+                'filtro-idade-min', 'filtro-idade-max', 'filtro-municipio',
+                'filtro-zona', 'filtro-origem-escolar'
+            ];
+
+            campos.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = ''; // Funciona tanto para inputs quanto selects
+                }
+            });
+
+            // Limpar localStorage
+            localStorage.removeItem('filtros_alunos');
+
+            // Esconder seção de filtros aplicados
+            document.getElementById('filtros-aplicados').style.display = 'none';
+
+            // Redirecionar para página sem filtros
+            window.location.href = '/alunos';
+        }
+
+        // Event listeners
+        document.getElementById("btn-filtrar").addEventListener("click", aplicarFiltros);
+        document.getElementById("btn-limpar-filtros").addEventListener("click", limparFiltros);
+
+        // Permitir filtrar pressionando Enter nos campos de input
+        document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    aplicarFiltros();
+                }
+            });
         });
+
+        // Carregar filtros salvos quando a página carrega
+        document.addEventListener('DOMContentLoaded', carregarFiltrosSalvos);
     </script>
 
     <script src="static/js/menu.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
+
+    <script>
+        // Verificar e mostrar filtros aplicados vindos do backend
+        document.addEventListener('DOMContentLoaded', function() {
+            const filtrosAplicadosEl = document.getElementById('filtros-aplicados');
+            const filtrosData = filtrosAplicadosEl.getAttribute('data-filtros');
+
+            if (filtrosData) {
+                try {
+                    const filtrosBackend = JSON.parse(filtrosData);
+                    mostrarFiltrosAplicados(filtrosBackend);
+                } catch (e) {
+                    console.error('Erro ao parsear filtros do backend:', e);
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

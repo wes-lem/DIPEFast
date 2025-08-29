@@ -312,14 +312,45 @@ def listar_alunos(
     curso: Optional[str] = Query(None),
     ano: Optional[str] = Query(None),
     situacao: Optional[str] = Query(None),
+    nome: Optional[str] = Query(None),
+    idade_min: Optional[int] = Query(None),
+    idade_max: Optional[int] = Query(None),
+    municipio: Optional[str] = Query(None),
+    zona: Optional[str] = Query(None),
+    origem_escolar: Optional[str] = Query(None),
 ):
     """Lista alunos, com filtros opcionais, e exibe notas por matéria."""
     # A lógica de consulta foi mantida aqui pois é específica da listagem de alunos,
     # não diretamente parte dos dashboards analíticos que moveremos.
-    
+
     portugues = aliased(Prova)
     matematica = aliased(Prova)
     ciencias = aliased(Prova)
+
+    # Subquery para calcular a média das notas
+    media_subquery = (
+        func.coalesce(
+            db.query(Resultado.acertos)
+            .join(portugues, Resultado.prova_id == portugues.id)
+            .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
+            .scalar_subquery(),
+            0,
+        ) +
+        func.coalesce(
+            db.query(Resultado.acertos)
+            .join(matematica, Resultado.prova_id == matematica.id)
+            .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
+            .scalar_subquery(),
+            0,
+        ) +
+        func.coalesce(
+            db.query(Resultado.acertos)
+            .join(ciencias, Resultado.prova_id == ciencias.id)
+            .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
+            .scalar_subquery(),
+            0,
+        )
+    ) / 3.0
 
     query = db.query(
         Aluno,
@@ -344,22 +375,61 @@ def listar_alunos(
             .scalar_subquery(),
             0,
         ).label("nota_ciencias"),
+        media_subquery.label("media_geral")
     ).select_from(Aluno)
 
+    # Aplicar filtros
     if curso:
         query = query.filter(Aluno.curso == curso)
     if ano:
         query = query.filter(Aluno.ano == ano)
+    if nome:
+        query = query.filter(Aluno.nome.ilike(f"%{nome}%"))
+    if idade_min is not None:
+        query = query.filter(Aluno.idade >= idade_min)
+    if idade_max is not None:
+        query = query.filter(Aluno.idade <= idade_max)
+    if municipio:
+        query = query.filter(Aluno.municipio.ilike(f"%{municipio}%"))
+    if zona:
+        query = query.filter(Aluno.zona == zona)
+    if origem_escolar:
+        query = query.filter(Aluno.origem_escolar == origem_escolar)
+
+    # Filtro por situação baseado na média calculada
     if situacao:
-        query = query.filter(Aluno.situacao == situacao) # Se você tiver 'situacao' no modelo Aluno, ou precisa calcular/join com Resultado
+        if situacao == "suficiente":
+            query = query.filter(media_subquery >= 10)
+        elif situacao == "regular":
+            query = query.filter(media_subquery.between(5, 10))
+        elif situacao == "insuficiente":
+            query = query.filter(media_subquery < 5)
 
     alunos = query.all()
+
+    # Preparar filtros aplicados para o template
+    filtros_aplicados = {}
+    if curso: filtros_aplicados['curso'] = curso
+    if ano: filtros_aplicados['ano'] = ano
+    if situacao: filtros_aplicados['situacao'] = situacao
+    if nome: filtros_aplicados['nome'] = nome
+    if idade_min is not None: filtros_aplicados['idade_min'] = idade_min
+    if idade_max is not None: filtros_aplicados['idade_max'] = idade_max
+    if municipio: filtros_aplicados['municipio'] = municipio
+    if zona: filtros_aplicados['zona'] = zona
+    if origem_escolar: filtros_aplicados['origem_escolar'] = origem_escolar
+
+    # Buscar municípios disponíveis para o filtro
+    municipios_disponiveis = db.query(Aluno.municipio).distinct().order_by(Aluno.municipio).all()
+    municipios_lista = [m[0] for m in municipios_disponiveis if m[0]]
 
     return templates.TemplateResponse(
         "gestor/gestor_alunos.html",
         {
             "request": request,
-            "alunos": alunos
+            "alunos": alunos,
+            "filtros_aplicados": filtros_aplicados,
+            "municipios_disponiveis": municipios_lista
         },
     )
 

@@ -71,8 +71,12 @@
             </div>
         </aside>
 
-        <div class="main p-4 bg-branco">
+        <div class="main p-4 bg-pattern">
             <div class="row px-2">
+                <div class="col-12 p-0 mb-3 d-flex justify-content-end">
+                    <a href="/alunos/cadastrar" class="btn btn-padrao-dark text-light p-2 fs-6 m-0">Cadastrar Aluno <i
+                                class="bi bi-plus-lg c-secundaria bg-padrao rounded-3 bg-icone p-1 m-0 ms-2"></i></a>
+                </div>
                 <div class="col-12 p-0">
                     <div class="accordion" id="accordionFiltros">
                         <div class="accordion-item">
@@ -189,6 +193,7 @@
                 </div>
 
                 <div class="col-12 p-0 mt-3">
+                    <h1 class="fw-bold c-black mb-2 fs-2">Alunos</h1>
                     <div class="row g-4">
                         {% for aluno, nota_portugues, nota_matematica, nota_ciencias, media_geral in alunos %}
                         {% set media = media_geral %}
@@ -215,12 +220,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                </div>
-            </div>
-            <div class="w-100 d-flex justify-content-end mt-4">
-                <div class="w-25">
-                    <a href="/alunos/cadastrar" class="btn btn-padrao text-light w-100 fs-5">Cadastrar Aluno <i
-                            class="bi bi-plus text-light"></i></a>
                 </div>
             </div>
         </div>

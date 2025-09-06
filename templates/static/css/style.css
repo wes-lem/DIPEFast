@@ -65,6 +65,12 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
     color: var(--green-800);
 }
 
+.btn-padrao-dark{
+    background-color: var(--green-900) !important;
+    border-color: var(--green-900) !important;
+    color: var(--green-100);
+}
+
 .btn-padrao:active {
     background-color: var(--green-700) !important;
     border-color: var(--green-700) !important;
@@ -349,4 +355,10 @@ textarea:not(:placeholder-shown) { background-color: white; }
     display: flex;
     justify-content: center;
     align-items: center; 
+}
+
+.bg-icone{
+    aspect-ratio: 1 / 1;
+    width: 20px !important;
+    height: 50px !important;
 }

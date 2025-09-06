@@ -71,14 +71,16 @@
             </div>
         </aside>
 
-        <div class="main p-4 bg-branco">
-            <form action="/alunos/cadastrar" method="post" enctype="multipart/form-data" class="w-100 p-0">
-                <div class="row p-5 bg-branco rounded-4 borda">
+        <div class="main p-4 bg-pattern">
+            <form action="/alunos/cadastrar" method="post" enctype="multipart/form-data">
+                <div class="row mb-2">
                     <div class="col-12 p-0">
-                        <h3 class="c-nota m-0 p-0">Cadastro de alunos</h3>
+                        <h3 class="c-black m-0 p-0">Cadastro de alunos</h3>
                     </div>
+                </div>
+                <div class="row p-3 bg-branco rounded-4 borda">
                     <div class="col-8 ps-0">
-                        <label for="nome" class="mt-2">Nome:</label>
+                        <label for="nome" class="mt-0">Nome:</label>
                         <input type="text" name="nome" placeholder="Nome completo" id="nome"
                             class="form-control bg-cinza py-2" required>
 
@@ -100,8 +102,8 @@
                             <option value="pública">Pública</option>
                         </select>
                     </div>
-                    <div class="col-4 pr-0">
-                        <label for="imagem" class="mt-2">Foto do Aluno:</label>
+                    <div class="col-4 pe-0">
+                        <label for="imagem" class="mt-0">Foto do Aluno:</label>
                         <input type="file" name="imagem" id="imagem" accept="image/*" class="form-control bg-cinza">
 
                         <label for="ano" class="mt-2">Ano:</label>
@@ -123,9 +125,13 @@
                             <option value="Agropecuária">Agropecuária</option>
                         </select>
                     </div>
-                    <div class="col-12">
-                        <div class="w-100 d-flex justify-content-end mt-4">
-                            <div class="w-50">
+                    <div class="col-12 pe-0">
+                        <div class="w-100 d-flex justify-content-end mt-4 gap-3">
+                            <div class="w-25">
+                                <a href="/alunos" type="submit" class="btn btn-secondary text-light fs-5 w-100">
+                                    <i class="bi bi-arrow-left text-light"></i> Voltar</a>
+                            </div>
+                            <div class="w-25">
                                 <button type="submit" class="btn btn-padrao text-light fs-5 w-100">Cadastrar</button>
                             </div>
                         </div>

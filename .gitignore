@@ -37,3 +37,6 @@ env/
 instance/
 *.db
 *.sqlite3
+
+#Imagens alunos
+uploads/

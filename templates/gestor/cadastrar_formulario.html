@@ -76,27 +76,27 @@
         </aside>
 
         <div class="main p-4 bg-pattern">
-            <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
+            <div class="col-12 bg-padrao p-2 px-3 rounded-2 rounded-bottom-0 borda border-bottom-0">
                 <h4 class="text-light">Cadastrar Novo Formulário</h4>
             </div>
             <div class="col-12">
                 <form method="POST" action="/gestor/formularios/cadastrar" id="formularioForm">
-                    <div class="card mb-2">
+                    <div class="card mb-2 rounded-2 rounded-top-0 borda border-top-0">
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Título do Formulário <i class="text-danger fs-5">*</i></label>
                                 <input type="text" class="form-control" id="titulo" name="titulo" required>
                             </div>
 
-                            <div class="mb-3">
+                            <div>
                                 <label for="descricao" class="form-label">Descrição</label>
                                 <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <h4 class="text-light bg-padrao rounded-2 p-2 px-3 mb-2 borda">Perguntas</h4>
-                    <div class="card">
+                    <h4 class="text-light bg-padrao p-2 px-3 rounded-2 rounded-bottom-0 borda border-bottom-0">Perguntas</h4>
+                    <div class="card rounded-2 rounded-top-0 borda border-top-0">
                         <div class="card-body">
                             <div class="mb-4">
                                 <div id="perguntas-container">
@@ -123,44 +123,42 @@
             </div>
 
             <!-- Template para nova pergunta -->
-            <template id="pergunta-template">
-                <div class="card mb-3 pergunta-item">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0">Pergunta <span class="numero-pergunta"></span></h5>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removerPergunta(this)">
-                                <i class="bi bi-trash text-light"></i> Remover
-                            </button>
-                        </div>
+            <template id="pergunta-template" class=" gap-5">
+                <div class="pergunta-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Pergunta <span class="numero-pergunta"></span></h5>
+                        <button type="button" class="btn btn-danger" onclick="removerPergunta(this)">
+                            <i class="bi bi-trash3-fill text-light"></i> Remover
+                        </button>
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Enunciado  <i class="text-danger fs-5">*</i></label>
-                            <input type="text" class="form-control enunciado" required>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Enunciado  <i class="text-danger fs-5">*</i></label>
+                        <input type="text" class="form-control enunciado" required>
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Tipo de Pergunta</label>
-                            <select class="form-select tipo-pergunta" onchange="atualizarOpcoes(this)">
-                                <option value="texto">Texto Livre</option>
-                                <option value="selecao_unica">Escolha Única</option>
-                                <option value="multipla_escolha">Múltipla Escolha</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Pergunta</label>
+                        <select class="form-select tipo-pergunta" onchange="atualizarOpcoes(this)">
+                            <option value="texto">Texto Livre</option>
+                            <option value="selecao_unica">Escolha Única</option>
+                            <option value="multipla_escolha">Múltipla Escolha</option>
+                        </select>
+                    </div>
 
-                        <div class="opcoes-container" style="display: none;">
-                            <label class="form-label">Opções</label>
-                            <div class="opcoes-lista">
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control opcao-input" placeholder="Digite uma opção">
-                                    <button type="button" class="btn btn-danger" onclick="removerOpcao(this)">
-                                        <i class="bi bi-trash text-light"></i>
-                                    </button>
-                                </div>
+                    <div class="opcoes-container" style="display: none;">
+                        <label class="form-label">Opções</label>
+                        <div class="opcoes-lista">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control opcao-input" placeholder="Digite uma opção">
+                                <button type="button" class="btn btn-danger" onclick="removerOpcao(this)">
+                                    <i class="bi bi-trash text-light"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-padrao btn-sm text-light" onclick="adicionarOpcao(this)">
-                                <i class="bi bi-plus-circle text-light"></i> Adicionar Opção
-                            </button>
                         </div>
+                        <button type="button" class="btn btn-padrao btn-sm text-light" onclick="adicionarOpcao(this)">
+                            <i class="bi bi-plus-circle text-light"></i> Adicionar Opção
+                        </button>
                     </div>
                 </div>
             </template>

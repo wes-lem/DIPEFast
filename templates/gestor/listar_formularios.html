@@ -79,16 +79,15 @@
       </aside>
 
       <div class="main p-4 bg-pattern">
-        <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
+        <div class="row px-2">
+        <div class="col-12 p-0 mb-3 d-flex justify-content-end">
+          <a href="/gestor/formularios/cadastrar" class="btn btn-padrao-dark text-light p-2 fs-6 m-0 rounded-0 rounded-start-2">Novo Formulário</a>
+          <a href="/gestor/formularios/cadastrar" class="btn btn-padrao rounded-0 rounded-end-2 d-flex align-items-center"><i class="bi bi-plus-circle text-light"></i></a>
+        </div>
+        <div class="col-12 bg-padrao p-2 px-3 rounded-2 rounded-bottom-0 borda border-bottom-0">
           <h4 class="text-light">Formulários Cadastrados</h4>
         </div>
-        <div class="container-fluid bg-branco rounded-2 borda p-4">
-          <a
-            href="/gestor/formularios/cadastrar"
-            class="btn btn-padrao ativo mb-4 text-light"
-            ><i class="bi bi-plus-circle me-2 text-light"></i>Novo Formulário</a
-          >
-
+        <div class="container-fluid bg-branco rounded-2 rounded-top-0 py-3 borda border-top-0">
           {% if formularios %}
           <div class="table-responsive">
             <table class="table table-hover">
@@ -132,9 +131,10 @@
             </table>
           </div>
           {% else %}
-          <p>Nenhum formulário cadastrado ainda.</p>
+          <p class="fs-6"><i class="bi bi-info-circle"></i> Nenhum formulário cadastrado ainda.</p>
           {% endif %}
         </div>
+      </div>
       </div>
     </div>
 

@@ -48,15 +48,26 @@ O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o a
 
 ### Instalação
 1. Clone o repositório
-2. Instale as dependências:
+2. Criar o ambiente virtual
+```bash
+python -m venv venv
+```
+3. Ativar o ambiente virtual
+No Windows
+```bash
+.\venv\Scripts\activate
+```
+Linux e macOS
+```bash
+source venv/bin/activate
+```
+4. Instalar dependências:
 ```bash
 pip install -r requirements.txt
 ```
-3. Configure o banco de dados MySQL
-4. Execute o servidor:
+5. Configure o banco de dados MySQL
+6. Execute o servidor:
 ```bash
-cd "DIPEFast"
-.\venv\Scripts\activate
 python main.py
 ```
 

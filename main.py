@@ -9,16 +9,14 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.exceptions import HTTPException
 import os
 import uvicorn
-
-# Importar a instância 'templates' do arquivo de configuração
 from app_config import templates
-
 from dao.database import engine, Base
 
-# 2. CRIAÇÃO DAS TABELAS
-print("Verificando e criando tabelas no banco de dados, se necessário...")
+from dao.cadastrarGestor import criar_gestor_padrao
+
 Base.metadata.create_all(bind=engine)
-print("Processo de criação de tabelas finalizado.")
+
+criar_gestor_padrao()
 
 app = FastAPI()
 

@@ -1,0 +1,55 @@
+services:
+  app:
+    # Define o serviço principal da aplicação
+    build: .
+    # Constrói a imagem a partir do Dockerfile localizado no diretório atual (.)
+
+    ports:
+      - "8080:8080"
+    # Mapeia a porta 8080 do host para a porta 8080 do container,
+    # permitindo acessar a aplicação pelo navegador em http://localhost:8080
+
+    environment:
+      DATABASE_URL: mysql+pymysql://user:password@db:3306/dipe
+    # Define a variável de ambiente com a URL de conexão ao banco MySQL,
+    # usando o driver PyMySQL e apontando para o serviço "db" (mesma rede do Compose)
+
+    depends_on:
+      db:
+        condition: service_healthy
+    # Garante que o container da aplicação só seja iniciado depois que o banco "db"
+    # for considerado "saudável" pelo healthcheck
+
+  db:
+    # Define o serviço do banco de dados
+    image: mysql:8.0
+    # Usa a imagem oficial do MySQL na versão 8.0
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: dipe
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    # Configurações iniciais do banco:
+    # - senha do root
+    # - nome do banco criado automaticamente
+    # - usuário e senha padrão para acesso
+
+    volumes:
+      - db_data:/var/lib/mysql
+    # Persiste os dados do MySQL em um volume nomeado "db_data",
+    # garantindo que os dados não se percam quando o container for reiniciado/removido
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      start_period: 10s
+    # Define um healthcheck para verificar se o banco está pronto:
+    # Executa "mysqladmin ping" dentro do container.
+    # - timeout: tempo máximo de resposta do teste
+    # - retries: número de tentativas antes de marcar como "não saudável"
+    # - start_period: tempo de espera antes de iniciar os testes
+
+volumes:
+  db_data:

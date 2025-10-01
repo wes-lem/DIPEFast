@@ -47,12 +47,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
@@ -62,12 +56,6 @@
                     <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Relatórios</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -87,18 +75,13 @@
             </div>
         </aside>
 
-        <div class="main">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-                <a class="navbar-brand" href="#">
-                    <h4 class="mb-0">Detalhes da Prova</h4>
-                </a>
-            </nav>
+        <div class="main bg-pattern p-4">
 
-            <div class="content-wrapper p-4">
+            <div class="content-wrapper">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Detalhes da Prova</h2>
                     <a href="/gestor/provas-professores" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Voltar
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
                     </a>
                 </div>
 
@@ -106,14 +89,14 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="card-title mb-0">{{ prova.titulo or prova.materia }}</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Matéria:</strong> {{ prova.materia }}</p>
-                                        <p><strong>Professor:</strong> {{ prova.professor.usuario.nome if prova.professor else 'N/A' }}</p>
+                                        <p><strong>Professor:</strong> {{ prova.professor.nome if prova.professor else 'N/A' }}</p>
                                         <p><strong>Status:</strong> 
                                             <span class="badge bg-{{ 'success' if prova.status.value == 'ativa' else 'secondary' }}">
                                                 {{ prova.status.value.title() }}
@@ -130,18 +113,163 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-header">
-                                <h6 class="card-title mb-0">Ações</h6>
+                            <div class="card-header bg-padrao text-light">
+                                <h6 class="card-title mb-0">Estatísticas</h6>
                             </div>
                             <div class="card-body">
-                                <div class="d-grid gap-2">
-                                    <a href="/gestor/prova/{{ prova.id }}/turmas" class="btn btn-primary">
-                                        <i class="bi bi-people"></i> Ver Turmas
-                                    </a>
-                                    <a href="/gestor/prova/{{ prova.id }}/resultados" class="btn btn-info">
-                                        <i class="bi bi-graph-up"></i> Ver Resultados
-                                    </a>
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <h5 class="text-primary">{{ prova.prova_turmas|length }}</h5>
+                                        <small class="text-muted">Turmas</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <h5 class="text-success">{{ resultados|length }}</h5>
+                                        <small class="text-muted">Respostas</small>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Turmas -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-people"></i> Turmas Disponíveis
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if prova.prova_turmas %}
+                                <div class="row">
+                                    {% for prova_turma in prova.prova_turmas %}
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="card border-padrao">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ prova_turma.turma.nome }}</h6>
+                                                <p class="card-text">
+                                                    <strong>Professor:</strong> {{ prova_turma.turma.professor.nome if prova_turma.turma.professor else 'N/A' }}<br>
+                                                    <strong>Campus:</strong> {{ prova_turma.turma.campus.nome if prova_turma.turma.campus else 'N/A' }}<br>
+                                                    <strong>Status:</strong> 
+                                                    <span class="badge bg-{{ 'success' if prova_turma.status.value == 'ativa' else 'secondary' }}">
+                                                        {{ prova_turma.status.value.title() }}
+                                                    </span>
+                                                </p>
+                                                <p class="card-text">
+                                                    <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M') if prova_turma.data_inicio else 'N/A' }}<br>
+                                                    <strong>Fim:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') if prova_turma.data_expiracao else 'N/A' }}
+                                                </p>
+                                                <a href="/gestor/turma/{{ prova_turma.turma.id }}/detalhes" class="btn btn-black btn-sm">
+                                                    <i class="bi bi-eye text-light"></i> Ver Turma
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Esta prova não está disponibilizada para nenhuma turma ainda.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Resultados -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-graph-up"></i> Resultados da Prova
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if resultados %}
+                                <!-- Estatísticas dos Resultados -->
+                                <div class="row mb-4">
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-padrao">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-primary">{{ resultados|length }}</h5>
+                                                <p class="card-text">Total de Respostas</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-padrao">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-success">{{ "%.1f"|format(resultados|map(attribute='nota')|sum / resultados|length if resultados else 0) }}</h5>
+                                                <p class="card-text">Nota Média</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-warning">{{ resultados|map(attribute='nota')|max if resultados else 0 }}</h5>
+                                                <p class="card-text">Maior Nota</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-danger">{{ resultados|map(attribute='nota')|min if resultados else 0 }}</h5>
+                                                <p class="card-text">Menor Nota</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela de Resultados -->
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Aluno</th>
+                                                <th>Turma</th>
+                                                <th>Nota</th>
+                                                <th>Acertos</th>
+                                                <th>Total</th>
+                                                <th>Data</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for resultado in resultados %}
+                                            <tr>
+                                                <td>{{ resultado.aluno.nome }}</td>
+                                                <td>{{ resultado.aluno.aluno_turmas[0].turma.nome if resultado.aluno.aluno_turmas else 'N/A' }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
+                                                        {{ "%.1f"|format(resultado.nota) }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ resultado.acertos }}</td>
+                                                <td>{{ resultado.total_questoes }}</td>
+                                                <td>N/A</td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
+                                                        {{ 'Aprovado' if resultado.nota >= 7 else 'Recuperação' if resultado.nota >= 5 else 'Reprovado' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Nenhum resultado encontrado para esta prova.
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

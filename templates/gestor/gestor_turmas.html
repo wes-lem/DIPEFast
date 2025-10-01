@@ -47,12 +47,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
@@ -65,9 +59,9 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Relatórios</span>
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Gerenciar Usuários</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -118,7 +112,7 @@
                 <div class="col-md-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <h5 class="card-title text-info">{{ turmas|map(attribute='alunos_turma')|map('length')|sum }}</h5>
+                            <h5 class="card-title text-info">{{ turmas|map(attribute='aluno_turmas')|map('length')|sum }}</h5>
                             <p class="card-text">Total de Matrículas</p>
                         </div>
                     </div>
@@ -129,14 +123,14 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Todas as Turmas</h2>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-info" onclick="filtrarPorStatus('ativa')">
-                            <i class="bi bi-check-circle"></i> Ativas
+                        <button type="button" class="btn btn-outline-black" onclick="filtrarPorStatus('ativa')">
+                            <i class="bi bi-check-circle c-padrao"></i> Ativas
                         </button>
-                        <button type="button" class="btn btn-outline-info" onclick="filtrarPorStatus('arquivada')">
-                            <i class="bi bi-archive"></i> Arquivadas
+                        <button type="button" class="btn btn-outline-black" onclick="filtrarPorStatus('arquivada')">
+                            <i class="bi bi-archive text-warning"></i> Arquivadas
                         </button>
-                        <button type="button" class="btn btn-outline-info" onclick="filtrarPorStatus('todas')">
-                            <i class="bi bi-list"></i> Todas
+                        <button type="button" class="btn btn-outline-black" onclick="filtrarPorStatus('todas')">
+                            <i class="bi bi-list text-primary"></i> Todas
                         </button>
                     </div>
                 </div>
@@ -158,7 +152,7 @@
                                     <strong>Campus:</strong> {{ turma.campus.nome }}<br>
                                     <strong>Código:</strong> <code>{{ turma.codigo }}</code><br>
                                     <strong>Criada em:</strong> {{ turma.data_criacao.strftime('%d/%m/%Y') }}<br>
-                                    <strong>Alunos:</strong> {{ turma.alunos_turma|length }} matriculados
+                                    <strong>Alunos:</strong> {{ turma.aluno_turmas|length }} matriculados
                                 </p>
                             </div>
                             <div class="card-footer">

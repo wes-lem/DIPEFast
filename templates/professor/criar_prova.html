@@ -52,12 +52,6 @@
                         <span>Notificações</span>
                     </a>
                 </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/professor/relatorios" class="sidebar-link {% if request.url.path == '/professor/relatorios' %}active{% endif %}">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Relatórios</span>
-                    </a>
-                </li>
                 <div class="sidebar-item mt-3">
                     <form action="/sair" method="post" style="display: inline;">
                         <button type="submit" class="sidebar-link w-100 text-start">
@@ -81,7 +75,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-10">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="mb-0">Informações da Prova</h5>
                             </div>
                             <div class="card-body">
@@ -142,12 +136,12 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex justify-content-end gap-3">
                                         <a href="/professor/provas" class="btn btn-secondary">
-                                            <i class="bi bi-arrow-left"></i> Voltar
+                                            <i class="bi bi-arrow-left text-light"></i> Voltar
                                         </a>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-plus-circle"></i> Criar Prova
+                                        <button type="submit" class="btn btn-padrao text-light">
+                                            <i class="bi bi-plus-circle text-light"></i> Criar Prova
                                         </button>
                                     </div>
                                 </form>
@@ -187,7 +181,6 @@
                     submitBtn.innerHTML = `<i class="bi bi-plus-circle"></i> Criar Prova (${selected} questões)`;
                 } else {
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="bi bi-plus-circle"></i> Selecione pelo menos 1 questão';
                 }
             }
             

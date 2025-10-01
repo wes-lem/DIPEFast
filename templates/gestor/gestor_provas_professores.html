@@ -47,12 +47,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
@@ -62,12 +56,6 @@
                     <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Relatórios</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -87,29 +75,59 @@
             </div>
         </aside>
 
-        <div class="main">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-                <a class="navbar-brand" href="#">
-                    <h4 class="mb-0">Provas dos Professores</h4>
-                </a>
-                
-            </nav>
+        <div class="main bg-pattern p-4">
+            <!-- Estatísticas -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">{{ provas|selectattr('status.value', 'equalto', 'ativa')|list|length }}</h5>
+                            <p class="card-text">Provas Ativas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">{{ provas|selectattr('status.value', 'equalto', 'rascunho')|list|length }}</h5>
+                            <p class="card-text">Rascunhos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">{{ provas|selectattr('status.value', 'equalto', 'expirada')|list|length }}</h5>
+                            <p class="card-text">Expiradas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ provas|length }}</h5>
+                            <p class="card-text">Total de Provas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="content-wrapper p-4">
+            <div class="content-wrapper mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Todas as Provas dos Professores</h2>
+                    
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-success" onclick="filtrarPorStatus('ativa')">
-                            <i class="bi bi-play-circle"></i> Ativas
+                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('ativa')">
+                            <i class="bi bi-play-circle text-success"></i> Ativas
                         </button>
-                        <button type="button" class="btn btn-outline-warning" onclick="filtrarPorStatus('rascunho')">
-                            <i class="bi bi-pencil"></i> Rascunhos
+                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('rascunho')">
+                            <i class="bi bi-pencil text-warning"></i> Rascunhos
                         </button>
-                        <button type="button" class="btn btn-outline-danger" onclick="filtrarPorStatus('expirada')">
-                            <i class="bi bi-clock-history"></i> Expiradas
+                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('expirada')">
+                            <i class="bi bi-clock-history text-danger"></i> Expiradas
                         </button>
-                        <button type="button" class="btn btn-outline-info" onclick="filtrarPorStatus('todas')">
-                            <i class="bi bi-list"></i> Todas
+                        <button type="button" class="btn btn-outline-black border-start-0" onclick="filtrarPorStatus('todas')">
+                            <i class="bi bi-list text-secondary"></i> Todas
                         </button>
                     </div>
                 </div>
@@ -119,13 +137,13 @@
                     {% for prova in provas %}
                     <div class="col-md-6 col-lg-4 mb-4 prova-card" data-status="{{ prova.status.value }}">
                         <div class="card h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-padrao text-light">
                                 <h6 class="mb-0">{{ prova.titulo }}</h6>
                                 <span class="badge 
-                                    {% if prova.status.value == 'ativa' %}bg-success
-                                    {% elif prova.status.value == 'rascunho' %}bg-warning
-                                    {% elif prova.status.value == 'expirada' %}bg-danger
-                                    {% else %}bg-secondary{% endif %}">
+                                    {% if prova.status.value == 'ativa' %}bg-white c-padrao
+                                    {% elif prova.status.value == 'rascunho' %}bg-white c-warning
+                                    {% elif prova.status.value == 'expirada' %}bg-white c-danger
+                                    {% else %}bg-white c-secondary{% endif %}">
                                     {{ prova.status.value.title() }}
                                 </span>
                             </div>
@@ -139,15 +157,9 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <div class="btn-group w-100" role="group">
-                                    <a href="/gestor/prova/{{ prova.id }}/detalhes" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye"></i> Ver
-                                    </a>
-                                    <a href="/gestor/prova/{{ prova.id }}/turmas" class="btn btn-outline-info btn-sm">
-                                        <i class="bi bi-people"></i> Turmas
-                                    </a>
-                                    <a href="/gestor/prova/{{ prova.id }}/resultados" class="btn btn-outline-success btn-sm">
-                                        <i class="bi bi-bar-chart"></i> Resultados
+                                <div class="w-100">
+                                    <a href="/gestor/prova/{{ prova.id }}/detalhes" class="btn btn-black btn-sm">
+                                        <i class="bi bi-eye text-light"></i> Ver
                                     </a>
                                 </div>
                             </div>
@@ -163,41 +175,7 @@
                 </div>
                 {% endif %}
 
-                <!-- Estatísticas -->
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title text-success">{{ provas|selectattr('status.value', 'equalto', 'ativa')|list|length }}</h5>
-                                <p class="card-text">Provas Ativas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title text-warning">{{ provas|selectattr('status.value', 'equalto', 'rascunho')|list|length }}</h5>
-                                <p class="card-text">Rascunhos</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title text-danger">{{ provas|selectattr('status.value', 'equalto', 'expirada')|list|length }}</h5>
-                                <p class="card-text">Expiradas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">{{ provas|length }}</h5>
-                                <p class="card-text">Total de Provas</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>

@@ -103,6 +103,21 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
     color: white;
 }
 
+.btn-outline-black {
+    background-color: none;
+    outline: #0B334C solid 1px !important;
+    color: #0B334C;
+}
+
+.btn-outline-black:hover {
+    background-color: #0B334C !important;
+    border-color: #0B334C !important;
+    color: white;
+}
+.btn-outline-black:hover i {
+    color: white;
+}
+
 .form-control:focus {
     box-shadow: 0 0 5px 2px var(--green-300);
 }

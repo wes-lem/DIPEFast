@@ -47,12 +47,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
@@ -62,12 +56,6 @@
                     <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
-                        <i class="bi bi-graph-up"></i>
-                        <span>Relatórios</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -87,19 +75,12 @@
             </div>
         </aside>
 
-        <div class="main">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-                <a class="navbar-brand" href="#">
-                    <h4 class="mb-0">Detalhes da Turma</h4>
-                </a>
-                
-            </nav>
-
-            <div class="content-wrapper p-4">
+        <div class="main bg-pattern p-4">
+            <div class="content-wrapper">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>{{ turma.nome }}</h2>
                     <a href="/gestor/turmas" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Voltar
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
                     </a>
                 </div>
 
@@ -107,7 +88,7 @@
                 <div class="row mb-4">
                     <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="mb-0">Informações da Turma</h5>
                             </div>
                             <div class="card-body">
@@ -132,7 +113,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="mb-0">Estatísticas</h5>
                             </div>
                             <div class="card-body text-center">
@@ -155,19 +136,19 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="mb-0">Ações Rápidas</h5>
                             </div>
                             <div class="card-body">
-                                <div class="btn-group" role="group">
-                                    <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-primary">
-                                        <i class="bi bi-people"></i> Ver Alunos
+                                <div>
+                                    <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-black">
+                                        <i class="bi bi-people text-light"></i> Ver Alunos
                                     </a>
-                                    <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-success">
-                                        <i class="bi bi-file-text"></i> Ver Provas
+                                    <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-black">
+                                        <i class="bi bi-file-text text-light"></i> Ver Provas
                                     </a>
-                                    <button type="button" class="btn btn-warning" onclick="copiarCodigo()">
-                                        <i class="bi bi-clipboard"></i> Copiar Código
+                                    <button type="button" class="btn btn-info" onclick="copiarCodigo()">
+                                        <i class="bi bi-clipboard text-light"></i> Copiar Código
                                     </button>
                                 </div>
                             </div>
@@ -175,60 +156,122 @@
                     </div>
                 </div>
 
-                <!-- Alunos Recentes -->
-                {% if turma.alunos_turma %}
-                <div class="row">
-                    <div class="col-md-6">
+                <!-- Seção de Alunos -->
+                <div class="row mt-4">
+                    <div class="col-12">
                         <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Alunos Matriculados</h5>
-                                <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-sm btn-outline-primary">Ver Todos</a>
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-people text-light"></i> Alunos Matriculados
+                                </h5>
                             </div>
                             <div class="card-body">
-                                {% for aluno_turma in turma.alunos_turma[:5] %}
-                                <div class="d-flex align-items-center mb-2">
-                                    <img src="{{ aluno_turma.aluno.imagem or '/static/img/user.jpg' }}" 
-                                         alt="Aluno" class="rounded-circle me-2" width="30" height="30">
-                                    <div>
-                                        <strong>{{ aluno_turma.aluno.nome }}</strong><br>
-                                        <small class="text-muted">Entrou em {{ aluno_turma.data_entrada.strftime('%d/%m/%Y') }}</small>
-                                    </div>
+                                {% if turma.aluno_turmas %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Foto</th>
+                                                <th>Nome</th>
+                                                <th>Curso</th>
+                                                <th>Ano</th>
+                                                <th>Data de Entrada</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for aluno_turma in turma.aluno_turmas %}
+                                            {% if aluno_turma.status.value == 'ativo' %}
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ aluno_turma.aluno.imagem or '/static/img/user.jpg' }}" 
+                                                         alt="Aluno" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                                </td>
+                                                <td>{{ aluno_turma.aluno.nome }}</td>
+                                                <td>{{ aluno_turma.aluno.curso }}</td>
+                                                <td>{{ aluno_turma.aluno.ano }}</td>
+                                                <td>{{ aluno_turma.data_entrada.strftime('%d/%m/%Y') }}</td>
+                                                <td>
+                                                    <span class="badge bg-success">{{ aluno_turma.status.value.title() }}</span>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <a href="/alunos/{{ aluno_turma.aluno.idAluno }}" class="btn btn-sm btn-dark">
+                                                            <i class="bi bi-eye text-light"></i> Ver
+                                                        </a>
+                                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                                data-aluno-id="{{ aluno_turma.aluno.idAluno }}" 
+                                                                data-aluno-nome="{{ aluno_turma.aluno.nome }}"
+                                                                onclick="confirmarRemocao(this)">
+                                                            <i class="bi bi-person-dash text-light"></i> Remover
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
-                                {% endfor %}
-                                {% if turma.alunos_turma|length > 5 %}
-                                <p class="text-muted text-center mt-2">... e mais {{ turma.alunos_turma|length - 5 }} alunos</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Provas da Turma</h5>
-                                <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-sm btn-outline-primary">Ver Todas</a>
-                            </div>
-                            <div class="card-body">
-                                {% if turma.provas_turma %}
-                                    {% for prova_turma in turma.provas_turma[:3] %}
-                                    <div class="mb-2">
-                                        <strong>{{ prova_turma.prova.titulo }}</strong><br>
-                                        <small class="text-muted">
-                                            {{ prova_turma.data_inicio.strftime('%d/%m/%Y') }} - 
-                                            {{ prova_turma.data_expiracao.strftime('%d/%m/%Y') }}
-                                        </small>
-                                    </div>
-                                    {% endfor %}
-                                    {% if turma.provas_turma|length > 3 %}
-                                    <p class="text-muted text-center mt-2">... e mais {{ turma.provas_turma|length - 3 }} provas</p>
-                                    {% endif %}
                                 {% else %}
-                                <p class="text-muted text-center">Nenhuma prova cadastrada</p>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Nenhum aluno matriculado nesta turma.
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endif %}
+
+                <!-- Seção de Provas -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-file-text text-light"></i> Provas da Turma
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if turma.prova_turmas %}
+                                <div class="row">
+                                    {% for prova_turma in turma.prova_turmas %}
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="card border-padrao">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ prova_turma.prova.titulo or prova_turma.prova.materia }}</h6>
+                                                <p class="card-text">
+                                                    <strong>Matéria:</strong> {{ prova_turma.prova.materia }}<br>
+                                                    <strong>Professor:</strong> {{ prova_turma.prova.professor.nome if prova_turma.prova.professor else 'N/A' }}<br>
+                                                    <strong>Status:</strong> 
+                                                    <span class="badge bg-{{ 'success' if prova_turma.status.value == 'ativa' else 'secondary' }}">
+                                                        {{ prova_turma.status.value.title() }}
+                                                    </span>
+                                                </p>
+                                                <p class="card-text">
+                                                    <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M') if prova_turma.data_inicio else 'N/A' }}<br>
+                                                    <strong>Fim:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') if prova_turma.data_expiracao else 'N/A' }}
+                                                </p>
+                                                <a href="/gestor/prova/{{ prova_turma.prova.id }}/detalhes" class="btn btn-black btn-sm">
+                                                    <i class="bi bi-eye text-light"></i> Ver Prova
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Nenhuma prova cadastrada para esta turma.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -243,6 +286,22 @@
             navigator.clipboard.writeText('{{ turma.codigo }}').then(function() {
                 alert('Código copiado para a área de transferência!');
             });
+        }
+
+        function confirmarRemocao(button) {
+            const alunoId = button.getAttribute('data-aluno-id');
+            const nomeAluno = button.getAttribute('data-aluno-nome');
+            
+            if (confirm('Tem certeza que deseja remover o aluno "' + nomeAluno + '" desta turma?')) {
+                // Criar um formulário para enviar a requisição POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/gestor/turma/{{ turma.id }}/remover-aluno/' + alunoId;
+                
+                // Adicionar o formulário ao body e enviar
+                document.body.appendChild(form);
+                form.submit();
+            }
         }
     </script>
 </body>

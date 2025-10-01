@@ -476,8 +476,8 @@ def upload_imagem_aluno_gestor( # Renomeada para evitar conflito e clareza
 
     return {"message": "Imagem enviada com sucesso!", "path": aluno.imagem}
 
-@router.get("/alunos/{aluno_id}")
-def detalhes_aluno(
+@router.get("/gestor/aluno/{aluno_id}/detalhes")
+def detalhes_aluno_gestor(
     request: Request,
     aluno_id: int,
     db: Session = Depends(get_db),
@@ -510,6 +510,16 @@ def detalhes_aluno(
             "nota_ciencias": nota_ciencias
         }
     )
+
+@router.get("/alunos/{aluno_id}")
+def detalhes_aluno(
+    request: Request,
+    aluno_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao) # Protegido por gestor
+):
+    """Exibe os detalhes e notas de um aluno específico para o gestor (rota de compatibilidade)."""
+    return RedirectResponse(url=f"/gestor/aluno/{aluno_id}/detalhes", status_code=302)
 
 @router.post("/gestor/alunos/{aluno_id}/editar")
 async def editar_aluno(
@@ -847,14 +857,25 @@ def detalhes_turma_gestor(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    """Detalhes de uma turma específica"""
-    turma = TurmaDAO.get_with_details(db, turma_id)
+    """Detalhes de uma turma específica com alunos e provas"""
+    from sqlalchemy.orm import joinedload
+    from models.aluno_turma import AlunoTurma
+    from models.prova_turma import ProvaTurma
+    
+    # Buscar turma com todos os dados relacionados
+    turma = db.query(Turma).options(
+        joinedload(Turma.professor),
+        joinedload(Turma.campus),
+        joinedload(Turma.aluno_turmas).joinedload(AlunoTurma.aluno),
+        joinedload(Turma.prova_turmas).joinedload(ProvaTurma.prova)
+    ).filter(Turma.id == turma_id).first()
+    
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
     
     # Buscar estatísticas da turma
-    total_alunos = len(turma.alunos_turma)
-    total_provas = len(turma.provas_turma)
+    total_alunos = len(turma.aluno_turmas)
+    total_provas = len(turma.prova_turmas)
     
     return templates.TemplateResponse(
         "gestor/detalhes_turma.html",
@@ -874,7 +895,16 @@ def alunos_turma_gestor(
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
     """Lista alunos de uma turma específica"""
-    turma = TurmaDAO.get_with_details(db, turma_id)
+    from sqlalchemy.orm import joinedload
+    from models.aluno_turma import AlunoTurma
+    
+    # Buscar turma com dados relacionados
+    turma = db.query(Turma).options(
+        joinedload(Turma.professor),
+        joinedload(Turma.campus),
+        joinedload(Turma.aluno_turmas).joinedload(AlunoTurma.aluno)
+    ).filter(Turma.id == turma_id).first()
+    
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
     
@@ -891,7 +921,16 @@ def provas_turma_gestor(
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
     """Lista provas de uma turma específica"""
-    turma = TurmaDAO.get_with_details(db, turma_id)
+    from sqlalchemy.orm import joinedload
+    from models.prova_turma import ProvaTurma
+    
+    # Buscar turma com dados relacionados
+    turma = db.query(Turma).options(
+        joinedload(Turma.professor),
+        joinedload(Turma.campus),
+        joinedload(Turma.prova_turmas).joinedload(ProvaTurma.prova)
+    ).filter(Turma.id == turma_id).first()
+    
     if not turma:
         raise HTTPException(status_code=404, detail="Turma não encontrada")
     
@@ -900,6 +939,58 @@ def provas_turma_gestor(
         {"request": request, "turma": turma}
     )
 
+@router.post("/gestor/turma/{turma_id}/remover-aluno/{aluno_id}")
+def remover_aluno_turma(
+    turma_id: int,
+    aluno_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Remove um aluno de uma turma"""
+    from models.aluno_turma import AlunoTurma, StatusAlunoTurma
+    
+    # Buscar a relação aluno-turma
+    aluno_turma = db.query(AlunoTurma).filter(
+        AlunoTurma.turma_id == turma_id,
+        AlunoTurma.aluno_id == aluno_id,
+        AlunoTurma.status == StatusAlunoTurma.ATIVO
+    ).first()
+    
+    if not aluno_turma:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado na turma")
+    
+    # Marcar como removido em vez de deletar
+    aluno_turma.status = StatusAlunoTurma.REMOVIDO
+    db.commit()
+    
+    return RedirectResponse(url=f"/gestor/turma/{turma_id}/detalhes", status_code=303)
+
+@router.post("/gestor/turma/{turma_id}/adicionar-aluno/{aluno_id}")
+def adicionar_aluno_turma(
+    turma_id: int,
+    aluno_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Adiciona um aluno de volta a uma turma"""
+    from models.aluno_turma import AlunoTurma, StatusAlunoTurma
+    
+    # Buscar a relação aluno-turma
+    aluno_turma = db.query(AlunoTurma).filter(
+        AlunoTurma.turma_id == turma_id,
+        AlunoTurma.aluno_id == aluno_id,
+        AlunoTurma.status == StatusAlunoTurma.REMOVIDO
+    ).first()
+    
+    if not aluno_turma:
+        raise HTTPException(status_code=404, detail="Aluno não encontrado na turma")
+    
+    # Marcar como ativo novamente
+    aluno_turma.status = StatusAlunoTurma.ATIVO
+    db.commit()
+    
+    return RedirectResponse(url=f"/gestor/turma/{turma_id}/alunos", status_code=303)
+
 @router.get("/gestor/prova/{prova_id}/detalhes")
 def detalhes_prova_gestor(
     request: Request,
@@ -907,20 +998,26 @@ def detalhes_prova_gestor(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    """Detalhes de uma prova específica"""
+    """Detalhes de uma prova específica com turmas e resultados"""
     from sqlalchemy.orm import joinedload
     prova = db.query(Prova).options(
         joinedload(Prova.professor),
         joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco),
-        joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma)
+        joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma),
+        joinedload(Prova.resultados).joinedload(Resultado.aluno)
     ).filter(Prova.id == prova_id).first()
     
     if not prova:
         raise HTTPException(status_code=404, detail="Prova não encontrada")
     
+    # Buscar resultados da prova
+    resultados = db.query(Resultado).options(
+        joinedload(Resultado.aluno)
+    ).filter(Resultado.prova_id == prova_id).all()
+    
     return templates.TemplateResponse(
         "gestor/detalhes_prova.html",
-        {"request": request, "prova": prova}
+        {"request": request, "prova": prova, "resultados": resultados}
     )
 
 @router.get("/gestor/prova/{prova_id}/turmas")
@@ -978,3 +1075,622 @@ async def relatorios_gestor(
         "gestor/relatorios.html",
         {"request": request}
     )
+
+# ===== ROTAS DE GERENCIAMENTO DE USUÁRIOS =====
+
+@router.get("/gestor/gerenciar-usuarios")
+def gerenciar_usuarios(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Página de gerenciamento de usuários"""
+    from sqlalchemy.orm import joinedload
+    from models.aluno import Aluno
+    from models.professor import Professor
+    from models.gestor import Gestor
+    from models.campus import Campus
+    
+    # Buscar todos os usuários
+    alunos = db.query(Aluno).options(joinedload(Aluno.usuario)).all()
+    professores = db.query(Professor).options(
+        joinedload(Professor.usuario),
+        joinedload(Professor.campus)
+    ).all()
+    gestores = db.query(Gestor).options(joinedload(Gestor.usuario)).all()
+    campus_list = db.query(Campus).options(
+        joinedload(Campus.professores),
+        joinedload(Campus.turmas)
+    ).all()
+    
+    # Contar totais
+    total_alunos = len(alunos)
+    total_professores = len(professores)
+    total_gestores = len(gestores)
+    total_campus = len(campus_list)
+    total_usuarios = total_alunos + total_professores + total_gestores
+    
+    return templates.TemplateResponse(
+        "gestor/gerenciar_usuarios.html",
+        {
+            "request": request,
+            "alunos": alunos,
+            "professores": professores,
+            "gestores": gestores,
+            "campus_list": campus_list,
+            "total_alunos": total_alunos,
+            "total_professores": total_professores,
+            "total_gestores": total_gestores,
+            "total_campus": total_campus,
+            "total_usuarios": total_usuarios
+        }
+    )
+
+@router.post("/gestor/cadastrar-aluno")
+async def cadastrar_aluno(
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    curso: str = Form(...),
+    ano: int = Form(...),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Cadastra um novo aluno"""
+    from models.aluno import Aluno
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    from datetime import datetime
+    
+    # Verificar se email já existe
+    usuario_existente = db.query(Usuario).filter(Usuario.email == email).first()
+    if usuario_existente:
+        raise HTTPException(status_code=400, detail="Email já cadastrado")
+    
+    try:
+        # Criar usuário
+        usuario = Usuario(
+            email=email,
+            senha_hash=criptografar_senha(senha),
+            tipo="aluno"
+        )
+        db.add(usuario)
+        db.flush()  # Para obter o ID
+        
+        # Processar imagem se fornecida
+        imagem_path = None
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/alunos"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            imagem_path = "/static/uploads/alunos/" + filename
+        
+        # Criar aluno
+        aluno = Aluno(
+            idUser=usuario.id,
+            nome=nome,
+            curso=curso,
+            ano=ano,
+            imagem=imagem_path,
+            idade=18,  # Valor padrão
+            municipio="Não informado",  # Valor padrão
+            zona="urbana",  # Valor padrão
+            origem_escolar="pública"  # Valor padrão
+        )
+        db.add(aluno)
+        db.commit()
+        
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao cadastrar aluno: {str(e)}")
+
+@router.post("/gestor/cadastrar-professor")
+async def cadastrar_professor(
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    campus_id: int = Form(...),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Cadastra um novo professor"""
+    from models.professor import Professor
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    from datetime import datetime
+    
+    # Verificar se email já existe
+    usuario_existente = db.query(Usuario).filter(Usuario.email == email).first()
+    if usuario_existente:
+        raise HTTPException(status_code=400, detail="Email já cadastrado")
+    
+    try:
+        # Criar usuário
+        usuario = Usuario(
+            email=email,
+            senha_hash=criptografar_senha(senha),
+            tipo="professor"
+        )
+        db.add(usuario)
+        db.flush()  # Para obter o ID
+        
+        # Processar imagem se fornecida
+        imagem_path = None
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/professores"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            imagem_path = "/static/uploads/professores/" + filename
+        
+        # Criar professor
+        professor = Professor(
+            id=usuario.id,
+            nome=nome,
+            imagem=imagem_path,
+            campus_id=campus_id
+        )
+        db.add(professor)
+        db.commit()
+        
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao cadastrar professor: {str(e)}")
+
+@router.post("/gestor/cadastrar-gestor")
+async def cadastrar_gestor(
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Cadastra um novo gestor"""
+    from models.gestor import Gestor
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    from datetime import datetime
+    
+    # Verificar se email já existe
+    usuario_existente = db.query(Usuario).filter(Usuario.email == email).first()
+    if usuario_existente:
+        raise HTTPException(status_code=400, detail="Email já cadastrado")
+    
+    try:
+        # Criar usuário
+        usuario = Usuario(
+            email=email,
+            senha_hash=criptografar_senha(senha),
+            tipo="gestor"
+        )
+        db.add(usuario)
+        db.flush()  # Para obter o ID
+        
+        # Processar imagem se fornecida
+        imagem_path = None
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/gestores"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            imagem_path = "/static/uploads/gestores/" + filename
+        
+        # Criar gestor
+        gestor = Gestor(
+            id=usuario.id,
+            nome=nome,
+            imagem=imagem_path
+        )
+        db.add(gestor)
+        db.commit()
+        
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao cadastrar gestor: {str(e)}")
+
+@router.post("/gestor/editar-aluno/{aluno_id}")
+async def editar_aluno(
+    aluno_id: int,
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    curso: str = Form(...),
+    ano: int = Form(...),
+    senha: str = Form(None),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Edita um aluno existente"""
+    from models.aluno import Aluno
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    
+    try:
+        # Buscar o aluno
+        aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
+        if not aluno:
+            raise HTTPException(status_code=404, detail="Aluno não encontrado")
+        
+        # Buscar o usuário associado
+        usuario = db.query(Usuario).filter(Usuario.id == aluno.idUser).first()
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Verificar se email já existe em outro usuário
+        if email != usuario.email:
+            usuario_existente = db.query(Usuario).filter(
+                Usuario.email == email,
+                Usuario.id != usuario.id
+            ).first()
+            if usuario_existente:
+                raise HTTPException(status_code=400, detail="Email já cadastrado")
+        
+        # Atualizar dados do usuário
+        if senha and senha.strip():
+            # Atualizar email e senha
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email,
+                "senha_hash": criptografar_senha(senha)
+            })
+        else:
+            # Atualizar apenas email
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email
+            })
+        
+        # Atualizar dados do aluno
+        aluno.nome = nome
+        aluno.curso = curso
+        aluno.ano = ano
+        
+        # Processar nova imagem se fornecida
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/alunos"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            aluno.imagem = "/static/uploads/alunos/" + filename
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao editar aluno: {str(e)}")
+
+@router.post("/gestor/cadastrar-campus")
+def cadastrar_campus(
+    nome: str = Form(...),
+    endereco: str = Form(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Cadastra um novo campus"""
+    from dao.campus_dao import CampusDAO
+    
+    try:
+        CampusDAO.create(db, nome=nome, endereco=endereco)
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao cadastrar campus: {str(e)}")
+
+@router.post("/gestor/editar-campus/{campus_id}")
+def editar_campus(
+    campus_id: int,
+    nome: str = Form(...),
+    endereco: str = Form(None),
+    ativo: str = Form(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Edita um campus existente"""
+    from dao.campus_dao import CampusDAO
+    
+    try:
+        ativo_bool = ativo == "true" if ativo else None
+        CampusDAO.update(db, campus_id, nome=nome, endereco=endereco, ativo=ativo_bool)
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao editar campus: {str(e)}")
+
+@router.post("/gestor/excluir-campus/{campus_id}")
+def excluir_campus(
+    campus_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Exclui permanentemente um campus"""
+    from dao.campus_dao import CampusDAO
+    
+    try:
+        # Verificar se o campus tem professores ou turmas associadas
+        campus = CampusDAO.get_by_id(db, campus_id)
+        if not campus:
+            raise HTTPException(status_code=404, detail="Campus não encontrado")
+        
+        if campus.professores or campus.turmas:
+            raise HTTPException(status_code=400, detail="Não é possível excluir campus com professores ou turmas associadas")
+        
+        CampusDAO.hard_delete(db, campus_id)
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir campus: {str(e)}")
+
+@router.post("/gestor/editar-professor/{professor_id}")
+async def editar_professor(
+    professor_id: int,
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    campus_id: int = Form(...),
+    senha: str = Form(None),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Edita um professor existente"""
+    from models.professor import Professor
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    
+    try:
+        # Buscar o professor
+        professor = db.query(Professor).filter(Professor.id == professor_id).first()
+        if not professor:
+            raise HTTPException(status_code=404, detail="Professor não encontrado")
+        
+        # Buscar o usuário associado
+        usuario = db.query(Usuario).filter(Usuario.id == professor.id).first()
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Verificar se email já existe em outro usuário
+        if email != usuario.email:
+            usuario_existente = db.query(Usuario).filter(
+                Usuario.email == email,
+                Usuario.id != usuario.id
+            ).first()
+            if usuario_existente:
+                raise HTTPException(status_code=400, detail="Email já cadastrado")
+        
+        # Atualizar dados do usuário
+        if senha and senha.strip():
+            # Atualizar email e senha
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email,
+                "senha_hash": criptografar_senha(senha)
+            })
+        else:
+            # Atualizar apenas email
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email
+            })
+        
+        # Atualizar dados do professor
+        professor.nome = nome
+        professor.campus_id = campus_id
+        
+        # Processar nova imagem se fornecida
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/professores"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            professor.imagem = "/static/uploads/professores/" + filename
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao editar professor: {str(e)}")
+
+@router.post("/gestor/editar-gestor/{gestor_id}")
+async def editar_gestor(
+    gestor_id: int,
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(None),
+    imagem: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_logado_id: int = Depends(verificar_gestor_sessao)
+):
+    """Edita um gestor existente"""
+    from models.gestor import Gestor
+    from models.usuario import Usuario
+    from dao.senhaHash import criptografar_senha
+    import os
+    
+    try:
+        # Buscar o gestor
+        gestor = db.query(Gestor).filter(Gestor.id == gestor_id).first()
+        if not gestor:
+            raise HTTPException(status_code=404, detail="Gestor não encontrado")
+        
+        # Buscar o usuário associado
+        usuario = db.query(Usuario).filter(Usuario.id == gestor.id).first()
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Verificar se email já existe em outro usuário
+        if email != usuario.email:
+            usuario_existente = db.query(Usuario).filter(
+                Usuario.email == email,
+                Usuario.id != usuario.id
+            ).first()
+            if usuario_existente:
+                raise HTTPException(status_code=400, detail="Email já cadastrado")
+        
+        # Atualizar dados do usuário
+        if senha and senha.strip():
+            # Atualizar email e senha
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email,
+                "senha_hash": criptografar_senha(senha)
+            })
+        else:
+            # Atualizar apenas email
+            db.query(Usuario).filter(Usuario.id == usuario.id).update({
+                "email": email
+            })
+        
+        # Atualizar dados do gestor
+        gestor.nome = nome
+        
+        # Processar nova imagem se fornecida
+        if imagem and imagem.filename:
+            upload_dir = "templates/static/uploads/gestores"
+            os.makedirs(upload_dir, exist_ok=True)
+            filename = f"{usuario.id}_{imagem.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            with open(file_path, "wb") as buffer:
+                content = await imagem.read()
+                buffer.write(content)
+            gestor.imagem = "/static/uploads/gestores/" + filename
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao editar gestor: {str(e)}")
+
+@router.post("/gestor/excluir-aluno/{aluno_id}")
+def excluir_aluno(
+    aluno_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Exclui um aluno permanentemente"""
+    from models.aluno import Aluno
+    from models.usuario import Usuario
+    
+    try:
+        # Buscar o aluno
+        aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
+        if not aluno:
+            raise HTTPException(status_code=404, detail="Aluno não encontrado")
+        
+        # Verificar se o aluno tem turmas associadas
+        if aluno.aluno_turmas:
+            raise HTTPException(status_code=400, detail="Não é possível excluir aluno com turmas associadas")
+        
+        # Excluir o usuário (cascade vai excluir o aluno)
+        usuario = db.query(Usuario).filter(Usuario.id == aluno.idUser).first()
+        if usuario:
+            db.delete(usuario)
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir aluno: {str(e)}")
+
+@router.post("/gestor/excluir-professor/{professor_id}")
+def excluir_professor(
+    professor_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Exclui um professor permanentemente"""
+    from models.professor import Professor
+    from models.usuario import Usuario
+    
+    try:
+        # Buscar o professor
+        professor = db.query(Professor).filter(Professor.id == professor_id).first()
+        if not professor:
+            raise HTTPException(status_code=404, detail="Professor não encontrado")
+        
+        # Verificar se o professor tem turmas associadas
+        if professor.turmas:
+            raise HTTPException(status_code=400, detail="Não é possível excluir professor com turmas associadas")
+        
+        # Excluir o usuário (cascade vai excluir o professor)
+        usuario = db.query(Usuario).filter(Usuario.id == professor.id).first()
+        if usuario:
+            db.delete(usuario)
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir professor: {str(e)}")
+
+@router.post("/gestor/excluir-gestor/{gestor_id}")
+def excluir_gestor(
+    gestor_id: int,
+    db: Session = Depends(get_db),
+    gestor_logado_id: int = Depends(verificar_gestor_sessao)
+):
+    """Exclui um gestor permanentemente"""
+    from models.gestor import Gestor
+    from models.usuario import Usuario
+    
+    try:
+        # Verificar se não está tentando excluir a si mesmo
+        if gestor_id == gestor_logado_id:
+            raise HTTPException(status_code=400, detail="Não é possível excluir a si mesmo")
+        
+        # Buscar o gestor
+        gestor = db.query(Gestor).filter(Gestor.id == gestor_id).first()
+        if not gestor:
+            raise HTTPException(status_code=404, detail="Gestor não encontrado")
+        
+        # Excluir o usuário (cascade vai excluir o gestor)
+        usuario = db.query(Usuario).filter(Usuario.id == gestor.id).first()
+        if usuario:
+            db.delete(usuario)
+        
+        db.commit()
+        return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir gestor: {str(e)}")

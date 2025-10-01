@@ -117,7 +117,13 @@ class TurmaDAO:
     @staticmethod
     def get_with_details(db: Session, turma_id: int):
         """Busca uma turma com detalhes do professor e campus"""
-        return db.query(Turma).join(Turma.professor).join(Turma.campus).filter(Turma.id == turma_id).first()
+        from sqlalchemy.orm import joinedload
+        return db.query(Turma).options(
+            joinedload(Turma.professor),
+            joinedload(Turma.campus),
+            joinedload(Turma.aluno_turmas),
+            joinedload(Turma.prova_turmas)
+        ).filter(Turma.id == turma_id).first()
 
     @staticmethod
     def get_with_alunos_count(db: Session, professor_id: int):

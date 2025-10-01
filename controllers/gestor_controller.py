@@ -21,12 +21,21 @@ from models.resposta import Resposta
 from models.resultado import Resultado
 from models.usuario import Usuario
 from models.notificacao import Notificacao
+from models.professor import Professor
+from models.campus import Campus
+from models.turma import Turma
+from models.banco_questoes import BancoQuestoes
+from models.prova_questao import ProvaQuestao
+from models.prova_turma import ProvaTurma
 
 from controllers.usuario_controller import verificar_sessao
 
 from services.graficos_service import AnalyticsService
 
 from dao.resposta_formulario_dao import RespostaFormularioDAO
+from dao.professor_dao import ProfessorDAO
+from dao.campus_dao import CampusDAO
+from dao.turma_dao import TurmaDAO
 
 from utils.auth import verificar_gestor_sessao
 
@@ -716,3 +725,256 @@ async def dashboard_gestor(
             {"request": request, "erro": "Erro ao carregar os dados do dashboard."},
             status_code=500
         )
+
+# === ROTAS DE GERENCIAMENTO DE PROFESSORES ===
+
+@router.get("/gestor/professores")
+def listar_professores(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista todos os professores cadastrados"""
+    professores = ProfessorDAO.get_all_with_campus(db)
+    return templates.TemplateResponse(
+        "gestor/gestor_professores.html",
+        {"request": request, "professores": professores}
+    )
+
+@router.get("/gestor/professores/cadastrar")
+def cadastrar_professor_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Página para gestor cadastrar professor"""
+    campus = CampusDAO.get_all(db)
+    return templates.TemplateResponse(
+        "gestor/cadastrar_professor.html",
+        {"request": request, "campus": campus}
+    )
+
+@router.post("/gestor/professores/cadastrar")
+async def cadastrar_professor_gestor(
+    request: Request,
+    nome: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    campus_id: int = Form(...),
+    especialidade: str = Form(None),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Processa cadastro de professor pelo gestor"""
+    # Verificar se campus existe
+    campus = CampusDAO.get_by_id(db, campus_id)
+    if not campus:
+        campus_list = CampusDAO.get_all(db)
+        return templates.TemplateResponse(
+            "gestor/cadastrar_professor.html",
+            {"request": request, "campus": campus_list, "erro": "Campus inválido"}
+        )
+    
+    # Processar upload de foto
+    imagem_path = None
+    if foto and foto.filename:
+        professor_upload_dir = os.path.join(UPLOAD_DIR, "professores")
+        os.makedirs(professor_upload_dir, exist_ok=True)
+        filename = f"professor_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
+        file_location = os.path.join(professor_upload_dir, filename)
+        
+        with open(file_location, "wb") as buffer:
+            buffer.write(await foto.read())
+        imagem_path = f"/static/uploads/professores/{filename}"
+    
+    # Criar professor
+    professor = ProfessorDAO.create_with_usuario(
+        db=db,
+        email=email,
+        senha=senha,
+        nome=nome,
+        campus_id=campus_id,
+        especialidade=especialidade,
+        imagem=imagem_path
+    )
+    
+    if not professor:
+        campus_list = CampusDAO.get_all(db)
+        return templates.TemplateResponse(
+            "gestor/cadastrar_professor.html",
+            {"request": request, "campus": campus_list, "erro": "E-mail já cadastrado"}
+        )
+    
+    return RedirectResponse(url="/gestor/professores", status_code=303)
+
+@router.get("/gestor/turmas")
+def listar_turmas_gestor(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista todas as turmas de todos os professores"""
+    turmas = TurmaDAO.get_all_with_details(db)
+    return templates.TemplateResponse(
+        "gestor/gestor_turmas.html",
+        {"request": request, "turmas": turmas}
+    )
+
+@router.get("/gestor/provas-professores")
+def listar_provas_professores(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista todas as provas criadas pelos professores"""
+    from sqlalchemy.orm import joinedload
+    provas = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.prova_questoes)
+    ).filter(Prova.professor_id.isnot(None)).order_by(Prova.data_criacao.desc()).all()
+    return templates.TemplateResponse(
+        "gestor/gestor_provas_professores.html",
+        {"request": request, "provas": provas}
+    )
+
+# === ROTAS DE DETALHES PARA GESTOR ===
+
+@router.get("/gestor/turma/{turma_id}/detalhes")
+def detalhes_turma_gestor(
+    request: Request,
+    turma_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Detalhes de uma turma específica"""
+    turma = TurmaDAO.get_with_details(db, turma_id)
+    if not turma:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    
+    # Buscar estatísticas da turma
+    total_alunos = len(turma.alunos_turma)
+    total_provas = len(turma.provas_turma)
+    
+    return templates.TemplateResponse(
+        "gestor/detalhes_turma.html",
+        {
+            "request": request, 
+            "turma": turma,
+            "total_alunos": total_alunos,
+            "total_provas": total_provas
+        }
+    )
+
+@router.get("/gestor/turma/{turma_id}/alunos")
+def alunos_turma_gestor(
+    request: Request,
+    turma_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista alunos de uma turma específica"""
+    turma = TurmaDAO.get_with_details(db, turma_id)
+    if not turma:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    
+    return templates.TemplateResponse(
+        "gestor/alunos_turma.html",
+        {"request": request, "turma": turma}
+    )
+
+@router.get("/gestor/turma/{turma_id}/provas")
+def provas_turma_gestor(
+    request: Request,
+    turma_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista provas de uma turma específica"""
+    turma = TurmaDAO.get_with_details(db, turma_id)
+    if not turma:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    
+    return templates.TemplateResponse(
+        "gestor/provas_turma.html",
+        {"request": request, "turma": turma}
+    )
+
+@router.get("/gestor/prova/{prova_id}/detalhes")
+def detalhes_prova_gestor(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Detalhes de uma prova específica"""
+    from sqlalchemy.orm import joinedload
+    prova = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco),
+        joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    return templates.TemplateResponse(
+        "gestor/detalhes_prova.html",
+        {"request": request, "prova": prova}
+    )
+
+@router.get("/gestor/prova/{prova_id}/turmas")
+def turmas_prova_gestor(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Lista turmas de uma prova específica"""
+    from sqlalchemy.orm import joinedload
+    prova = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    return templates.TemplateResponse(
+        "gestor/turmas_prova.html",
+        {"request": request, "prova": prova}
+    )
+
+@router.get("/gestor/prova/{prova_id}/resultados")
+def resultados_prova_gestor(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Resultados de uma prova específica"""
+    from sqlalchemy.orm import joinedload
+    prova = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.resultados).joinedload(Resultado.aluno)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    return templates.TemplateResponse(
+        "gestor/resultados_prova.html",
+        {"request": request, "prova": prova}
+    )
+
+@router.get("/relatorios")
+async def relatorios_gestor(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Página de relatórios do gestor"""
+    return templates.TemplateResponse(
+        "gestor/relatorios.html",
+        {"request": request}
+    )

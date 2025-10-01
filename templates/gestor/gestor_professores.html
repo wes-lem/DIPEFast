@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+    <title>Gestor - Professores</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body id="topo">
+    <div class="wrapper">
+        <aside id="sidebar" class="shadow-lg">
+            <div class="d-flex justify-content-center">
+                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
+                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
+                </button>
+            </div>
+                        <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Início</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Alunos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Professores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                        <i class="bi bi-collection-fill"></i>
+                        <span>Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas Diagnósticas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                        <span>Provas dos Professores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                        <i class="bi bi-clipboard2-fill"></i>
+                        <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <div class="sidebar-item mt-3">
+                    <form action="/sair" method="post" style="display: inline;">
+                        <button type="submit" class="sidebar-link w-100 text-start">
+                            <i class="bi bi-door-open-fill"></i>
+                            <span class="fw-bold">Sair</span>
+                        </button>
+                    </form>
+                </div>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#topo" class="sidebar-link">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>Voltar ao topo</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="main bg-pattern">
+
+            <div class="content-wrapper p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Professores Cadastrados</h2>
+                    <a href="/gestor/professores/cadastrar" class="btn btn-padrao text-light">
+                        <i class="bi bi-plus-circle text-light"></i> Cadastrar Professor
+                    </a>
+                </div>
+
+                {% if professores %}
+                <div class="row">
+                    {% for professor in professores %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="{{ professor.imagem or '/static/img/user.jpg' }}" 
+                                         alt="Professor" class="rounded-circle me-3" width="50" height="50">
+                                    <div>
+                                        <h5 class="card-title mb-0">{{ professor.nome }}</h5>
+                                        <small class="text-muted">{{ professor.campus.nome }}</small>
+                                    </div>
+                                </div>
+                                <p class="card-text">
+                                    <strong>Especialidade:</strong> {{ professor.especialidade or 'Não informada' }}<br>
+                                    <strong>Email:</strong> {{ professor.usuario.email }}<br>
+                                    <strong>Cadastrado em:</strong> {{ professor.data_cadastro.strftime('%d/%m/%Y') }}
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="w-100">
+                                    <button type="button" class="btn btn-black btn-sm" 
+                                            onclick="verProfessor({{ professor.id }})">
+                                        <i class="bi bi-eye text-light"></i> Ver
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm" 
+                                            onclick="editarProfessor({{ professor.id }})">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" 
+                                            onclick="excluirProfessor({{ professor.id }})">
+                                        <i class="bi bi-trash text-light"></i> Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-person-badge display-1 text-muted"></i>
+                    <h3 class="text-muted mt-3">Nenhum professor cadastrado</h3>
+                    <p class="text-muted">Cadastre o primeiro professor para começar a usar o sistema de turmas.</p>
+                    <a href="/gestor/professores/cadastrar" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Professor
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
+        crossorigin="anonymous"></script>
+    <script src="/static/js/menu.js"></script>
+    
+    <script>
+        function verProfessor(id) {
+            // Implementar visualização de professor
+            alert('Funcionalidade de visualizar professor será implementada em breve.');
+        }
+        
+        function editarProfessor(id) {
+            // Implementar edição de professor
+            alert('Funcionalidade de editar professor será implementada em breve.');
+        }
+        
+        function excluirProfessor(id) {
+            if (confirm('Tem certeza que deseja excluir este professor? Esta ação não pode ser desfeita.')) {
+                // Implementar exclusão de professor
+                alert('Funcionalidade de excluir professor será implementada em breve.');
+            }
+        }
+    </script>
+</body>
+
+</html>

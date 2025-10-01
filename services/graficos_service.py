@@ -196,22 +196,58 @@ class AnalyticsService:
     def get_aluno_profile_data(db: Session, user_id: int):
         """
         Coleta e processa os dados para o perfil do aluno.
+        Agora busca apenas provas das turmas em que o aluno está matriculado.
         """
+        from models.aluno_turma import AlunoTurma
+        from models.prova_turma import ProvaTurma
+        from models.prova_questao import ProvaQuestao
+        
         aluno = db.query(Aluno).filter(Aluno.idUser == user_id).first()
         if not aluno:
-            return None # Ou raise HTTPException para o controller tratar
+            return None
 
-        materias_fixas = ["Português", "Matemática", "Ciências"]
-        materias_info = [] # Renomeado para evitar conflito com a variável global 'materias'
+        # Buscar turmas do aluno
+        turmas_aluno = db.query(AlunoTurma).filter(
+            AlunoTurma.aluno_id == aluno.idAluno,
+            AlunoTurma.status == "ativo"
+        ).all()
+        
+        # Se o aluno não está em nenhuma turma, retorna dados vazios
+        if not turmas_aluno:
+            return {
+                "aluno": aluno,
+                "materias": [],
+                "provas_turmas": [],
+                "dados_grafico_pizza": {'labels': [], 'data': [], 'cores': []},
+                "dados_grafico_barra": {'labels': [], 'datasets': []}
+            }
+        
+        # Buscar provas das turmas do aluno
+        turmas_ids = [at.turma_id for at in turmas_aluno]
+        provas_turmas = db.query(ProvaTurma).filter(
+            ProvaTurma.turma_id.in_(turmas_ids)
+        ).all()
+        
+        # Organizar provas por matéria
+        materias_dict = {}
+        for prova_turma in provas_turmas:
+            materia = prova_turma.prova.materia
+            if materia not in materias_dict:
+                materias_dict[materia] = []
+            materias_dict[materia].append(prova_turma)
+        
+        # Preparar dados para o template
+        materias_info = []
+        provas_turmas_info = []
         
         dados_grafico_pizza = {
-            'labels': materias_fixas,
+            'labels': [],
             'data': [],
-            'cores': ['#FF6384', '#36A2EB', '#FFCE56']
+            'cores': ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
         }
         
         dados_grafico_barra = {
-            'labels': materias_fixas,
+            'labels': [],
             'datasets': [
                 {
                     'label': 'Sua média',
@@ -222,69 +258,83 @@ class AnalyticsService:
                     'label': 'Média da turma',
                     'data': [],
                     'backgroundColor': '#36A2EB'
-                },
-                {
-                    'label': 'Média geral',
-                    'data': [],
-                    'backgroundColor': '#FFCE56'
                 }
             ]
         }
 
-        for materia_nome in materias_fixas:
-            prova = db.query(Prova).filter(Prova.materia == materia_nome).first()
-            prova_disponivel = prova is not None 
-
-            if prova:
-                resultado = db.query(Resultado).filter(
-                    Resultado.aluno_id == aluno.idAluno,
-                    Resultado.prova_id == prova.id
-                ).first()
-                
-                media_turma = db.query(func.avg(Resultado.acertos)).join(
-                    Aluno, Resultado.aluno_id == Aluno.idAluno
-                ).filter(
-                    Aluno.curso == aluno.curso,
-                    Resultado.prova_id == prova.id
-                ).scalar() or 0
-
-                media_geral = db.query(func.avg(Resultado.acertos)).filter(
-                    Resultado.prova_id == prova.id
-                ).scalar() or 0
-                
-                if resultado:
-                    nota = float(resultado.acertos)
-                    status = resultado.situacao
-                    url_prova = f"/prova/{prova.id}/resultado-detalhado"
+        # Processar cada matéria
+        for materia_nome, provas_turma_list in materias_dict.items():
+            # Pegar a prova mais recente da matéria (ordenar por data de criação da prova)
+            provas_turma_list.sort(key=lambda pt: pt.prova.data_criacao, reverse=True)
+            prova_turma_mais_recente = provas_turma_list[0]
+            prova = prova_turma_mais_recente.prova
+            
+            # Verificar se o aluno já respondeu
+            resultado = db.query(Resultado).filter(
+                Resultado.aluno_id == aluno.idAluno,
+                Resultado.prova_id == prova.id
+            ).first()
+            
+            # Calcular média da turma (apenas alunos da mesma turma)
+            turma_id = prova_turma_mais_recente.turma_id
+            media_turma = db.query(func.avg(Resultado.nota)).join(
+                Aluno, Resultado.aluno_id == Aluno.idAluno
+            ).join(AlunoTurma, AlunoTurma.aluno_id == Aluno.idAluno).filter(
+                AlunoTurma.turma_id == turma_id,
+                AlunoTurma.status == "ativo",
+                Resultado.prova_id == prova.id
+            ).scalar() or 0
+            
+            if resultado:
+                nota = float(resultado.nota) if resultado.nota else float(resultado.acertos)
+                status = resultado.situacao
+                url_prova = f"/aluno/prova/{prova.id}/consultar"
+            else:
+                # Verificar se a prova ainda está ativa
+                from datetime import datetime
+                agora = datetime.now()
+                if prova_turma_mais_recente.data_expiracao > agora:
+                    nota = None
+                    status = "Disponível"
+                    url_prova = f"/aluno/prova/{prova.id}/responder"
                 else:
                     nota = None
-                    status = "Não realizada"
-                    url_prova = f"/prova/{prova.id}"
-                
-                dados_grafico_pizza['data'].append(nota if nota is not None else 0)
-                dados_grafico_barra['datasets'][0]['data'].append(nota if nota is not None else 0)
-                dados_grafico_barra['datasets'][1]['data'].append(float(media_turma))
-                dados_grafico_barra['datasets'][2]['data'].append(float(media_geral))
-            else:
-                nota = None
-                status = "Ainda não há provas disponíveis"
-                url_prova = "#"
-                dados_grafico_pizza['data'].append(0)
-                dados_grafico_barra['datasets'][0]['data'].append(0)
-                dados_grafico_barra['datasets'][1]['data'].append(0)
-                dados_grafico_barra['datasets'][2]['data'].append(0)
-
+                    status = "Expirada"
+                    url_prova = f"/aluno/prova/{prova.id}/consultar"
+            
             materias_info.append({
                 "nome": materia_nome,
                 "nota": nota,
                 "status": status,
                 "url_prova": url_prova,
-                "prova_disponivel": prova_disponivel
+                "prova_disponivel": True,
+                "turma": prova_turma_mais_recente.turma.nome,
+                "professor": prova.professor.nome
             })
+            
+            # Adicionar dados para gráficos
+            dados_grafico_pizza['labels'].append(materia_nome)
+            dados_grafico_pizza['data'].append(nota if nota is not None else 0)
+            dados_grafico_barra['labels'].append(materia_nome)
+            dados_grafico_barra['datasets'][0]['data'].append(nota if nota is not None else 0)
+            dados_grafico_barra['datasets'][1]['data'].append(float(media_turma))
+            
+            # Adicionar informações das provas das turmas
+            for prova_turma in provas_turma_list:
+                provas_turmas_info.append({
+                    "prova": prova_turma.prova,
+                    "turma": prova_turma.turma,
+                    "professor": prova_turma.professor,
+                    "data_inicio": prova_turma.data_inicio,
+                    "data_expiracao": prova_turma.data_expiracao,
+                    "status": prova_turma.status,
+                    "resultado": resultado if resultado and resultado.prova_id == prova_turma.prova.id else None
+                })
         
         return {
             "aluno": aluno,
             "materias": materias_info,
+            "provas_turmas": provas_turmas_info,
             "dados_grafico_pizza": dados_grafico_pizza,
             "dados_grafico_barra": dados_grafico_barra
         }

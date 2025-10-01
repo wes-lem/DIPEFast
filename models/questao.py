@@ -16,5 +16,4 @@ class Questao(Base):
     opcao_e = Column(String(255), nullable=False)
     resposta_correta = Column(String(1), nullable=False)
 
-    prova = relationship("Prova", back_populates="questoes") ## -> CORRIGIDO
-    respostas = relationship("Resposta", back_populates="questao", cascade="all, delete-orphan") ## -> CORRIGIDO
+    prova = relationship("Prova", back_populates="questoes")

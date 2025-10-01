@@ -11,8 +11,16 @@ from sqlalchemy.orm import Session
 from dao.database import get_db
 from dao.aluno_dao import AlunoDAO
 from dao.usuario_dao import UsuarioDAO
+from dao.turma_dao import TurmaDAO
+from dao.aluno_turma_dao import AlunoTurmaDAO
+from dao.prova_turma_dao import ProvaTurmaDAO
 from models.aluno import Aluno
 from models.usuario import Usuario
+from models.turma import Turma
+from models.prova import Prova
+from models.prova_questao import ProvaQuestao
+from models.resposta import Resposta
+from models.resultado import Resultado
 
 from controllers.usuario_controller import verificar_sessao
 
@@ -187,6 +195,7 @@ def perfil(
         "aluno/perfil.html",
         {
             "request": request,
+            "aluno": aluno,
             "id": aluno.idAluno,
             "nome": aluno.nome,
             "imagem": aluno.imagem,
@@ -195,6 +204,7 @@ def perfil(
             "ano": aluno.ano,
             "curso": aluno.curso,
             "materias": materias,
+            "provas_turmas": aluno_profile_data.get('provas_turmas', []),
             "dados_grafico_pizza": dados_grafico_pizza,
             "dados_grafico_barra": dados_grafico_barra,
             "formularios_pendentes": formularios_pendentes,
@@ -313,3 +323,326 @@ async def editar_dados(
     
     db.commit()
     return RedirectResponse(url="/perfil", status_code=303)
+
+# === ROTAS DE TURMAS PARA ALUNOS ===
+
+@router.get("/aluno/turmas")
+def turmas_aluno(
+    request: Request,
+    sucesso: str = None,
+    erro: str = None,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Lista turmas do aluno"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    turmas_aluno = AlunoTurmaDAO.get_turmas_with_details_by_aluno(db, aluno.idAluno)
+    return templates.TemplateResponse(
+        "aluno/turmas_aluno.html",
+        {
+            "request": request, 
+            "turmas_aluno": turmas_aluno, 
+            "aluno": aluno,
+            "sucesso": sucesso,
+            "erro": erro
+        }
+    )
+
+
+@router.post("/aluno/turmas/entrar")
+def entrar_turma(
+    request: Request,
+    codigo: str = Form(...),
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Processa entrada do aluno em turma"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Buscar turma pelo código
+    turma = TurmaDAO.get_by_codigo(db, codigo.upper())
+    if not turma:
+        return RedirectResponse(url="/aluno/turmas?erro=Código de turma inválido", status_code=303)
+    
+    # Verificar se aluno já está na turma
+    if AlunoTurmaDAO.is_aluno_in_turma(db, aluno.idAluno, turma.id):
+        return RedirectResponse(url="/aluno/turmas?erro=Você já está matriculado nesta turma", status_code=303)
+    
+    # Adicionar aluno à turma
+    aluno_turma = AlunoTurmaDAO.create(db, aluno.idAluno, turma.id)
+    if aluno_turma:
+        return RedirectResponse(url="/aluno/turmas?sucesso=Entrou na turma com sucesso", status_code=303)
+    else:
+        return RedirectResponse(url="/aluno/turmas?erro=Erro ao entrar na turma", status_code=303)
+
+@router.get("/aluno/provas")
+def provas_aluno(
+    request: Request,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Lista provas disponíveis para o aluno"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Buscar provas ativas das turmas do aluno
+    provas_ativas = ProvaTurmaDAO.get_provas_for_aluno(db, aluno.idAluno)
+    
+    # Buscar provas expiradas para consulta
+    provas_expiradas = ProvaTurmaDAO.get_provas_expired_for_aluno(db, aluno.idAluno)
+    
+    # Para cada prova, verificar se o aluno já respondeu
+    for prova_turma in provas_ativas:
+        resultado = db.query(Resultado).filter(
+            Resultado.aluno_id == aluno.idAluno,
+            Resultado.prova_id == prova_turma.prova.id
+        ).first()
+        prova_turma.aluno_ja_respondeu = resultado is not None
+        if resultado:
+            prova_turma.resultado_aluno = resultado
+    
+    for prova_turma in provas_expiradas:
+        resultado = db.query(Resultado).filter(
+            Resultado.aluno_id == aluno.idAluno,
+            Resultado.prova_id == prova_turma.prova.id
+        ).first()
+        prova_turma.aluno_ja_respondeu = resultado is not None
+        if resultado:
+            prova_turma.resultado_aluno = resultado
+    
+    return templates.TemplateResponse(
+        "aluno/provas_aluno.html",
+        {
+            "request": request, 
+            "aluno": aluno,
+            "provas_ativas": provas_ativas,
+            "provas_expiradas": provas_expiradas
+        }
+    )
+
+# === ROTAS DE DETALHES PARA ALUNO ===
+
+@router.get("/aluno/turma/{turma_id}/detalhes")
+def detalhes_turma_aluno(
+    request: Request,
+    turma_id: int,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Detalhes de uma turma específica para o aluno"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Verificar se o aluno está na turma
+    if not AlunoTurmaDAO.is_aluno_in_turma(db, aluno.idAluno, turma_id):
+        raise HTTPException(status_code=403, detail="Você não está matriculado nesta turma")
+    
+    turma = TurmaDAO.get_with_details(db, turma_id)
+    if not turma:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    
+    # Buscar alunos da turma (colegas)
+    colegas = AlunoTurmaDAO.get_alunos_with_details_by_turma(db, turma_id)
+    
+    # Buscar provas da turma
+    provas_turma = ProvaTurmaDAO.get_by_turma(db, turma_id)
+    
+    return templates.TemplateResponse(
+        "aluno/detalhes_turma.html",
+        {
+            "request": request, 
+            "turma": turma, 
+            "aluno": aluno,
+            "colegas": colegas,
+            "provas_turma": provas_turma
+        }
+    )
+
+@router.get("/aluno/prova/{prova_id}/responder")
+def responder_prova_aluno(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Página para o aluno responder uma prova"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Buscar prova com dados relacionados
+    from sqlalchemy.orm import joinedload
+    prova = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    # Verificar se o aluno pode responder a prova
+    # (implementar lógica de verificação de turma e prazo)
+    
+    return templates.TemplateResponse(
+        "aluno/responder_prova.html",
+        {"request": request, "prova": prova, "aluno": aluno}
+    )
+
+@router.post("/aluno/prova/{prova_id}/responder")
+async def salvar_resposta_prova(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Salva as respostas do aluno para uma prova"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Buscar prova
+    from sqlalchemy.orm import joinedload
+    prova = db.query(Prova).options(
+        joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    # Verificar se o aluno já respondeu esta prova
+    resultado_existente = db.query(Resultado).filter(
+        Resultado.aluno_id == aluno.idAluno,
+        Resultado.prova_id == prova_id
+    ).first()
+    
+    if resultado_existente:
+        return RedirectResponse(url="/aluno/provas?erro=Você já respondeu esta prova", status_code=303)
+    
+    # Processar respostas do formulário
+    form_data = await request.form()
+    respostas_corretas = 0
+    total_questoes = len(prova.prova_questoes)
+    
+    # Salvar cada resposta
+    for questao_prova in prova.prova_questoes:
+        questao_id = questao_prova.questao_banco.id
+        resposta_aluno = form_data.get(f"questao_{questao_id}")
+        
+        if resposta_aluno:
+            # Criar resposta
+            resposta = Resposta(
+                aluno_id=aluno.idAluno,
+                questao_id=questao_id,
+                resposta=resposta_aluno
+            )
+            db.add(resposta)
+            
+            # Verificar se está correta
+            if resposta_aluno == questao_prova.questao_banco.resposta_correta:
+                respostas_corretas += 1
+    
+    # Calcular nota (0 a 10)
+    nota = (respostas_corretas / total_questoes) * 10 if total_questoes > 0 else 0
+    
+    # Criar resultado
+    resultado = Resultado(
+        aluno_id=aluno.idAluno,
+        prova_id=prova_id,
+        nota=nota,
+        acertos=respostas_corretas,
+        total_questoes=total_questoes
+    )
+    db.add(resultado)
+    
+    db.commit()
+    
+    return RedirectResponse(url="/aluno/provas?sucesso=Prova respondida com sucesso!", status_code=303)
+
+@router.get("/aluno/prova/{prova_id}/consultar")
+def consultar_prova_aluno(
+    request: Request,
+    prova_id: int,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(verificar_sessao)
+):
+    """Página para o aluno consultar uma prova (expirada ou já respondida)"""
+    aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
+    if not aluno:
+        return RedirectResponse(url="/login", status_code=303)
+    
+    # Buscar prova com dados relacionados
+    from sqlalchemy.orm import joinedload
+    from models.prova_turma import ProvaTurma
+    from models.resposta import Resposta
+    from models.resultado import Resultado
+    from datetime import datetime
+    
+    prova = db.query(Prova).options(
+        joinedload(Prova.professor),
+        joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco)
+    ).filter(Prova.id == prova_id).first()
+    
+    if not prova:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    # Verificar se o aluno já respondeu a prova
+    resultado = db.query(Resultado).filter(
+        Resultado.aluno_id == aluno.idAluno,
+        Resultado.prova_id == prova_id
+    ).first()
+    
+    # Buscar as respostas do aluno para esta prova
+    respostas_aluno = db.query(Resposta).filter(
+        Resposta.aluno_id == aluno.idAluno,
+        Resposta.questao_id.in_([pq.questao_banco_id for pq in prova.prova_questoes])
+    ).all()
+    
+    # Determinar o status da prova
+    prova_turma = db.query(ProvaTurma).filter(
+        ProvaTurma.prova_id == prova_id
+    ).first()
+    
+    agora = datetime.now()
+    is_expirada = prova_turma and prova_turma.data_expiracao < agora
+    is_respondida = resultado is not None
+    
+    # Determinar status para exibição
+    if is_respondida and not is_expirada:
+        status_prova = "respondida"
+        status_texto = "Prova Respondida"
+        status_cor = "success"
+    elif is_respondida and is_expirada:
+        status_prova = "respondida_expirada"
+        status_texto = "Prova Respondida (Expirada)"
+        status_cor = "info"
+    elif is_expirada:
+        status_prova = "expirada"
+        status_texto = "Prova Expirada"
+        status_cor = "warning"
+    else:
+        status_prova = "ativa"
+        status_texto = "Prova Ativa"
+        status_cor = "primary"
+    
+    return templates.TemplateResponse(
+        "aluno/consultar_prova.html",
+        {
+            "request": request, 
+            "prova": prova, 
+            "aluno": aluno,
+            "resultado": resultado,
+            "respostas_aluno": respostas_aluno,
+            "status_prova": status_prova,
+            "status_texto": status_texto,
+            "status_cor": status_cor,
+            "is_expirada": is_expirada,
+            "is_respondida": is_respondida
+        }
+    )

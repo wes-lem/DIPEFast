@@ -15,7 +15,7 @@
 }
 
 * { font-family: "Poppins", sans-serif; color: #0B334C; }
-p { font-size: 12px; margin: 0;}
+p { font-size: 16px; margin: 0;}
 h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 
 /* Fontes */
@@ -89,6 +89,18 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 }.btn-secundario:hover {
     background-color: var(--green-300) !important;
     border-color: var(--green-300) !important;
+}
+
+.btn-black {
+    background-color: #0B334C;
+    border-color: #0B334C;
+    color: white;
+}
+
+.btn-black:hover {
+    background-color: #0B334C !important;
+    border-color: #0B334C !important;
+    color: white;
 }
 
 .form-control:focus {

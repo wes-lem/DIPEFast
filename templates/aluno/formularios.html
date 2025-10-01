@@ -23,37 +23,50 @@
                 <div class="sidebar-logo me-4">
                 </div>
             </div>
-            <ul class="sidebar-nav">
+                        <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/perfil" class="sidebar-link">
+                    <a href="/perfil" class="sidebar-link {% if request.url.path == '/perfil' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/dados" class="sidebar-link">
+                    <a href="/aluno/dados" class="sidebar-link {% if request.url.path == '/aluno/dados' %}active{% endif %}">
                         <i class="bi bi-person-fill"></i>
                         <span>Dados Pessoais</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/formularios" class="sidebar-link active">
+                    <a href="/aluno/turmas" class="sidebar-link {% if request.url.path == '/aluno/turmas' or request.url.path.startswith('/aluno/turmas/') %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Minhas Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/aluno/provas" class="sidebar-link {% if request.url.path == '/aluno/provas' or request.url.path.startswith('/aluno/provas/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas das Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                        <span>Provas Diagnósticas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ id }}" class="sidebar-link">
+                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
                         <i class="bi bi-bar-chart-fill"></i>
                         <span>Resultados</span>
                     </a>
                 </li>
+                <!-- Botão Sair -->
                 <div class="sidebar-item mt-3">
                     <form action="/sair" method="post" style="display: inline;">
                         <button type="submit" class="sidebar-link w-100 text-start">
@@ -69,11 +82,17 @@
                     <span>Voltar ao topo</span>
                 </a>
             </div>
+            <div class="sidebar-footer">
+                <a href="#topo" class="sidebar-link">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>Voltar ao topo</span>
+                </a>
+            </div>
         </aside>
 
         <div class="main p-4 bg-pattern">
             <div class="col-12">
-                <h4 class="bg-padrao p-2 px-3 borda text-light rounded-2 mb-2">Formulários Socioeconômicos</h4>
+                <h4 class="bg-padrao p-2 px-3 borda text-light rounded-2 rounded-bottom-0">Formulários</h4>
 
                 {% if formularios %}
                 <div class="row">
@@ -107,7 +126,7 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="alert alert-info">
+                <div class="alert alert-info rounded-top-0 border-top-0">
                     Não há formulários disponíveis no momento.
                 </div>
                 {% endif %}

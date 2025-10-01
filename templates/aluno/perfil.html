@@ -37,15 +37,27 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
-                        <i class="bi bi-clipboard2-fill"></i>
-                        <span>Formulários</span>
+                    <a href="/aluno/turmas" class="sidebar-link {% if request.url.path == '/aluno/turmas' or request.url.path.startswith('/aluno/turmas/') %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Minhas Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/aluno/provas" class="sidebar-link {% if request.url.path == '/aluno/provas' or request.url.path.startswith('/aluno/provas/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas das Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
                     <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas Diagnósticas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
+                        <i class="bi bi-clipboard2-fill"></i>
+                        <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
@@ -87,7 +99,7 @@
                 </div>
                 <div class="col-4 pe-0">
                     <div class="borda rounded-3 bg-branco h-100">
-                        <div class="bg-padrao rounded-3 p-2 px-3">
+                        <div class="bg-padrao rounded-3 p-2 px-3 rounded-bottom-0">
                             <h6 class="m-0 text-light fw-semi">Seu Perfil</h6>
                         </div>
 
@@ -119,52 +131,76 @@
 
             <div class="row px-2">
                 <div class="col-8 rounded-4 mt-2 p-0">
-                    <div class="my-2 d-flex align-items-center">
-                        <h5 class="fw-bold wrapper w-50">Provas diagnósticas:</h5>
+                    <div class="my-2 d-flex align-items-center justify-content-between">
+                        <h5 class="fw-bold wrapper">Provas das Minhas Turmas:</h5>
+                        <a href="/aluno/provas" class="btn btn-black btn-sm">
+                            <i class="bi bi-eye text-light"></i> Ver Todas
+                        </a>
                     </div>
 
-                    <!-- Container com os 3 cards -->
+                    {% if materias %}
+                    <!-- Container com os cards das matérias -->
                     <div class="menu-resultados d-flex justify-content-between w-100 gap-3">
                         {% for materia in materias %}
-                        <div class="bg-branco borda rounded-4 py-3 flex-grow-1">
+                        <div class="bg-branco borda rounded-4 py-2 flex-grow-1">
                             <!-- Cabeçalho com nome da matéria -->
                             <div class="d-flex justify-content-center">
-                                <h6 class="fw-bold m-0 c-{{ materia.nome.lower() }} pb-2">{{ materia.nome }}</h6>
+                                <h6 class="fw-bold m-0 c-{{ materia.nome.lower() }} mb-2">{{ materia.nome }}</h6>
                             </div>
 
                             <hr class="hr m-0">
+                            
+                            <!-- Informações da turma -->
+                            <!-- <div class="text-center">
+                                <div class="text-muted w-100 d-flex justify-content-center gap-3">
+                                    <small><i class="bi bi-people"></i> {{ materia.turma }}<br></small>
+                                    <small><i class="bi bi-person"></i> {{ materia.professor }}</small>
+                                </div>
+                            </div> -->
 
                             <!-- Conteúdo principal do card -->
                             {% if materia.prova_disponivel %}
                             {% if materia.nota is not none %}
                             <!-- Se já respondeu a prova -->
-                            <a href="/prova/1/resultado-detalhado"
-                                class="d-flex w-100 justify-content-center gap-5 h-75 text-decoration-none text-dark">
+                            <a href="{{ materia.url_prova }}"
+                                class="d-flex w-100 justify-content-center gap-5 mt-2 text-decoration-none text-dark">
                                 <div class="d-flex flex-column justify-content-center">
-                                    <p class="fs-6 m-0 fw-semi">Acertos:</p>
+                                    <p class="fs-6 m-0 fw-semi">Nota:</p>
                                     <p class="m-0 fs-6 fw-light">{{ materia.status }}</p>
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
-                                    <h1 class="m-0 fw-bolder c-{{ materia.nome.lower() }}">{{ materia.nota }}</h1>
+                                    <h1 class="m-0 fw-bolder c-{{ materia.nome.lower() }}">{{ "%.1f"|format(materia.nota) }}</h1>
                                 </div>
                             </a>
                             {% else %}
                             <!-- Prova disponível mas ainda não respondida -->
-                            <div class="d-flex justify-content-center gap-5 h-75 align-items-center text-center">
-                                <p class="m-0 fs-6 fw-light">Pendente:</p>
-                                <a href="{{ materia.url_prova }}" class="btn btn-padrao text-light rounded-4 mt-2">Fazer
-                                    Prova</a>
+                            <div class="d-flex justify-content-center gap-5 align-items-center text-center">
+                                <p class="m-0 fs-6 fw-light">{{ materia.status }}:</p>
+                                <a href="{{ materia.url_prova }}" class="btn btn-padrao text-light rounded-4 mt-2">
+                                    <i class="bi bi-play-fill"></i> Fazer Prova
+                                </a>
                             </div>
                             {% endif %}
                             {% else %}
                             <!-- Prova não está disponível -->
-                            <div class="d-flex align-items-center h-75 justify-content-center">
+                            <div class="d-flex align-items-center justify-content-center">
                                 <p class="m-0 fs-6 fw-light">Prova não disponível</p>
                             </div>
                             {% endif %}
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <!-- Mensagem quando não há provas -->
+                    <div class="bg-branco borda rounded-4 py-5 text-center">
+                        <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">Nenhuma prova disponível</h4>
+                        <p class="text-muted">Você não está matriculado em nenhuma turma ou não há provas disponíveis.</p>
+                        <a href="/aluno/turmas" class="btn btn-primary">
+                            <i class="bi bi-people"></i> Ver Minhas Turmas
+                        </a>
+                    </div>
+                    {% endif %}
 
 
                     <!-- Gráficos de desempenho -->
@@ -186,9 +222,8 @@
 
                 <div class="col-4 pe-0 mt-2">
                     <div class="borda rounded-3 bg-branco h-100">
-                        <div class="bg-padrao rounded-3 p-2 px-3 d-flex justify-content-between align-self-center">
+                        <div class="bg-padrao rounded-3 p-2 px-3 d-flex justify-content-between align-self-center rounded-bottom-0">
                             <h6 class="m-0 text-light h-100 align-self-center fw-semi">Notificações</h6>
-                            
                         </div>
 
                         <div class="px-3 py-2">

@@ -5,6 +5,7 @@ from controllers.aluno_controller import router as aluno_router
 from controllers.prova_controller import router as prova_router
 from controllers.gestor_controller import router as gestor_router
 from controllers.formulario_controller import router as formulario_router
+from controllers.professor_controller import router as professor_router
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.exceptions import HTTPException
 import os
@@ -13,10 +14,14 @@ from app_config import templates
 from dao.database import engine, Base
 
 from dao.cadastrarGestor import criar_gestor_padrao
+from dao.criar_campus import criar_campus_iniciais
+from dao.migrar_banco import migrar_banco
 
 Base.metadata.create_all(bind=engine)
 
+migrar_banco()
 criar_gestor_padrao()
+criar_campus_iniciais()
 
 app = FastAPI()
 
@@ -57,6 +62,7 @@ app.include_router(usuario_router)
 app.include_router(prova_router)
 app.include_router(gestor_router)
 app.include_router(formulario_router)
+app.include_router(professor_router)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

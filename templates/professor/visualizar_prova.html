@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+    <title>Professor - Visualizar Prova</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body id="topo">
+    <div class="wrapper">
+        <aside id="sidebar" class="shadow-lg">
+            <div class="d-flex justify-content-center">
+                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
+                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
+                </button>
+            </div>
+                        <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/professor/dashboard" class="sidebar-link {% if request.url.path == '/professor/dashboard' %}active{% endif %}">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Início</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/professor/turmas" class="sidebar-link {% if request.url.path == '/professor/turmas' or request.url.path.startswith('/professor/turma/') %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/professor/provas" class="sidebar-link {% if request.url.path == '/professor/provas' or request.url.path.startswith('/professor/prova/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/professor/banco-questoes" class="sidebar-link {% if request.url.path == '/professor/banco-questoes' or request.url.path.startswith('/professor/questao/') %}active{% endif %}">
+                        <i class="bi bi-question-circle-fill"></i>
+                        <span>Banco de Questões</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/professor/notificacoes" class="sidebar-link {% if request.url.path == '/professor/notificacoes' %}active{% endif %}">
+                        <i class="bi bi-bell-fill"></i>
+                        <span>Notificações</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/professor/relatorios" class="sidebar-link {% if request.url.path == '/professor/relatorios' %}active{% endif %}">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <div class="sidebar-item mt-3">
+                    <form action="/sair" method="post" style="display: inline;">
+                        <button type="submit" class="sidebar-link w-100 text-start">
+                            <i class="bi bi-door-open-fill"></i>
+                            <span class="fw-bold">Sair</span>
+                        </button>
+                    </form>
+                </div>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#topo" class="sidebar-link">
+                    <i class="bi bi-arrow-up"></i>
+                    <span>Voltar ao topo</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="main bg-pattern">
+
+            <div class="content-wrapper p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>{{ prova.titulo }}</h2>
+                    <a href="/professor/provas" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
+                    </a>
+                </div>
+
+                <!-- Informações da Prova -->
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Informações da Prova</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Matéria:</strong> {{ prova.materia }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Status:</strong> 
+                                <span class="badge 
+                                    {% if prova.status.value == 'ativa' %}bg-success
+                                    {% elif prova.status.value == 'rascunho' %}bg-warning
+                                    {% elif prova.status.value == 'expirada' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ prova.status.value.title() }}
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Questões:</strong> {{ prova.prova_questoes|length }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Criada em:</strong> {{ prova.data_criacao.strftime('%d/%m/%Y %H:%M') }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Alunos que responderam:</strong> 
+                                <span class="badge bg-info fs-6">{{ prova.alunos_responderam }}</span>
+                            </div>
+                            {% if prova.alunos_responderam > 0 %}
+                            <div class="col-md-3">
+                                <strong>Nota média:</strong> 
+                                <span class="badge bg-success fs-6">{{ "%.1f"|format(prova.nota_media) }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Maior nota:</strong> 
+                                <span class="badge bg-warning fs-6">{{ "%.1f"|format(prova.maior_nota) }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Menor nota:</strong> 
+                                <span class="badge bg-danger fs-6">{{ "%.1f"|format(prova.menor_nota) }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Ações</h5>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <a href="/professor/prova/{{ prova.id }}/editar" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editar Prova
+                            </a>
+                            {% if prova.status.value == 'rascunho' %}
+                            <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-success">
+                                <i class="bi bi-share text-light"></i> Disponibilizar
+                            </a>
+                            {% endif %}
+                            <button type="button" class="btn btn-danger" onclick="excluirProva({{ prova.id }})">
+                                <i class="bi bi-trash text-light"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Turmas onde a prova está aplicada -->
+                {% if prova.prova_turmas %}
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Turmas onde a prova está aplicada</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for prova_turma in prova.prova_turmas %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-1">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ prova_turma.turma.nome }}</h6>
+                                        <p class="card-text">
+                                            <strong>Status:</strong> 
+                                            <span class="badge 
+                                                {% if prova_turma.status.value == 'ativa' %}bg-success
+                                                {% elif prova_turma.status.value == 'expirada' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ prova_turma.status.value.title() }}
+                                            </span><br>
+                                            <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M') }}<br>
+                                            <strong>Expiração:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Alunos que responderam a prova -->
+                {% if prova.resultados %}
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Alunos que responderam a prova</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nome do Aluno</th>
+                                        <th>Nota</th>
+                                        <th>Acertos</th>
+                                        <th>Total</th>
+                                        <th>Situação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for resultado in prova.resultados %}
+                                    <tr>
+                                        <td>{{ resultado.aluno.nome }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if resultado.nota >= 7 %}bg-success
+                                                {% elif resultado.nota >= 5 %}bg-warning
+                                                {% else %}bg-danger{% endif %}">
+                                                {{ "%.1f"|format(resultado.nota) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ resultado.acertos }}</td>
+                                        <td>{{ resultado.total_questoes }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if resultado.situacao == 'aprovado' %}bg-success
+                                                {% else %}bg-danger{% endif %}">
+                                                {{ resultado.situacao.title() }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Alunos que responderam a prova</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h4 class="text-muted mt-3">Nenhum aluno respondeu ainda</h4>
+                        <p class="text-muted">Aguarde os alunos responderem a prova para ver os resultados aqui.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Questões da Prova -->
+                <div class="card">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">Questões da Prova</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for questao_prova in prova.prova_questoes %}
+                        <div class="mb-4 p-3 border rounded">
+                            <h6 class="mb-3">
+                                <strong>Questão {{ loop.index }}:</strong>
+                                {{ questao_prova.questao_banco.enunciado }}
+                            </h6>
+                            
+                            {% if questao_prova.questao_banco.imagem %}
+                            <div class="mb-3">
+                                <img src="{{ questao_prova.questao_banco.imagem }}" alt="Imagem da questão" class="img-fluid">
+                            </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>A)</strong> {{ questao_prova.questao_banco.opcao_a }}
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>B)</strong> {{ questao_prova.questao_banco.opcao_b }}
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>C)</strong> {{ questao_prova.questao_banco.opcao_c }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>D)</strong> {{ questao_prova.questao_banco.opcao_d }}
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>E)</strong> {{ questao_prova.questao_banco.opcao_e }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Resposta Correta -->
+                            <div class="mt-3 p-2 bg-success bg-opacity-10 border border-success rounded">
+                                <strong class="text-success">
+                                    <i class="bi bi-check-circle"></i> Resposta Correta: 
+                                    {{ questao_prova.questao_banco.resposta_correta }}
+                                </strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
+        crossorigin="anonymous"></script>
+    <script src="/static/js/menu.js"></script>
+    
+    <script>
+        function excluirProva(provaId) {
+            if (confirm('Tem certeza que deseja excluir esta prova? Esta ação não pode ser desfeita.')) {
+                // Criar formulário para enviar POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/professor/prova/${provaId}/excluir`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -44,11 +44,16 @@ async def login(
                 url=f"/cadastro/aluno/{usuario.id}", status_code=303
             )
     
+    # Definir URL de redirecionamento baseado no tipo de usuário
+    if usuario.tipo == "gestor":
+        redirect_url = "/gestor/dashboard"
+    elif usuario.tipo == "professor":
+        redirect_url = "/professor/dashboard"
+    else:  # aluno
+        redirect_url = "/perfil"
+    
     # Criar sessão
-    response = RedirectResponse(
-        url="/gestor/dashboard" if usuario.tipo == "gestor" else "/perfil",
-        status_code=303
-    )
+    response = RedirectResponse(url=redirect_url, status_code=303)
     response.set_cookie(
         key="session_user", value=str(usuario.id), httponly=True
     )

@@ -28,3 +28,4 @@ class Aluno(Base):
     notificacoes = relationship("Notificacao", back_populates="aluno", cascade="all, delete-orphan")
     respostas = relationship("Resposta", back_populates="aluno", cascade="all, delete-orphan") ## -> ADICIONADO/CORRIGIDO
     resultados = relationship("Resultado", back_populates="aluno", cascade="all, delete-orphan")
+    aluno_turmas = relationship("AlunoTurma", back_populates="aluno", cascade="all, delete-orphan")

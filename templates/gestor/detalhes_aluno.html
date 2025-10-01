@@ -31,35 +31,65 @@
                 </button>
                 <div class="sidebar-logo me-4"></div>
             </div>
-            <ul class="sidebar-nav">
+                        <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link">
+                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/alunos" class="sidebar-link active">
-                        <i class="bi bi-person-fill"></i>
+                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
                         <span>Alunos</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                        data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Turmas <i class="bi-caret-down-fill ms-3 text-center"></i></span>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Professores</span>
                     </a>
-                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link fw-normal"><i class="bi bi-mortarboard-fill me-3"></i>Redes
-                                de Computadores</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link fw-normal"><i
-                                    class="bi bi-mortarboard-fill me-3"></i>Agropecuária</a>
-                        </li>
-                    </ul>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                        <i class="bi bi-collection-fill"></i>
+                        <span>Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/provas/cadastrar" class="sidebar-link {% if request.url.path == '/provas/cadastrar' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Provas Diagnósticas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                        <span>Provas dos Professores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                        <i class="bi bi-clipboard2-fill"></i>
+                        <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+                <div class="sidebar-item mt-3">
+                    <form action="/sair" method="post" style="display: inline;">
+                        <button type="submit" class="sidebar-link w-100 text-start">
+                            <i class="bi bi-door-open-fill"></i>
+                            <span class="fw-bold">Sair</span>
+                        </button>
+                    </form>
+                </div>
+            </ul>
+            
                 </li>
                 <li class="sidebar-item mt-3">
                     <a href="/provas/cadastrar" class="sidebar-link">
@@ -100,6 +130,8 @@
                     <span>Voltar ao topo</span>
                 </a>
             </div>
+
+            
         </aside>
 
         <div class="main p-4 bg-pattern">

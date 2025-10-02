@@ -233,7 +233,7 @@ def resultado_provas(request: Request, aluno_id: int, db: Session = Depends(get_
         questao = db.query(Questao).filter(Questao.id == resposta.questao_id).first()
         if questao:
             total_questoes[questao.materia] += 1
-            if resposta.resposta == questao.resposta_correta:
+            if resposta.resposta_aluno == questao.resposta_correta:
                 pontuacao[questao.materia] += 1
 
     situacoes = {}

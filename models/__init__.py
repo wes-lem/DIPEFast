@@ -13,7 +13,7 @@ from .resposta_formulario import RespostaFormulario
 from .notificacao import Notificacao
 from .resposta import Resposta
 from .resultado import Resultado
-from .prova import Prova, StatusProva
+from .prova import Prova
 from .questao import Questao
 from .formulario import Formulario
 from .pergunta_formulario import PerguntaFormulario

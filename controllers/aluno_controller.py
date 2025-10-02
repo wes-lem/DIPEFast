@@ -540,7 +540,7 @@ async def salvar_resposta_prova(
             resposta = Resposta(
                 aluno_id=aluno.idAluno,
                 questao_id=questao_id,
-                resposta=resposta_aluno
+                resposta_aluno=resposta_aluno
             )
             db.add(resposta)
             
@@ -548,16 +548,20 @@ async def salvar_resposta_prova(
             if resposta_aluno == questao_prova.questao_banco.resposta_correta:
                 respostas_corretas += 1
     
-    # Calcular nota (0 a 10)
-    nota = (respostas_corretas / total_questoes) * 10 if total_questoes > 0 else 0
+    # Determinar situação baseada nos acertos
+    if respostas_corretas <= 5:
+        situacao = "Insuficiente"
+    elif respostas_corretas <= 10:
+        situacao = "Regular"
+    else:
+        situacao = "Suficiente"
     
     # Criar resultado
     resultado = Resultado(
         aluno_id=aluno.idAluno,
         prova_id=prova_id,
-        nota=nota,
         acertos=respostas_corretas,
-        total_questoes=total_questoes
+        situacao=situacao
     )
     db.add(resultado)
     

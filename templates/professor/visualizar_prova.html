@@ -98,11 +98,11 @@
                             <div class="col-md-3">
                                 <strong>Status:</strong> 
                                 <span class="badge 
-                                    {% if prova.status.value == 'ativa' %}bg-success
-                                    {% elif prova.status.value == 'rascunho' %}bg-warning
-                                    {% elif prova.status.value == 'expirada' %}bg-danger
+                                    {% if prova.status == 'ativa' %}bg-success
+                                    {% elif prova.status == 'rascunho' %}bg-warning
+                                    {% elif prova.status == 'expirada' %}bg-danger
                                     {% else %}bg-secondary{% endif %}">
-                                    {{ prova.status.value.title() }}
+                                    {{ prova.status.title() }}
                                 </span>
                             </div>
                             <div class="col-md-3">
@@ -146,7 +146,7 @@
                             <a href="/professor/prova/{{ prova.id }}/editar" class="btn btn-warning">
                                 <i class="bi bi-pencil"></i> Editar Prova
                             </a>
-                            {% if prova.status.value == 'rascunho' %}
+                            {% if prova.status == 'rascunho' %}
                             <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-success">
                                 <i class="bi bi-share text-light"></i> Disponibilizar
                             </a>
@@ -215,14 +215,14 @@
                                         <td>{{ resultado.aluno.nome }}</td>
                                         <td>
                                             <span class="badge 
-                                                {% if resultado.nota >= 7 %}bg-success
-                                                {% elif resultado.nota >= 5 %}bg-warning
+                                                {% if resultado.acertos >= 7 %}bg-success
+                                                {% elif resultado.acertos >= 5 %}bg-warning
                                                 {% else %}bg-danger{% endif %}">
-                                                {{ "%.1f"|format(resultado.nota) }}
+                                                {{ resultado.acertos }}
                                             </span>
                                         </td>
                                         <td>{{ resultado.acertos }}</td>
-                                        <td>{{ resultado.total_questoes }}</td>
+                                        <td>{{ resultado.situacao }}</td>
                                         <td>
                                             <span class="badge 
                                                 {% if resultado.situacao == 'aprovado' %}bg-success

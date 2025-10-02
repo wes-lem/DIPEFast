@@ -109,11 +109,11 @@
                                         <label class="form-label">Status Atual</label>
                                         <div>
                                             <span class="badge 
-                                                {% if prova.status.value == 'ativa' %}bg-success
-                                                {% elif prova.status.value == 'rascunho' %}bg-warning
-                                                {% elif prova.status.value == 'expirada' %}bg-danger
+                                                {% if prova.status == 'ativa' %}bg-success
+                                                {% elif prova.status == 'rascunho' %}bg-warning
+                                                {% elif prova.status == 'expirada' %}bg-danger
                                                 {% else %}bg-secondary{% endif %}">
-                                                {{ prova.status.value.title() }}
+                                                {{ prova.status.title() }}
                                             </span>
                                         </div>
                                     </div>

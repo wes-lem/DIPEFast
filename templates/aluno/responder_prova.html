@@ -82,25 +82,19 @@
             </div>
         </aside>
 
-        <div class="main">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-                <a class="navbar-brand" href="#">
-                    <h4 class="mb-0">Responder Prova</h4>
-                </a>
-                
-            </nav>
+        <div class="main bg-pattern p-4">
 
-            <div class="content-wrapper p-4">
+            <div class="content-wrapper">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>{{ prova.titulo }}</h2>
                     <a href="/aluno/provas" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Voltar
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
                     </a>
                 </div>
 
                 <!-- Informações da Prova -->
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header bg-padrao text-light">
                         <h5 class="mb-0">Informações da Prova</h5>
                     </div>
                     <div class="card-body">
@@ -125,7 +119,7 @@
                 <!-- Formulário da Prova -->
                 <form id="provaForm" method="post" action="/aluno/prova/{{ prova.id }}/responder">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header bg-padrao text-light">
                             <h5 class="mb-0">Questões</h5>
                         </div>
                         <div class="card-body">
@@ -141,46 +135,51 @@
                                     <img src="{{ questao_prova.questao_banco.imagem }}" alt="Imagem da questão" class="img-fluid">
                                 </div>
                                 {% endif %}
-                                
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
-                                           id="questao_{{ questao_prova.questao_banco.id }}_a" value="A">
-                                    <label class="form-check-label" for="questao_{{ questao_prova.questao_banco.id }}_a">
-                                        <strong>A)</strong> {{ questao_prova.questao_banco.opcao_a }}
-                                    </label>
+
+                                <div class="d-flex flex-column gap-2">
+
+                                    <div class="form-check mb-2 d-flex align-items-center">
+                                        <input class="form-check-input rounded-3" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
+                                               id="questao_{{ questao_prova.questao_banco.id }}_a" value="A">
+                                        <label class="form-check-label ms-3" for="questao_{{ questao_prova.questao_banco.id }}_a">
+                                            <strong>A)</strong> {{ questao_prova.questao_banco.opcao_a }}
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2 d-flex align-items-center">
+                                        <input class="form-check-input rounded-3" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
+                                               id="questao_{{ questao_prova.questao_banco.id }}_b" value="B">
+                                        <label class="form-check-label ms-3" for="questao_{{ questao_prova.questao_banco.id }}_b">
+                                            <strong>B)</strong> {{ questao_prova.questao_banco.opcao_b }}
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2 d-flex align-items-center">
+                                        <input class="form-check-input rounded-3" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
+                                               id="questao_{{ questao_prova.questao_banco.id }}_c" value="C">
+                                        <label class="form-check-label ms-3" for="questao_{{ questao_prova.questao_banco.id }}_c">
+                                            <strong>C)</strong> {{ questao_prova.questao_banco.opcao_c }}
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2 d-flex align-items-center">
+                                        <input class="form-check-input rounded-3" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
+                                               id="questao_{{ questao_prova.questao_banco.id }}_d" value="D">
+                                        <label class="form-check-label ms-3" for="questao_{{ questao_prova.questao_banco.id }}_d">
+                                            <strong>D)</strong> {{ questao_prova.questao_banco.opcao_d }}
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2 d-flex align-items-center">
+                                        <input class="form-check-input rounded-3" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
+                                               id="questao_{{ questao_prova.questao_banco.id }}_e" value="E">
+                                        <label class="form-check-label ms-3" for="questao_{{ questao_prova.questao_banco.id }}_e">
+                                            <strong>E)</strong> {{ questao_prova.questao_banco.opcao_e }}
+                                        </label>
+                                    </div>
                                 </div>
                                 
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
-                                           id="questao_{{ questao_prova.questao_banco.id }}_b" value="B">
-                                    <label class="form-check-label" for="questao_{{ questao_prova.questao_banco.id }}_b">
-                                        <strong>B)</strong> {{ questao_prova.questao_banco.opcao_b }}
-                                    </label>
-                                </div>
                                 
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
-                                           id="questao_{{ questao_prova.questao_banco.id }}_c" value="C">
-                                    <label class="form-check-label" for="questao_{{ questao_prova.questao_banco.id }}_c">
-                                        <strong>C)</strong> {{ questao_prova.questao_banco.opcao_c }}
-                                    </label>
-                                </div>
-                                
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
-                                           id="questao_{{ questao_prova.questao_banco.id }}_d" value="D">
-                                    <label class="form-check-label" for="questao_{{ questao_prova.questao_banco.id }}_d">
-                                        <strong>D)</strong> {{ questao_prova.questao_banco.opcao_d }}
-                                    </label>
-                                </div>
-                                
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="questao_{{ questao_prova.questao_banco.id }}" 
-                                           id="questao_{{ questao_prova.questao_banco.id }}_e" value="E">
-                                    <label class="form-check-label" for="questao_{{ questao_prova.questao_banco.id }}_e">
-                                        <strong>E)</strong> {{ questao_prova.questao_banco.opcao_e }}
-                                    </label>
-                                </div>
                             </div>
                             {% endfor %}
                         </div>

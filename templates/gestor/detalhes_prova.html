@@ -98,8 +98,8 @@
                                         <p><strong>Matéria:</strong> {{ prova.materia }}</p>
                                         <p><strong>Professor:</strong> {{ prova.professor.nome if prova.professor else 'N/A' }}</p>
                                         <p><strong>Status:</strong> 
-                                            <span class="badge bg-{{ 'success' if prova.status.value == 'ativa' else 'secondary' }}">
-                                                {{ prova.status.value.title() }}
+                                            <span class="badge bg-{{ 'success' if prova.status == 'ativa' else 'secondary' }}">
+                                                {{ prova.status.title() }}
                                             </span>
                                         </p>
                                     </div>
@@ -247,16 +247,16 @@
                                                 <td>{{ resultado.aluno.nome }}</td>
                                                 <td>{{ resultado.aluno.aluno_turmas[0].turma.nome if resultado.aluno.aluno_turmas else 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
-                                                        {{ "%.1f"|format(resultado.nota) }}
+                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                        {{ resultado.acertos }}
                                                     </span>
                                                 </td>
                                                 <td>{{ resultado.acertos }}</td>
-                                                <td>{{ resultado.total_questoes }}</td>
+                                                <td>{{ resultado.situacao }}</td>
                                                 <td>N/A</td>
                                                 <td>
-                                                    <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
-                                                        {{ 'Aprovado' if resultado.nota >= 7 else 'Recuperação' if resultado.nota >= 5 else 'Reprovado' }}
+                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                        {{ resultado.situacao }}
                                                     </span>
                                                 </td>
                                             </tr>

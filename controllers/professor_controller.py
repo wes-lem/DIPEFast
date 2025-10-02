@@ -15,7 +15,7 @@ from models.campus import Campus
 from models.turma import Turma, StatusTurma
 from models.aluno_turma import AlunoTurma, StatusAlunoTurma
 from models.banco_questoes import BancoQuestoes, StatusQuestao
-from models.prova import Prova, StatusProva
+from models.prova import Prova
 from models.prova_questao import ProvaQuestao
 from models.prova_turma import ProvaTurma, StatusProvaTurma
 from models.resultado import Resultado
@@ -388,7 +388,7 @@ def provas_professor(
     for prova in provas:
         prova.alunos_responderam = len(prova.resultados)
         if prova.resultados:
-            prova.nota_media = sum(r.nota for r in prova.resultados) / len(prova.resultados)
+            prova.nota_media = sum(r.acertos for r in prova.resultados) / len(prova.resultados)
         else:
             prova.nota_media = 0
     
@@ -425,7 +425,7 @@ def criar_prova(
         titulo=titulo,
         materia=materia,
         professor_id=professor_id,
-        status=StatusProva.RASCUNHO
+        status="rascunho"
     )
     db.add(prova)
     db.commit()
@@ -501,9 +501,9 @@ def visualizar_prova_professor(
     # Calcular estatísticas
     prova.alunos_responderam = len(prova.resultados)
     if prova.resultados:
-        prova.nota_media = sum(r.nota for r in prova.resultados) / len(prova.resultados)
-        prova.maior_nota = max(r.nota for r in prova.resultados)
-        prova.menor_nota = min(r.nota for r in prova.resultados)
+        prova.nota_media = sum(r.acertos for r in prova.resultados) / len(prova.resultados)
+        prova.maior_nota = max(r.acertos for r in prova.resultados)
+        prova.menor_nota = min(r.acertos for r in prova.resultados)
     else:
         prova.nota_media = 0
         prova.maior_nota = 0
@@ -629,7 +629,7 @@ def salvar_disponibilizacao_prova(
         db.add(prova_turma)
     
     # Atualizar status da prova
-    prova.status = StatusProva.ATIVA
+    prova.status = "ativa"
     
     db.commit()
     return RedirectResponse(url="/professor/provas", status_code=303)

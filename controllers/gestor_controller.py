@@ -729,10 +729,16 @@ async def dashboard_gestor(
         )
     except SQLAlchemyError as e:
         print(f"Erro ao acessar o banco de dados: {e}")
+        # Buscar o gestor para passar ao template mesmo em caso de erro
+        gestor = db.query(Gestor).filter(Gestor.id == gestor_id).first()
         # Retorna uma página de erro ou redireciona com mensagem
         return templates.TemplateResponse(
             "gestor/dashboard_gestor.html",
-            {"request": request, "erro": "Erro ao carregar os dados do dashboard."},
+            {
+                "request": request, 
+                "gestor": gestor,
+                "erro": "Erro ao carregar os dados do dashboard."
+            },
             status_code=500
         )
 

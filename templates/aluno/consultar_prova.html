@@ -102,8 +102,8 @@
                     {% if resultado %}
                     <hr>
                     <p class="mb-0">
-                        <strong>Sua nota:</strong> {{ "%.1f"|format(resultado.nota) }} 
-                        ({{ resultado.acertos }}/{{ resultado.total_questoes }} acertos)
+                        <strong>Seus acertos:</strong> {{ resultado.acertos }} 
+                        ({{ resultado.situacao }})
                     </p>
                     {% endif %}
                 </div>
@@ -116,8 +116,8 @@
                     {% if resultado %}
                     <hr>
                     <p class="mb-0">
-                        <strong>Sua nota:</strong> {{ "%.1f"|format(resultado.nota) }} 
-                        ({{ resultado.acertos }}/{{ resultado.total_questoes }} acertos)
+                        <strong>Seus acertos:</strong> {{ resultado.acertos }} 
+                        ({{ resultado.situacao }})
                     </p>
                     {% endif %}
                 </div>

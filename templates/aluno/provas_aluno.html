@@ -113,8 +113,8 @@
                                         </a>
                                         {% if prova_turma.resultado_aluno %}
                                         <small class="text-muted d-block mt-2">
-                                            Nota: {{ "%.1f"|format(prova_turma.resultado_aluno.nota) }} 
-                                            ({{ prova_turma.resultado_aluno.acertos }}/{{ prova_turma.resultado_aluno.total_questoes }})
+                                            Acertos: {{ prova_turma.resultado_aluno.acertos }} 
+                                            ({{ prova_turma.resultado_aluno.situacao }})
                                         </small>
                                         {% endif %}
                                     {% else %}

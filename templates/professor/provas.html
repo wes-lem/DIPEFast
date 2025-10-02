@@ -95,8 +95,8 @@
                                 <p class="card-text">
                                     <strong>Matéria:</strong> {{ prova.materia }}<br>
                                     <strong>Status:</strong> 
-                                    <span class="badge bg-{{ 'success' if prova.status.value == 'ativa' else 'warning' if prova.status.value == 'rascunho' else 'secondary' }}">
-                                        {{ prova.status.value }}
+                                    <span class="badge bg-{{ 'success' if prova.status == 'ativa' else 'warning' if prova.status == 'rascunho' else 'secondary' }}">
+                                        {{ prova.status }}
                                     </span><br>
                                     <strong>Alunos que responderam:</strong> 
                                     <span class="badge bg-info">{{ prova.alunos_responderam }}</span><br>
@@ -114,7 +114,7 @@
                                     <a href="/professor/prova/{{ prova.id }}/editar" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>
-                                    {% if prova.status.value == 'rascunho' %}
+                                    {% if prova.status == 'rascunho' %}
                                     <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-success btn-sm">
                                         <i class="bi bi-share"></i> Disponibilizar
                                     </a>

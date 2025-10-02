@@ -277,7 +277,7 @@ class AnalyticsService:
             
             # Calcular média da turma (apenas alunos da mesma turma)
             turma_id = prova_turma_mais_recente.turma_id
-            media_turma = db.query(func.avg(Resultado.nota)).join(
+            media_turma = db.query(func.avg(Resultado.acertos)).join(
                 Aluno, Resultado.aluno_id == Aluno.idAluno
             ).join(AlunoTurma, AlunoTurma.aluno_id == Aluno.idAluno).filter(
                 AlunoTurma.turma_id == turma_id,
@@ -286,7 +286,7 @@ class AnalyticsService:
             ).scalar() or 0
             
             if resultado:
-                nota = float(resultado.nota) if resultado.nota else float(resultado.acertos)
+                nota = float(resultado.acertos)
                 status = resultado.situacao
                 url_prova = f"/aluno/prova/{prova.id}/consultar"
             else:

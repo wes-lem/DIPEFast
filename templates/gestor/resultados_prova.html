@@ -150,16 +150,16 @@
                                         <td>{{ resultado.aluno.usuario.nome }}</td>
                                         <td>{{ resultado.aluno.turma.nome if resultado.aluno.turma else 'N/A' }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
-                                                {{ "%.1f"|format(resultado.nota) }}
+                                            <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                {{ resultado.acertos }}
                                             </span>
                                         </td>
                                         <td>{{ resultado.acertos }}</td>
-                                        <td>{{ resultado.total_questoes }}</td>
+                                        <td>{{ resultado.situacao }}</td>
                                         <td>{{ resultado.data_resposta.strftime('%d/%m/%Y %H:%M') if resultado.data_resposta else 'N/A' }}</td>
                                         <td>
-                                            <span class="badge bg-{{ 'success' if resultado.nota >= 7 else 'warning' if resultado.nota >= 5 else 'danger' }}">
-                                                {{ 'Aprovado' if resultado.nota >= 7 else 'Recuperação' if resultado.nota >= 5 else 'Reprovado' }}
+                                            <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                {{ resultado.situacao }}
                                             </span>
                                         </td>
                                     </tr>

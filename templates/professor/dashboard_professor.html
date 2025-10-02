@@ -237,8 +237,8 @@
                                             <small class="text-muted">{{ prova.materia }}</small>
                                         </div>
                                         <span
-                                            class="badge bg-{{ 'success' if prova.status.value == 'ativa' else 'secondary' }}">
-                                            {{ prova.status.value }}
+                                            class="badge bg-{{ 'success' if prova.status == 'ativa' else 'secondary' }}">
+                                            {{ prova.status }}
                                         </span>
                                     </div>
                                     {% endfor %}

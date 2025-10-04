@@ -116,6 +116,14 @@
                                         </button>
                                     </form>
                                     {% endif %}
+                                    {% if turma.status.value == 'arquivada' %}
+                                    <form method="post" action="/professor/turmas/{{ turma.id }}/ativar" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm" 
+                                                onclick="return confirm('Tem certeza que deseja ativar esta turma?')">
+                                            <i class="bi bi-box-arrow-up text-light"></i> Ativar
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                     <form method="post" action="/professor/turmas/{{ turma.id }}/excluir" class="d-inline">
                                         <button type="submit" class="btn btn-danger btn-sm"
                                                 onclick="return confirm('Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita.')">

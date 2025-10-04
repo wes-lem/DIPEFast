@@ -81,13 +81,13 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Disponibilizar Prova: {{ prova.titulo }}</h2>
                     <a href="/professor/provas" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Voltar
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
                     </a>
                 </div>
 
                 <!-- Informações da Prova -->
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header bg-padrao text-light">
                         <h5 class="mb-0">Informações da Prova</h5>
                     </div>
                     <div class="card-body">
@@ -113,7 +113,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card">
-                                <div class="card-header">
+                                <div class="card-header bg-padrao text-light">
                                     <h5 class="mb-0">Selecionar Turmas</h5>
                                 </div>
                                 <div class="card-body">
@@ -125,11 +125,9 @@
                                             <input class="form-check-input" type="checkbox" 
                                                    name="turmas_selecionadas" value="{{ turma.id }}" 
                                                    id="turma_{{ turma.id }}">
-                                            <label class="form-check-label" for="turma_{{ turma.id }}">
-                                                <strong>{{ turma.nome }}</strong> - {{ turma.campus.nome }}
-                                                <br>
+                                            <label class="form-check-label ps-2 d-flex flex-column" for="turma_{{ turma.id }}">
+                                                <div><strong>{{ turma.nome }}</strong> - {{ turma.campus.nome }}</div>
                                                 <small class="text-muted">
-                                                    Código: {{ turma.codigo }} | 
                                                     Alunos: {{ turma.alunos_turma|length }}
                                                 </small>
                                             </label>
@@ -179,11 +177,11 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="/professor/provas" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Cancelar
+                    <div class="d-flex justify-content-end mt-4 gap-3">
+                        <a href="/professor/provas" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left text-light"></i> Cancelar
                         </a>
-                        <button type="submit" class="btn btn-success" 
+                        <button type="submit" class="btn btn-padrao text-light btn-lg" 
                                 {% if not turmas %}disabled{% endif %}>
                             <i class="bi bi-share"></i> Disponibilizar Prova
                         </button>

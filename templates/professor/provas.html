@@ -122,6 +122,11 @@
                                         <i class="bi bi-share c-black"></i> Disponibilizar
                                     </a>
                                     {% endif %}
+                                    {% if prova.status == 'arquivada' %}
+                                    <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-padrao text-light btn-sm">
+                                        <i class="bi bi-share c-black"></i> Ativar
+                                    </a>
+                                    {% endif %}
                                     <button type="button" class="btn btn-danger btn-sm" 
                                             onclick="excluirProva({{ prova.id }})">
                                         <i class="bi bi-trash text-light"></i> Excluir

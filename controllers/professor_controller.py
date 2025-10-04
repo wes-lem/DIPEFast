@@ -272,6 +272,20 @@ def arquivar_turma(
     TurmaDAO.archive(db, turma_id)
     return RedirectResponse(url="/professor/turmas", status_code=303)
 
+@router.post("/professor/turmas/{turma_id}/ativar")
+def ativar_turma(
+    turma_id: int,
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    """Ativa uma turma arquivada"""
+    turma = TurmaDAO.get_by_id(db, turma_id)
+    if not turma or turma.professor_id != professor_id:
+        raise HTTPException(status_code=404, detail="Turma não encontrada")
+    
+    TurmaDAO.activate(db, turma_id)
+    return RedirectResponse(url="/professor/turmas", status_code=303)
+
 @router.post("/professor/turmas/{turma_id}/excluir")
 def excluir_turma(
     turma_id: int,
@@ -446,18 +460,57 @@ def criar_prova(
 
 # === ROTAS DE NOTIFICAÇÕES ===
 
-@router.get("/professor/notificacoes")
+@router.get("/professor/notificacoes", name="notificacoes_professor")
 def notificacoes_professor(
     request: Request,
+    filtro: str = "todas",
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
-    """Lista notificações do professor"""
-    notificacoes = NotificacaoProfessorDAO.get_by_professor(db, professor_id)
+    """Lista notificações do professor com base em um filtro"""
+    if filtro == "nao_lidas":
+        notificacoes = NotificacaoProfessorDAO.get_unread_by_professor(db, professor_id)
+    elif filtro == "lidas":
+        notificacoes = NotificacaoProfessorDAO.get_read_by_professor(db, professor_id)
+    else:
+        notificacoes = NotificacaoProfessorDAO.get_by_professor(db, professor_id)
+    
+    # Pegamos a contagem de não lidas para o badge
+    nao_lidas_count = NotificacaoProfessorDAO.get_unread_count(db, professor_id)
+
     return templates.TemplateResponse(
         "professor/notificacoes.html",
-        {"request": request, "notificacoes": notificacoes}
+        {
+            "request": request, 
+            "notificacoes": notificacoes,
+            "nao_lidas_count": nao_lidas_count,
+            "filtro_ativo": filtro  # Para saber qual aba marcar como ativa
+        }
     )
+
+# Rota NOVA para excluir uma notificação
+@router.post("/professor/notificacoes/{notificacao_id}/excluir")
+def excluir_notificacao(
+    notificacao_id: int,
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao) # Garante que o prof está logado
+):
+    """Exclui uma notificação específica"""
+    # Adicionar lógica de permissão aqui se necessário
+    NotificacaoProfessorDAO.delete(db, notificacao_id)
+    return RedirectResponse(url="/professor/notificacoes", status_code=303)
+
+
+# Rota NOVA para limpar (excluir) notificações lidas
+@router.post("/professor/notificacoes/limpar-lidas")
+def limpar_notificacoes_lidas(
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    """Exclui todas as notificações já lidas do professor"""
+    NotificacaoProfessorDAO.delete_read_by_professor(db, professor_id)
+    return RedirectResponse(url="/professor/notificacoes", status_code=303)
+
 
 @router.post("/professor/notificacoes/{notificacao_id}/marcar-lida")
 def marcar_notificacao_lida(

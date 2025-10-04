@@ -42,6 +42,7 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .bg-branco { background-color: white; }
 .bg-fundo { background-color: #F9F8FA; }
 .bg-cinza { background-color: #F1F1F1; }
+.bg-black { background-color: #0B334C !important; }
 .bg-gradiente { background: linear-gradient(172.513deg, var(--green-200) 0%, var(--green-500) 100%); }
 .bg-pattern {
     background-image: url('../img/pattern.png');
@@ -388,4 +389,13 @@ textarea:not(:placeholder-shown) { background-color: white; }
     aspect-ratio: 1 / 1;
     width: 20px !important;
     height: 50px !important;
+}
+
+.nav-pills-padrao .nav-link.active, .nav-pills-success .show > .nav-link {
+    background-color: var(--green-500); 
+    color: var(--bs-white);
+}
+
+.nav-pills-padrao .nav-link {
+    color: var(--green-500);
 }

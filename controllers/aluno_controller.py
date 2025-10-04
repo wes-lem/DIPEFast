@@ -540,7 +540,7 @@ async def salvar_resposta_prova(
             resposta = Resposta(
                 aluno_id=aluno.idAluno,
                 questao_id=questao_id,
-                resposta_aluno=resposta_aluno
+                resposta=resposta_aluno
             )
             db.add(resposta)
             

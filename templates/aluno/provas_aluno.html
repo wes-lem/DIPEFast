@@ -21,7 +21,7 @@
                     <img src="/static/img/DipePreta.svg" width="40px" alt="">
                 </button>
             </div>
-                        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
                 <li class="sidebar-item">
                     <a href="/perfil" class="sidebar-link {% if request.url.path == '/perfil' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
@@ -29,39 +29,31 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/dados" class="sidebar-link {% if request.url.path == '/aluno/dados' %}active{% endif %}">
+                    <a href="/aluno/dados"
+                        class="sidebar-link {% if request.url.path == '/aluno/dados' %}active{% endif %}">
                         <i class="bi bi-person-fill"></i>
                         <span>Dados Pessoais</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/turmas" class="sidebar-link {% if request.url.path == '/aluno/turmas' or request.url.path.startswith('/aluno/turmas/') %}active{% endif %}">
+                    <a href="/aluno/turmas"
+                        class="sidebar-link {% if request.url.path == '/aluno/turmas' or request.url.path.startswith('/aluno/turmas/') %}active{% endif %}">
                         <i class="bi bi-people-fill"></i>
                         <span>Minhas Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/aluno/provas" class="sidebar-link {% if request.url.path == '/aluno/provas' or request.url.path.startswith('/aluno/provas/') %}active{% endif %}">
+                    <a href="/aluno/provas"
+                        class="sidebar-link {% if request.url.path == '/aluno/provas' or request.url.path.startswith('/aluno/provas/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-text-fill"></i>
                         <span>Provas das Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
+                    <a href="/aluno/formularios"
+                        class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
                     </a>
                 </li>
                 <!-- Botão Sair -->
@@ -94,33 +86,36 @@
                         {% for prova_turma in provas_ativas %}
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100 border-padrao">
-                                <div class="card-header bg-padrao text-white">
+                                <div class="card-header bg-padrao text-white d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">{{ prova_turma.prova.titulo }}</h6>
+                                    {% if prova_turma.resultado_aluno %}
+                                    <small class="c-padrao d-block bg-white rounded-4 fw-bold p-1 px-2">
+                                        Acertos: {{ prova_turma.resultado_aluno.acertos }}
+                                    </small>
+                                    {% endif %}
                                 </div>
                                 <div class="card-body">
                                     <p class="card-text">
                                         <strong>Turma:</strong> {{ prova_turma.turma.nome }}<br>
                                         <strong>Professor:</strong> {{ prova_turma.professor.nome }}<br>
                                         <strong>Matéria:</strong> {{ prova_turma.prova.materia }}<br>
-                                        <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M') }}<br>
-                                        <strong>Expira em:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') }}
+                                        <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M')
+                                        }}<br>
+                                        <strong>Expira em:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y
+                                        %H:%M') }}
                                     </p>
                                 </div>
                                 <div class="card-footer">
                                     {% if prova_turma.aluno_ja_respondeu %}
-                                        <a href="/aluno/prova/{{ prova_turma.prova.id }}/consultar" class="btn btn-info w-100">
-                                            <i class="bi bi-eye"></i> Consultar Respostas
-                                        </a>
-                                        {% if prova_turma.resultado_aluno %}
-                                        <small class="text-muted d-block mt-2">
-                                            Acertos: {{ prova_turma.resultado_aluno.acertos }} 
-                                            ({{ prova_turma.resultado_aluno.situacao }})
-                                        </small>
-                                        {% endif %}
+                                    <a href="/aluno/prova/{{ prova_turma.prova.id }}/consultar"
+                                        class="btn btn-info w-100">
+                                        <i class="bi bi-eye"></i> Consultar Respostas
+                                    </a>
                                     {% else %}
-                                        <a href="/aluno/prova/{{ prova_turma.prova.id }}/responder" class="btn btn-success w-100">
-                                            <i class="bi bi-play-fill"></i> Responder Prova
-                                        </a>
+                                    <a href="/aluno/prova/{{ prova_turma.prova.id }}/responder"
+                                        class="btn btn-success w-100">
+                                        <i class="bi bi-play-fill"></i> Responder Prova
+                                    </a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -148,11 +143,13 @@
                                         <strong>Turma:</strong> {{ prova_turma.turma.nome }}<br>
                                         <strong>Professor:</strong> {{ prova_turma.professor.nome }}<br>
                                         <strong>Matéria:</strong> {{ prova_turma.prova.materia }}<br>
-                                        <strong>Expirou em:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') }}
+                                        <strong>Expirou em:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y
+                                        %H:%M') }}
                                     </p>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="/aluno/prova/{{ prova_turma.prova.id }}/consultar" class="btn btn-outline-secondary w-100">
+                                    <a href="/aluno/prova/{{ prova_turma.prova.id }}/consultar"
+                                        class="btn btn-outline-secondary w-100">
                                         <i class="bi bi-eye"></i> Consultar Prova
                                     </a>
                                 </div>
@@ -165,12 +162,12 @@
 
                 <!-- Mensagem quando não há provas -->
                 {% if not provas_ativas and not provas_expiradas %}
-                <div class="text-center py-5">
-                    <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+                <div class="text-center py-5 bg-branco borda rounded-3 mb-3">
+                    <i class="bi bi-file-earmark-text display-3 c-padrao"></i>
                     <h3 class="text-muted mt-3">Nenhuma prova disponível</h3>
                     <p class="text-muted">Você não tem provas ativas ou expiradas em suas turmas.</p>
-                    <a href="/aluno/turmas" class="btn btn-primary">
-                        <i class="bi bi-people"></i> Ver Minhas Turmas
+                    <a href="/aluno/turmas" class="btn btn-black text-light btn-lg mt-2">
+                        <i class="bi bi-people c-padrao"></i> Ver Minhas Turmas
                     </a>
                 </div>
                 {% endif %}
@@ -185,7 +182,7 @@
                             <div class="col-md-6">
                                 <h6><i class="bi bi-play-circle-fill text-success"></i> Provas Ativas</h6>
                                 <p>Provas que você pode responder agora. Fique atento ao prazo de expiração!</p>
-                                
+
                                 <h6><i class="bi bi-clock-history text-muted"></i> Provas Expiradas</h6>
                                 <p>Provas que já expiraram. Você pode consultá-las, mas não pode mais responder.</p>
                             </div>

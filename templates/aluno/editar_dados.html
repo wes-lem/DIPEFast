@@ -49,21 +49,9 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
                     </a>
                 </li>
                 <!-- Botão Sair -->
@@ -82,19 +70,13 @@
                     <span>Voltar ao topo</span>
                 </a>
             </div>
-            <div class="sidebar-footer">
-                <a href="#topo" class="sidebar-link">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>Voltar ao topo</span>
-                </a>
-            </div>
         </aside>
 
         <div class="main p-4 bg-pattern">
-            <div class="row px-2">
+            <div class="row">
                 <div class="col-12">
                     <div class="col-12 bg-padrao rounded-2 rounded-bottom-0">
-                        <h4 class="text-light p-2">Editar seus dados pessoais</h4>
+                        <h6 class="text-light p-2 m-0">Editar seus dados pessoais</h6>
                     </div>
                     <div class="bg-branco borda rounded-4 rounded-top-0 p-4">
                         <form action="/aluno/dados" method="post" enctype="multipart/form-data">

@@ -41,18 +41,6 @@
                         <span>Formulários</span>
                     </a>
                 </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
-                    </a>
-                </li>
                 <div class="sidebar-item mt-3">
                     <form action="/sair" method="post" style="display: inline;">
                         <button type="submit" class="sidebar-link w-100 text-start">

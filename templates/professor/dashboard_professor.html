@@ -171,11 +171,11 @@
                 <!-- Turmas -->
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-padrao text-light">
                                 <h5 class="mb-0">Suas Turmas</h5>
-                                <a href="/professor/turmas/criar" class="btn btn-padrao btn-sm text-light">
-                                    <i class="bi bi-plus-circle text-light"></i> Nova Turma
+                                <a href="/professor/turmas/criar" class="btn btn-light btn-sm c-padrao">
+                                    <i class="bi bi-plus-circle c-padrao"></i> Nova Turma
                                 </a>
                             </div>
                             <div class="card-body">
@@ -203,8 +203,8 @@
                                                 </td>
                                                 <td>
                                                     <a href="/professor/turmas/{{ turma_data[0].id }}"
-                                                        class="btn btn-sm btn-black">
-                                                        <i class="bi bi-eye text-light"></i>
+                                                        class="btn btn-sm btn-black text-light">
+                                                        <i class="bi bi-eye c-padrao"></i> Ver
                                                     </a>
                                                 </td>
                                             </tr>
@@ -223,8 +223,8 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">
+                        <div class="card h-100">
+                            <div class="card-header bg-padrao text-light">
                                 <h5 class="mb-0">Provas Recentes</h5>
                             </div>
                             <div class="card-body">
@@ -237,7 +237,7 @@
                                             <small class="text-muted">{{ prova.materia }}</small>
                                         </div>
                                         <span
-                                            class="badge bg-{{ 'success' if prova.status == 'ativa' else 'secondary' }}">
+                                            class="badge bg-{{ 'padrao' if prova.status == 'ativa' else 'secondary' }}">
                                             {{ prova.status }}
                                         </span>
                                     </div>

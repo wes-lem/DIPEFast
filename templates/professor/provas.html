@@ -78,7 +78,7 @@
         <div class="main bg-pattern">
 
             <div class="content-wrapper p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2>Suas Provas</h2>
                     <a href="/professor/provas/criar" class="btn btn-padrao text-light">
                         <i class="bi bi-plus-circle text-light"></i> Nova Prova
@@ -90,12 +90,15 @@
                     {% for prova in provas %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="card-title m-0">{{ prova.titulo }}</h5>
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title">{{ prova.titulo }}</h5>
+                                
                                 <p class="card-text">
                                     <strong>Matéria:</strong> {{ prova.materia }}<br>
                                     <strong>Status:</strong> 
-                                    <span class="badge bg-{{ 'success' if prova.status == 'ativa' else 'warning' if prova.status == 'rascunho' else 'secondary' }}">
+                                    <span class="badge bg-{{ 'success' if prova.status == 'ATIVA' else 'warning' if prova.status == 'rascunho' else 'secondary' }}">
                                         {{ prova.status }}
                                     </span><br>
                                     <strong>Alunos que responderam:</strong> 
@@ -109,14 +112,14 @@
                             <div class="card-footer">
                                 <div class="w-100">
                                     <a href="/professor/prova/{{ prova.id }}/visualizar" class="btn btn-black btn-sm">
-                                        <i class="bi bi-eye text-light"></i> Ver
+                                        <i class="bi bi-eye c-padrao"></i> Ver
                                     </a>
                                     <a href="/professor/prova/{{ prova.id }}/editar" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>
                                     {% if prova.status == 'rascunho' %}
-                                    <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-success btn-sm">
-                                        <i class="bi bi-share"></i> Disponibilizar
+                                    <a href="/professor/prova/{{ prova.id }}/disponibilizar" class="btn btn-padrao text-light btn-sm">
+                                        <i class="bi bi-share c-black"></i> Disponibilizar
                                     </a>
                                     {% endif %}
                                     <button type="button" class="btn btn-danger btn-sm" 

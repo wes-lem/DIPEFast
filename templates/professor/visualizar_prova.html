@@ -225,7 +225,8 @@
                                         <td>{{ resultado.situacao }}</td>
                                         <td>
                                             <span class="badge 
-                                                {% if resultado.situacao == 'aprovado' %}bg-success
+                                                {% if resultado.situacao == 'Suficiente' %}bg-success
+                                                {% elif resultado.situacao == 'Regular' %}bg-warning
                                                 {% else %}bg-danger{% endif %}">
                                                 {{ resultado.situacao.title() }}
                                             </span>

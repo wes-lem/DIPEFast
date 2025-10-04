@@ -106,7 +106,7 @@
                             <div class="card-footer">
                                 <div class="w-100">
                                     <a href="/professor/turmas/{{ turma.id }}" class="btn btn-black btn-sm">
-                                        <i class="bi bi-eye text-light"></i> Gerenciar
+                                        <i class="bi bi-eye c-padrao"></i> Gerenciar
                                     </a>
                                     {% if turma.status.value == 'ativa' %}
                                     <form method="post" action="/professor/turmas/{{ turma.id }}/arquivar" class="d-inline">
@@ -119,7 +119,7 @@
                                     <form method="post" action="/professor/turmas/{{ turma.id }}/excluir" class="d-inline">
                                         <button type="submit" class="btn btn-danger btn-sm"
                                                 onclick="return confirm('Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita.')">
-                                            <i class="bi bi-trash"></i> Excluir
+                                            <i class="bi bi-trash text-light"></i> Excluir
                                         </button>
                                     </form>
                                 </div>

@@ -47,21 +47,9 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
                     </a>
                 </li>
                 <!-- Botão Sair -->
@@ -82,9 +70,9 @@
             </div>
         </aside>
 
-        <div class="main">
+        <div class="main bg-pattern p-4">
 
-            <div class="content-wrapper p-4">
+            <div class="content-wrapper">
                 <!-- Alertas de Sucesso/Erro -->
                 {% if sucesso %}
                 <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertSucesso">
@@ -100,7 +88,7 @@
                 </div>
                 {% endif %}
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2>Suas Turmas</h2>
                     <button type="button" class="btn btn-padrao text-light" onclick="abrirModalManual()">
                         <i class="bi bi-plus text-light"></i> Entrar em Turma
@@ -137,12 +125,12 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-people display-1 text-muted"></i>
+                <div class="text-center py-5 bg-branco borda rounded-3">
+                    <i class="bi bi-people display-3 c-padrao"></i>
                     <h3 class="text-muted mt-3">Você não está em nenhuma turma</h3>
                     <p class="text-muted">Entre em uma turma usando o código fornecido pelo seu professor.</p>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="abrirModalManual()">
-                        <i class="bi bi-plus-circle"></i> Entrar em Turma
+                    <button type="button" class="btn btn-padrao btn-lg text-light mt-2" onclick="abrirModalManual()">
+                        <i class="bi bi-plus-circle text-light"></i> Entrar em Turma
                     </button>
                 </div>
                 {% endif %}

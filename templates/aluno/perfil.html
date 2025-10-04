@@ -49,21 +49,9 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/provas" class="sidebar-link {% if request.url.path == '/provas' or request.url.path.startswith('/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                        <span>Provas Diagnósticas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
                     <a href="/aluno/formularios" class="sidebar-link {% if request.url.path == '/formularios' or request.url.path.startswith('/formularios/') %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/aluno/dashboard/{{ aluno.idAluno if aluno else id }}" class="sidebar-link {% if request.url.path.startswith('/aluno/dashboard/') %}active{% endif %}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Resultados</span>
                     </a>
                 </li>
                 <!-- Botão Sair -->
@@ -97,7 +85,7 @@
                         <img src="static/img/welcome.svg" alt="" class="h-100">
                     </div>
                 </div>
-                <div class="col-4 pe-0">
+                <div class="col-4">
                     <div class="borda rounded-3 bg-branco h-100">
                         <div class="bg-padrao rounded-3 p-2 px-3 rounded-bottom-0">
                             <h6 class="m-0 text-light fw-semi">Seu Perfil</h6>
@@ -133,8 +121,8 @@
                 <div class="col-8 rounded-4 mt-2 p-0">
                     <div class="my-2 d-flex align-items-center justify-content-between">
                         <h5 class="fw-bold wrapper">Provas das Minhas Turmas:</h5>
-                        <a href="/aluno/provas" class="btn btn-black btn-sm">
-                            <i class="bi bi-eye text-light"></i> Ver Todas
+                        <a href="/aluno/provas" class="btn btn-black btn-sm text-light">
+                            <i class="bi bi-eye c-padrao"></i> Ver Todas
                         </a>
                     </div>
 
@@ -193,11 +181,11 @@
                     {% else %}
                     <!-- Mensagem quando não há provas -->
                     <div class="bg-branco borda rounded-4 py-5 text-center">
-                        <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+                        <i class="bi bi-file-earmark-text display-3 c-padrao"></i>
                         <h4 class="text-muted mt-3">Nenhuma prova disponível</h4>
                         <p class="text-muted">Você não está matriculado em nenhuma turma ou não há provas disponíveis.</p>
-                        <a href="/aluno/turmas" class="btn btn-primary">
-                            <i class="bi bi-people"></i> Ver Minhas Turmas
+                        <a href="/aluno/turmas" class="btn btn-black text-light mt-2">
+                            <i class="bi bi-people c-padrao"></i> Ver Minhas Turmas
                         </a>
                     </div>
                     {% endif %}
@@ -220,7 +208,7 @@
                     </div>
                 </div>
 
-                <div class="col-4 pe-0 mt-2">
+                <div class="col-4 mt-2">
                     <div class="borda rounded-3 bg-branco h-100">
                         <div class="bg-padrao rounded-3 p-2 px-3 d-flex justify-content-between align-self-center rounded-bottom-0">
                             <h6 class="m-0 text-light h-100 align-self-center fw-semi">Notificações</h6>

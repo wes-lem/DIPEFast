@@ -94,7 +94,7 @@ async def enviar_respostas(
             db,
             aluno_id=aluno.idAluno,
             questao_id=questao_id,
-            resposta_aluno=resposta_aluno.strip().lower()
+            resposta=resposta_aluno.strip().lower()
         )
 
         if resposta_aluno.strip().lower() == questao.resposta_correta.strip().lower():
@@ -173,7 +173,7 @@ def resultado_detalhado_prova(
     ).all()
     
     # Cria um dicionário de respostas do aluno para fácil acesso
-    respostas_dict = {resposta.questao_id: resposta.resposta_aluno for resposta in respostas_aluno}
+    respostas_dict = {resposta.questao_id: resposta.resposta for resposta in respostas_aluno}
 
     # Buscar resultados do aluno nas matérias fixas
     materias_fixas = ["Português", "Matemática", "Ciências"]
@@ -233,7 +233,7 @@ def resultado_provas(request: Request, aluno_id: int, db: Session = Depends(get_
         questao = db.query(Questao).filter(Questao.id == resposta.questao_id).first()
         if questao:
             total_questoes[questao.materia] += 1
-            if resposta.resposta_aluno == questao.resposta_correta:
+            if resposta.resposta == questao.resposta_correta:
                 pontuacao[questao.materia] += 1
 
     situacoes = {}

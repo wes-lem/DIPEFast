@@ -50,7 +50,7 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 }
 
 .borda { border: #D9D9D9 solid 1px; }
-.borda-padrao { border: var(--green-500) solid 2px; }
+.borda-padrao { border: var(--green-500) solid 1px; }
 .rounded { border-radius: 8px; }
 
 /* Botões */
@@ -398,4 +398,13 @@ textarea:not(:placeholder-shown) { background-color: white; }
 
 .nav-pills-padrao .nav-link {
     color: var(--green-500);
+}
+
+.nav-tabs .nav-link:not(.active) {
+    color: var(--green-500) !important;
+}
+
+.nav-tabs .nav-link:not(.active):hover {
+    color: #16a34a; 
+    border-color: #e9ecef; 
 }

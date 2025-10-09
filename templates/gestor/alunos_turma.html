@@ -21,9 +21,10 @@
                     <img src="/static/img/DipePreta.svg" width="40px" alt="">
                 </button>
             </div>
-                        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                    <a href="/gestor/dashboard"
+                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
@@ -35,27 +36,38 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                    <a href="/gestor/professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
                         <i class="bi bi-person-badge-fill"></i>
                         <span>Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                    <a href="/gestor/turmas"
+                        class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
                         <i class="bi bi-collection-fill"></i>
                         <span>Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                    <a href="/gestor/provas-professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                    <a href="/gestor/formularios"
+                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios"
+                        class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -124,7 +136,8 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <h5 class="card-title text-success">{{ turma.aluno_turmas|selectattr('status.value', 'equalto', 'ativo')|list|length }}</h5>
+                                <h5 class="card-title text-success">{{ turma.aluno_turmas|selectattr('status.value',
+                                    'equalto', 'ativo')|list|length }}</h5>
                                 <p class="card-text">Alunos Ativos</p>
                             </div>
                         </div>
@@ -132,7 +145,8 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <h5 class="card-title text-secondary">{{ turma.aluno_turmas|selectattr('status.value', 'equalto', 'removido')|list|length }}</h5>
+                                <h5 class="card-title text-secondary">{{ turma.aluno_turmas|selectattr('status.value',
+                                    'equalto', 'removido')|list|length }}</h5>
                                 <p class="card-text">Alunos Removidos</p>
                             </div>
                         </div>
@@ -155,8 +169,8 @@
                         <div class="card h-100">
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
-                                    <img src="{{ aluno_turma.aluno.imagem or '/static/img/user.jpg' }}" 
-                                         alt="Aluno" class="rounded-circle me-3" width="50" height="50">
+                                    <img src="{{ aluno_turma.aluno.imagem or '/static/img/user.jpg' }}" alt="Aluno"
+                                        class="rounded-circle me-3" width="50" height="50">
                                     <div>
                                         <h6 class="card-title mb-0">{{ aluno_turma.aluno.nome }}</h6>
                                         <small class="text-muted">{{ aluno_turma.aluno.curso }}</small>
@@ -164,30 +178,31 @@
                                 </div>
                                 <p class="card-text">
                                     <strong>Email:</strong> {{ aluno_turma.aluno.usuario.email }}<br>
-                                    <strong>Matriculado em:</strong> {{ aluno_turma.data_entrada.strftime('%d/%m/%Y %H:%M') }}<br>
-                                    <strong>Status:</strong> 
-                                    <span class="badge {% if aluno_turma.status.value == 'ativo' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    <strong>Matriculado em:</strong> {{ aluno_turma.data_entrada.strftime('%d/%m/%Y
+                                    %H:%M') }}<br>
+                                    <strong>Status:</strong>
+                                    <span
+                                        class="badge {% if aluno_turma.status.value == 'ativo' %}bg-success{% else %}bg-secondary{% endif %}">
                                         {{ aluno_turma.status.value.title() }}
                                     </span>
                                 </p>
                             </div>
                             <div class="card-footer">
                                 <div class="w-100">
-                                    <button type="button" class="btn btn-dark btn-sm" onclick="verPerfilAluno({{ aluno_turma.aluno.idAluno }})">
+                                    <button type="button" class="btn btn-dark btn-sm"
+                                        onclick="verPerfilAluno({{ aluno_turma.aluno.idAluno }})">
                                         <i class="bi bi-person text-light"></i> Perfil
                                     </button>
                                     {% if aluno_turma.status.value == 'ativo' %}
-                                    <button type="button" class="btn btn-danger btn-sm" 
-                                            data-aluno-id="{{ aluno_turma.aluno.idAluno }}" 
-                                            data-aluno-nome="{{ aluno_turma.aluno.nome }}"
-                                            onclick="confirmarRemocao(this)">
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        data-aluno-id="{{ aluno_turma.aluno.idAluno }}"
+                                        data-aluno-nome="{{ aluno_turma.aluno.nome }}" onclick="confirmarRemocao(this)">
                                         <i class="bi bi-person-dash text-light"></i> Remover
                                     </button>
                                     {% else %}
-                                    <button type="button" class="btn btn-success btn-sm" 
-                                            data-aluno-id="{{ aluno_turma.aluno.idAluno }}" 
-                                            data-aluno-nome="{{ aluno_turma.aluno.nome }}"
-                                            onclick="confirmarAdicao(this)">
+                                    <button type="button" class="btn btn-success btn-sm"
+                                        data-aluno-id="{{ aluno_turma.aluno.idAluno }}"
+                                        data-aluno-nome="{{ aluno_turma.aluno.nome }}" onclick="confirmarAdicao(this)">
                                         <i class="bi bi-person-plus text-light"></i> Adicionar
                                     </button>
                                     {% endif %}
@@ -215,32 +230,32 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
-    
+
     <script>
         // Variáveis do template
         const turmaId = {{ turma.id }};
         const turmaCodigo = '{{ turma.codigo }}';
-        
+
         function copiarCodigo() {
-            navigator.clipboard.writeText(turmaCodigo).then(function() {
+            navigator.clipboard.writeText(turmaCodigo).then(function () {
                 alert('Código da turma copiado para a área de transferência!');
             });
         }
-        
+
         function verPerfilAluno(alunoId) {
             window.location.href = '/alunos/' + alunoId;
         }
-        
+
         function confirmarRemocao(button) {
             const alunoId = button.getAttribute('data-aluno-id');
             const alunoNome = button.getAttribute('data-aluno-nome');
-            
+
             if (confirm('Tem certeza que deseja remover o aluno "' + alunoNome + '" da turma?')) {
                 // Criar formulário para enviar requisição POST
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/gestor/turma/' + turmaId + '/remover-aluno/' + alunoId;
-                
+
                 // Adicionar token CSRF se necessário
                 const csrfToken = document.querySelector('meta[name="csrf-token"]');
                 if (csrfToken) {
@@ -250,22 +265,22 @@
                     csrfInput.value = csrfToken.getAttribute('content');
                     form.appendChild(csrfInput);
                 }
-                
+
                 document.body.appendChild(form);
                 form.submit();
             }
         }
-        
+
         function confirmarAdicao(button) {
             const alunoId = button.getAttribute('data-aluno-id');
             const alunoNome = button.getAttribute('data-aluno-nome');
-            
+
             if (confirm('Tem certeza que deseja adicionar o aluno "' + alunoNome + '" de volta à turma?')) {
                 // Criar formulário para enviar requisição POST
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/gestor/turma/' + turmaId + '/adicionar-aluno/' + alunoId;
-                
+
                 // Adicionar token CSRF se necessário
                 const csrfToken = document.querySelector('meta[name="csrf-token"]');
                 if (csrfToken) {
@@ -275,7 +290,7 @@
                     csrfInput.value = csrfToken.getAttribute('content');
                     form.appendChild(csrfInput);
                 }
-                
+
                 document.body.appendChild(form);
                 form.submit();
             }

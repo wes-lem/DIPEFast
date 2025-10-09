@@ -60,6 +60,12 @@
                         <span>Formulários</span>
                     </a>
                 </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
+                    </a>
+                </li>
                 <div class="sidebar-item mt-3">
                     <form action="/sair" method="post" style="display: inline;">
                         <button type="submit" class="sidebar-link w-100 text-start">
@@ -83,9 +89,7 @@
         <div class="main p-4 bg-pattern">
             <div class="row px-2">
                 <div class="col-12 p-0 mb-3 d-flex justify-content-end">
-                    <a href="/alunos/cadastrar" class="btn btn-padrao-dark text-light p-2 fs-6 m-0 rounded-0 rounded-start-2">Cadastrar Aluno</a>
-                    <a href="/alunos/cadastrar" class="btn btn-padrao text-light rounded-0 rounded-end-2 d-flex align-items-center"><i
-                    class="bi bi-plus-lg"></i></a>
+                    <a href="/alunos/cadastrar" class="btn btn-padrao text-light"><i class="bi bi-plus-circle text-light"></i> Cadastrar Aluno</a>
                 </div>
                 <div class="col-12 p-0">
                     <div class="accordion" id="accordionFiltros">

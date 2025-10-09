@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +12,7 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body id="topo" class="bg-fundo">
     <div class="wrapper">
         <aside id="sidebar" class="shadow-lg">
@@ -22,27 +24,45 @@
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link">
+                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/alunos" class="sidebar-link">
-                        <i class="bi bi-person-fill"></i>
+                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
                         <span>Alunos</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas" class="sidebar-link">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Provas</span>
+                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link active">
+                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                        <i class="bi bi-collection-fill"></i>
+                        <span>Turmas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                        <span>Provas dos Professores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %} active">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -63,42 +83,49 @@
         </aside>
 
         <div class="main p-4 bg-pattern">
-            <div class="col-12 bg-padrao rounded-2 p-2 px-3 mb-2 borda">
-                <h4 class="text-light">Formulário: {{ formulario.titulo }}</h4>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2>Formulário: {{ formulario.titulo }}</h2>
+                <a href="/gestor/formularios" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left text-light"></i> Voltar
+                </a>
             </div>
-            <div class="container-fluid bg-branco rounded-2 borda p-4">
-                <h5 class="mb-4">Respostas:</h5>
-                <hr>
 
-                {% if alunos %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID Aluno</th>
-                                <th>Nome</th>
-                                <th>Curso</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for aluno in alunos %}
-                            <tr>
-                                <td>{{ aluno.idAluno }}</td>
-                                <td>{{ aluno.nome }}</td>
-                                <td>{{ aluno.curso }}</td>
-                                <td>
-                                    <a href="/gestor/formularios/{{ formulario.id }}/respostas/{{ aluno.idAluno }}" class="btn btn-sm btn-primary"><i class="bi bi-journal-text text-light"></i> Ver Respostas</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="card">
+                <div class="card-header bg-padrao text-light">
+                    <h5 class="">Respostas</h5>
                 </div>
-                {% else %}
-                <p>Nenhum aluno respondeu a este formulário ainda.</p>
-                {% endif %}
-                <a href="/gestor/formularios" class="btn btn-secondary w-50 mt-3"><i class="bi bi-arrow-left text-light"></i> Voltar aos Formulários</a>
+                <div class="card-body">
+                    {% if alunos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID Aluno</th>
+                                    <th>Nome</th>
+                                    <th>Curso</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for aluno in alunos %}
+                                <tr>
+                                    <td>{{ aluno.idAluno }}</td>
+                                    <td>{{ aluno.nome }}</td>
+                                    <td>{{ aluno.curso }}</td>
+                                    <td>
+                                        <a href="/gestor/formularios/{{ formulario.id }}/respostas/{{ aluno.idAluno }}"
+                                            class="btn btn-sm btn-black"><i class="bi bi-journal-text c-padrao"></i>
+                                            Ver Respostas</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p>Nenhum aluno respondeu a este formulário ainda.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -107,4 +134,5 @@
         crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
 </body>
-</html> 
+
+</html>

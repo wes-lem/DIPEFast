@@ -64,6 +64,12 @@
             <span>Formulários</span>
           </a>
         </li>
+        <li class="sidebar-item mt-3">
+            <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                <i class="bi bi-person-fill-gear"></i>
+                <span>Gerenciar Usuários</span>
+            </a>
+        </li>
         <div class="sidebar-item mt-3">
           <form action="/sair" method="post" style="display: inline;">
             <button type="submit" class="sidebar-link w-100 text-start">
@@ -87,9 +93,8 @@
     <div class="main p-4 bg-pattern">
       <div class="row px-2">
         <div class="col-12 p-0 mb-3 d-flex justify-content-end">
-          <a href="/gestor/formularios/cadastrar"
-            class="btn btn-padrao text-light p-2 fs-6 m-0 rounded-2"><i
-            class="bi bi-plus-circle text-light"></i> Novo Formulário</a>
+          <a href="/gestor/formularios/cadastrar" class="btn btn-padrao text-light p-2 fs-6 m-0 rounded-2"><i
+              class="bi bi-plus-circle text-light"></i> Novo Formulário</a>
         </div>
         <div class="col-12 bg-padrao p-2 px-3 rounded-2 rounded-bottom-0 borda border-bottom-0">
           <h4 class="text-light">Formulários Cadastrados</h4>
@@ -115,13 +120,13 @@
                   <td>{{ form.data_criacao }}</td>
                   <td>{{ form.total_respondedores }}</td>
                   <td>
-                    <a href="/gestor/formularios/{{ form.id }}/respostas" class="btn btn-sm btn-info me-2"><i
-                        class="bi bi-eye"></i> Ver Respostas</a>
+                    <a href="/gestor/formularios/{{ form.id }}/respostas" class="btn btn-sm btn-black me-2"><i
+                        class="bi bi-eye c-padrao"></i> Ver Respostas</a>
 
                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                       data-bs-target="#deleteConfirmationModal"
                       data-form-action="/gestor/formularios/{{ form.id }}/deletar">
-                      <i class="bi bi-trash"></i>
+                      <i class="bi bi-x text-light"></i>
                       Deletar
                     </button>
                   </td>
@@ -141,7 +146,7 @@
   <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header bg-padrao text-light">
           <h5 class="modal-title" id="modalLabel">Confirmar Exclusão</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>

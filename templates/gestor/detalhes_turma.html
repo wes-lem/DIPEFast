@@ -58,6 +58,12 @@
                         <span>Formulários</span>
                     </a>
                 </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
+                    </a>
+                </li>
                 <div class="sidebar-item mt-3">
                     <form action="/sair" method="post" style="display: inline;">
                         <button type="submit" class="sidebar-link w-100 text-start">
@@ -142,13 +148,13 @@
                             <div class="card-body">
                                 <div>
                                     <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-black">
-                                        <i class="bi bi-people text-light"></i> Ver Alunos
+                                        <i class="bi bi-people c-padrao"></i> Ver Alunos
                                     </a>
                                     <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-black">
-                                        <i class="bi bi-file-text text-light"></i> Ver Provas
+                                        <i class="bi bi-file-text c-padrao"></i> Ver Provas
                                     </a>
                                     <button type="button" class="btn btn-info" onclick="copiarCodigo()">
-                                        <i class="bi bi-clipboard text-light"></i> Copiar Código
+                                        <i class="bi bi-clipboard"></i> Copiar Código
                                     </button>
                                 </div>
                             </div>
@@ -197,14 +203,14 @@
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        <a href="/alunos/{{ aluno_turma.aluno.idAluno }}" class="btn btn-sm btn-dark">
-                                                            <i class="bi bi-eye text-light"></i> Ver
+                                                        <a href="/alunos/{{ aluno_turma.aluno.idAluno }}" class="btn btn-sm btn-black">
+                                                            <i class="bi bi-eye c-padrao"></i> Ver
                                                         </a>
                                                         <button type="button" class="btn btn-sm btn-danger" 
                                                                 data-aluno-id="{{ aluno_turma.aluno.idAluno }}" 
                                                                 data-aluno-nome="{{ aluno_turma.aluno.nome }}"
                                                                 onclick="confirmarRemocao(this)">
-                                                            <i class="bi bi-person-dash text-light"></i> Remover
+                                                            <i class="bi bi-x text-light"></i> Remover
                                                         </button>
                                                     </div>
                                                 </td>
@@ -254,8 +260,8 @@
                                                     <strong>Início:</strong> {{ prova_turma.data_inicio.strftime('%d/%m/%Y %H:%M') if prova_turma.data_inicio else 'N/A' }}<br>
                                                     <strong>Fim:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y %H:%M') if prova_turma.data_expiracao else 'N/A' }}
                                                 </p>
-                                                <a href="/gestor/prova/{{ prova_turma.prova.id }}/detalhes" class="btn btn-black btn-sm">
-                                                    <i class="bi bi-eye text-light"></i> Ver Prova
+                                                <a href="/gestor/prova/{{ prova_turma.prova.id }}/detalhes" class="btn btn-black btn-sm mt-2">
+                                                    <i class="bi bi-eye c-padrao"></i> Ver Prova
                                                 </a>
                                             </div>
                                         </div>

@@ -59,6 +59,12 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
                     <a href="/gestor/relatorios" class="sidebar-link {% if request.url.path == '/gestor/relatorios' %}active{% endif %}">
                         <i class="bi bi-graph-up"></i>
                         <span>Relatórios</span>

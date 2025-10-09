@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,11 +17,13 @@
             color: white;
             font-weight: bold;
         }
+
         .response-item {
             margin-bottom: 10px;
         }
     </style>
 </head>
+
 <body id="topo" class="bg-fundo">
     <div class="wrapper">
         <aside id="sidebar" class="shadow-lg">
@@ -30,9 +33,10 @@
                 </button>
                 <div class="sidebar-logo me-4"></div>
             </div>
-                        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                    <a href="/gestor/dashboard"
+                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
@@ -44,27 +48,38 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                    <a href="/gestor/professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
                         <i class="bi bi-person-badge-fill"></i>
                         <span>Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                    <a href="/gestor/turmas"
+                        class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
                         <i class="bi bi-collection-fill"></i>
                         <span>Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                    <a href="/gestor/provas-professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                    <a href="/gestor/formularios"
+                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %} active">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios"
+                        class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">
@@ -83,59 +98,36 @@
                 </a>
             </div>
 
-            
-            
+
+
         </aside>
 
         <div class="main p-4 bg-pattern">
-            <div class="container-fluid bg-branco rounded-4 p-4 borda">
-                <h2 class="mb-4">Respostas: "{{ formulario.titulo }}"</h2>
-                <h4 class="mb-4 text-muted">Aluno: {{ aluno.nome }} (ID: {{ aluno.idAluno }})</h4>
-                <hr>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2>Formulário: {{ formulario.titulo }}</h2>
+                <a href="/gestor/formularios/{{ formulario.id }}/respostas" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left text-light"></i> Voltar
+                </a>
+            </div>
 
-                {% if respostas %}
-                    <div class="row">
+            <div class="card">
+                <div class="card-header bg-padrao text-light">
+                    <h5 class="">Respostas de: {{ aluno.nome }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% if respostas %}
                         {% for resposta_item in respostas %}
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100">
-                                <div class="card-header card-header-custom">{{ loop.index }}. {{ resposta_item.enunciado }}</div>
-                                <div class="card-body">
-                                    {% if resposta_item.tipo_pergunta == 'multipla_escolha' %}
-                                        <p class="card-text">
-                                            <strong>Respostas Selecionadas:</strong>
-                                            {% if resposta_item.resposta_dada is iterable and resposta_item.resposta_dada is not string %}
-                                                <ul>
-                                                {% for r in resposta_item.resposta_dada %}
-                                                    <li>{{ r }}</li>
-                                                {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                {{ resposta_item.resposta_dada }} (Formato inesperado para múltipla escolha)
-                                            {% endif %}
-                                        </p>
-                                    {% else %}
-                                        <p class="card-text">
-                                            <strong>Resposta:</strong> {{ resposta_item.resposta_dada }}
-                                        </p>
-                                    {% endif %}
-
-                                    {% if resposta_item.opcoes_pergunta %}
-                                        <small class="text-muted">Opções originais:
-                                            {% for opcao in resposta_item.opcoes_pergunta %}
-                                                {{ opcao }}{% if not loop.last %}, {% endif %}
-                                            {% endfor %}
-                                        </small>
-                                    {% endif %}
-                                </div>
+                        <li class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">{{ loop.index }}. {{ resposta_item.enunciado }}</h6>
                             </div>
-                        </div>
+                            <p class="mb-1 text-muted">{{ resposta_item.resposta_dada }}</p>
+                        </li>
                         {% endfor %}
-                    </div>
-                {% else %}
-                    <p>Este aluno ainda não respondeu a este formulário, ou as respostas não foram encontradas.</p>
-                {% endif %}
-
-                <a href="/gestor/formularios/{{ formulario.id }}/respostas" class="btn btn-secondary w-50 mt-3"><i class="bi bi-arrow-left text-light"></i> Voltar à Lista de Alunos</a>
+                    {% else %}
+                        <li class="list-group-item">Nenhuma resposta encontrada para este aluno.</li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </div>
@@ -144,4 +136,5 @@
         crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
 </body>
-</html> 
+
+</html>

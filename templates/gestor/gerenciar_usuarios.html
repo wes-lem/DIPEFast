@@ -23,7 +23,8 @@
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                    <a href="/gestor/dashboard"
+                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
@@ -35,32 +36,37 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                    <a href="/gestor/professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
                         <i class="bi bi-person-badge-fill"></i>
                         <span>Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                    <a href="/gestor/turmas"
+                        class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
                         <i class="bi bi-collection-fill"></i>
                         <span>Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                    <a href="/gestor/provas-professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                    <a href="/gestor/formularios"
+                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
-                        <i class="bi bi-people-fill"></i>
+                    <a href="/gestor/gerenciar-usuarios"
+                        class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
                         <span>Gerenciar Usuários</span>
                     </a>
                 </li>
@@ -86,13 +92,16 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Gerenciar Usuários</h2>
                     <div>
-                        <button type="button" class="btn btn-padrao text-light" onclick="abrirModal('modalCadastrarAluno')">
+                        <button type="button" class="btn btn-padrao text-light"
+                            onclick="abrirModal('modalCadastrarAluno')">
                             <i class="bi bi-person-plus text-light"></i> Cadastrar Aluno
                         </button>
-                        <button type="button" class="btn btn-padrao text-light" onclick="abrirModal('modalCadastrarProfessor')">
+                        <button type="button" class="btn btn-padrao text-light"
+                            onclick="abrirModal('modalCadastrarProfessor')">
                             <i class="bi bi-person-badge text-light"></i> Cadastrar Professor
                         </button>
-                        <button type="button" class="btn btn-padrao text-light" onclick="abrirModal('modalCadastrarGestor')">
+                        <button type="button" class="btn btn-padrao text-light"
+                            onclick="abrirModal('modalCadastrarGestor')">
                             <i class="bi bi-person-gear text-light"></i> Cadastrar Gestor
                         </button>
                     </div>
@@ -137,22 +146,26 @@
                 <!-- Abas -->
                 <ul class="nav nav-tabs" id="usuariosTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="alunos-tab" data-bs-toggle="tab" data-bs-target="#alunos" type="button" role="tab">
+                        <button class="nav-link active" id="alunos-tab" data-bs-toggle="tab" data-bs-target="#alunos"
+                            type="button" role="tab">
                             <i class="bi bi-people"></i> Alunos ({{ total_alunos }})
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="professores-tab" data-bs-toggle="tab" data-bs-target="#professores" type="button" role="tab">
+                        <button class="nav-link" id="professores-tab" data-bs-toggle="tab" data-bs-target="#professores"
+                            type="button" role="tab">
                             <i class="bi bi-person-badge"></i> Professores ({{ total_professores }})
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="gestores-tab" data-bs-toggle="tab" data-bs-target="#gestores" type="button" role="tab">
+                        <button class="nav-link" id="gestores-tab" data-bs-toggle="tab" data-bs-target="#gestores"
+                            type="button" role="tab">
                             <i class="bi bi-person-gear"></i> Gestores ({{ total_gestores }})
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="campus-tab" data-bs-toggle="tab" data-bs-target="#campus" type="button" role="tab">
+                        <button class="nav-link" id="campus-tab" data-bs-toggle="tab" data-bs-target="#campus"
+                            type="button" role="tab">
                             <i class="bi bi-building"></i> Campus ({{ total_campus }})
                         </button>
                     </li>
@@ -162,11 +175,12 @@
                 <div class="tab-content" id="usuariosTabsContent">
                     <!-- Aba Alunos -->
                     <div class="tab-pane fade show active" id="alunos" role="tabpanel">
-                        <div class="card mt-3">
+                        <div class="card rounded-top-0">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Lista de Alunos</h5>
                                 <div class="d-flex gap-2">
-                                    <input type="text" class="form-control" id="buscarAlunos" placeholder="Buscar aluno..." style="width: 200px;">
+                                    <input type="text" class="form-control" id="buscarAlunos"
+                                        placeholder="Buscar aluno..." style="width: 200px;">
                                     <select class="form-select" id="filtroCursoAlunos" style="width: 150px;">
                                         <option value="">Todos os cursos</option>
                                         <option value="Redes de Computadores">Redes de Computadores</option>
@@ -185,7 +199,6 @@
                                                 <th>Email</th>
                                                 <th>Curso</th>
                                                 <th>Ano</th>
-                                                <th>Data Cadastro</th>
                                                 <th>Ações</th>
                                             </tr>
                                         </thead>
@@ -193,26 +206,25 @@
                                             {% for aluno in alunos %}
                                             <tr>
                                                 <td>
-                                                    <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" 
-                                                         alt="Aluno" class="rounded-circle" width="40" height="40">
+                                                    <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" alt="Aluno"
+                                                        class="rounded-circle" width="40" height="40">
                                                 </td>
                                                 <td>{{ aluno.nome }}</td>
                                                 <td>{{ aluno.usuario.email }}</td>
                                                 <td>{{ aluno.curso }}</td>
-                                                <td>{{ aluno.ano }}</td>
-                                                <td>-</td>
+                                                <td>{{ aluno.ano }} ano</td>
                                                 <td>
                                                     <div class="d-flex gap-2">
-                                                          <button type="button" class="btn btn-sm btn-dark" 
-                                                                   onclick="verDetalhesAluno({{ aluno.idAluno }})">
-                                                              <i class="bi bi-eye text-light"></i>
-                                                          </button>
-                                                        <button type="button" class="btn btn-sm btn-warning" 
-                                                                onclick="editarAluno({{ aluno.idAluno }})">
+                                                        <button type="button" class="btn btn-sm btn-dark"
+                                                            onclick="verDetalhesAluno({{ aluno.idAluno }})">
+                                                            <i class="bi bi-eye text-light"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="editarAluno({{ aluno.idAluno }})">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                                onclick="excluirAluno({{ aluno.idAluno }}, '{{ aluno.nome }}')">
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="excluirAluno({{ aluno.idAluno }}, '{{ aluno.nome }}')">
                                                             <i class="bi bi-trash text-light"></i>
                                                         </button>
                                                     </div>
@@ -228,11 +240,12 @@
 
                     <!-- Aba Professores -->
                     <div class="tab-pane fade" id="professores" role="tabpanel">
-                        <div class="card mt-3">
+                        <div class="card rounded-top-0">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Lista de Professores</h5>
                                 <div class="d-flex gap-2">
-                                    <input type="text" class="form-control" id="buscarProfessores" placeholder="Buscar professor..." style="width: 200px;">
+                                    <input type="text" class="form-control" id="buscarProfessores"
+                                        placeholder="Buscar professor..." style="width: 200px;">
                                     <select class="form-select" id="filtroCampusProfessores" style="width: 150px;">
                                         <option value="">Todos os campus</option>
                                         {% for campus in campus_list %}
@@ -258,8 +271,8 @@
                                             {% for professor in professores %}
                                             <tr>
                                                 <td>
-                                                    <img src="{{ professor.imagem or '/static/img/user.jpg' }}" 
-                                                         alt="Professor" class="rounded-circle" width="40" height="40">
+                                                    <img src="{{ professor.imagem or '/static/img/user.jpg' }}"
+                                                        alt="Professor" class="rounded-circle" width="40" height="40">
                                                 </td>
                                                 <td>{{ professor.nome }}</td>
                                                 <td>{{ professor.usuario.email }}</td>
@@ -267,16 +280,16 @@
                                                 <td>{{ professor.data_cadastro.strftime('%d/%m/%Y') }}</td>
                                                 <td>
                                                     <div class="d-flex gap-2">
-                                                          <button type="button" class="btn btn-sm btn-dark" 
-                                                                   onclick="verDetalhesProfessor({{ professor.id }})">
-                                                              <i class="bi bi-eye text-light"></i>
-                                                          </button>
-                                                        <button type="button" class="btn btn-sm btn-warning" 
-                                                                onclick="editarProfessor({{ professor.id }})">
+                                                        <button type="button" class="btn btn-sm btn-dark"
+                                                            onclick="verDetalhesProfessor({{ professor.id }})">
+                                                            <i class="bi bi-eye text-light"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="editarProfessor({{ professor.id }})">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                                onclick="excluirProfessor({{ professor.id }}, '{{ professor.nome }}')">
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="excluirProfessor({{ professor.id }}, '{{ professor.nome }}')">
                                                             <i class="bi bi-trash text-light"></i>
                                                         </button>
                                                     </div>
@@ -292,11 +305,12 @@
 
                     <!-- Aba Gestores -->
                     <div class="tab-pane fade" id="gestores" role="tabpanel">
-                        <div class="card mt-3">
+                        <div class="card rounded-top-0">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Lista de Gestores</h5>
                                 <div class="d-flex gap-2">
-                                    <input type="text" class="form-control" id="buscarGestores" placeholder="Buscar gestor..." style="width: 200px;">
+                                    <input type="text" class="form-control" id="buscarGestores"
+                                        placeholder="Buscar gestor..." style="width: 200px;">
                                 </div>
                             </div>
                             <div class="card-body">
@@ -314,23 +328,23 @@
                                             {% for gestor in gestores %}
                                             <tr>
                                                 <td>
-                                                    <img src="{{ gestor.imagem or '/static/img/user.jpg' }}" 
-                                                         alt="Gestor" class="rounded-circle" width="40" height="40">
+                                                    <img src="{{ gestor.imagem or '/static/img/user.jpg' }}"
+                                                        alt="Gestor" class="rounded-circle" width="40" height="40">
                                                 </td>
                                                 <td>{{ gestor.nome }}</td>
                                                 <td>{{ gestor.usuario.email }}</td>
                                                 <td>
                                                     <div class="d-flex gap-2">
-                                                          <button type="button" class="btn btn-sm btn-dark" 
-                                                                   onclick="verDetalhesGestor({{ gestor.id }})">
-                                                              <i class="bi bi-eye text-light"></i>
-                                                          </button>
-                                                        <button type="button" class="btn btn-sm btn-warning" 
-                                                                onclick="editarGestor({{ gestor.id }})">
+                                                        <!-- <button type="button" class="btn btn-sm btn-dark"
+                                                            onclick="verDetalhesGestor({{ gestor.id }})">
+                                                            <i class="bi bi-eye text-light"></i>
+                                                        </button> -->
+                                                        <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="editarGestor({{ gestor.id }})">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                                onclick="excluirGestor({{ gestor.id }}, '{{ gestor.nome }}')">
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="excluirGestor({{ gestor.id }}, '{{ gestor.nome }}')">
                                                             <i class="bi bi-trash text-light"></i>
                                                         </button>
                                                     </div>
@@ -346,12 +360,14 @@
 
                     <!-- Aba Campus -->
                     <div class="tab-pane fade" id="campus" role="tabpanel">
-                        <div class="card mt-3">
+                        <div class="card rounded-top-0">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Lista de Campus</h5>
                                 <div class="d-flex gap-2">
-                                    <input type="text" class="form-control" id="buscarCampus" placeholder="Buscar campus..." style="width: 200px;">
-                                    <button type="button" class="btn btn-padrao text-light" onclick="abrirModal('modalCadastrarCampus')">
+                                    <input type="text" class="form-control" id="buscarCampus"
+                                        placeholder="Buscar campus..." style="width: 200px;">
+                                    <button type="button" class="btn btn-padrao text-light"
+                                        onclick="abrirModal('modalCadastrarCampus')">
                                         <i class="bi bi-building-add text-light"></i> Novo Campus
                                     </button>
                                 </div>
@@ -375,7 +391,8 @@
                                                 <td>{{ campus.nome }}</td>
                                                 <td>{{ campus.endereco or '-' }}</td>
                                                 <td>
-                                                    <span class="badge {% if campus.ativo %}bg-success{% else %}bg-secondary{% endif %}">
+                                                    <span
+                                                        class="badge {% if campus.ativo %}bg-success{% else %}bg-secondary{% endif %}">
                                                         {% if campus.ativo %}Ativo{% else %}Inativo{% endif %}
                                                     </span>
                                                 </td>
@@ -383,12 +400,12 @@
                                                 <td>{{ campus.turmas|length }}</td>
                                                 <td>
                                                     <div>
-                                                         <button type="button" class="btn btn-sm btn-warning" 
-                                                                 onclick="editarCampus({{ campus.id }}, '{{ campus.nome }}', '{{ campus.endereco or '' }}', {{ campus.ativo|lower }})">
-                                                             <i class="bi bi-pencil"></i>
-                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                                onclick="excluirCampus({{ campus.id }}, '{{ campus.nome }}')">
+                                                        <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="editarCampus({{ campus.id }}, '{{ campus.nome }}', '{{ campus.endereco or '' }}', {{ campus.ativo|lower }})">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="excluirCampus({{ campus.id }}, '{{ campus.nome }}')">
                                                             <i class="bi bi-trash text-light"></i>
                                                         </button>
                                                     </div>
@@ -410,8 +427,8 @@
     <div class="modal fade" id="modalCadastrarAluno" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar Novo Aluno</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-person-plus-fill text-light"></i> Cadastrar Novo Aluno</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/gestor/cadastrar-aluno" method="post" enctype="multipart/form-data">
@@ -453,20 +470,24 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="anoAluno" class="form-label">Ano</label>
-                                    <input type="number" class="form-control" id="anoAluno" name="ano" min="1" max="4" required>
+                                    <input type="number" class="form-control" id="anoAluno" name="ano" min="1" max="4"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemAluno" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemAluno" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="imagemAluno" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarAluno')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Cadastrar Aluno</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarAluno')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i
+                                class="bi bi-plus-circle text-light"></i> Cadastrar Aluno</button>
                     </div>
                 </form>
             </div>
@@ -477,8 +498,9 @@
     <div class="modal fade" id="modalCadastrarProfessor" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar Novo Professor</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-person-plus-fill text-light"></i> Cadastrar Novo Professor
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/gestor/cadastrar-professor" method="post" enctype="multipart/form-data">
@@ -501,7 +523,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="senhaProfessor" class="form-label">Senha</label>
-                                    <input type="password" class="form-control" id="senhaProfessor" name="senha" required>
+                                    <input type="password" class="form-control" id="senhaProfessor" name="senha"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -520,14 +543,18 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemProfessor" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemProfessor" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="imagemProfessor" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarProfessor')">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Cadastrar Professor</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="fecharModal('modalCadastrarProfessor')"><i class="bi bi-arrow-left text-light"></i>
+                            Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i
+                                class="bi bi-plus-circle text-light"></i> Cadastrar Professor</button>
                     </div>
                 </form>
             </div>
@@ -538,8 +565,8 @@
     <div class="modal fade" id="modalCadastrarGestor" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar Novo Gestor</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-person-plus-fill text-light"></i> Cadastrar Novo Gestor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/gestor/cadastrar-gestor" method="post" enctype="multipart/form-data">
@@ -568,14 +595,17 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemGestor" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemGestor" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="imagemGestor" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarGestor')">Cancelar</button>
-                        <button type="submit" class="btn btn-info">Cadastrar Gestor</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarGestor')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i
+                                class="bi bi-plus-circle text-light"></i> Cadastrar Gestor</button>
                     </div>
                 </form>
             </div>
@@ -586,8 +616,8 @@
     <div class="modal fade" id="modalEditarAluno" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Aluno</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square text-light"></i> Editar Aluno</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formEditarAluno" method="post" enctype="multipart/form-data">
@@ -609,7 +639,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editSenhaAluno" class="form-label">Nova Senha (deixe em branco para manter a atual)</label>
+                                    <label for="editSenhaAluno" class="form-label">Nova Senha (deixe em branco para
+                                        manter a atual)</label>
                                     <input type="password" class="form-control" id="editSenhaAluno" name="senha">
                                 </div>
                             </div>
@@ -629,20 +660,24 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="editAnoAluno" class="form-label">Ano</label>
-                                    <input type="number" class="form-control" id="editAnoAluno" name="ano" min="1" max="4" required>
+                                    <input type="number" class="form-control" id="editAnoAluno" name="ano" min="1"
+                                        max="4" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="editImagemAluno" class="form-label">Nova Foto</label>
-                                    <input type="file" class="form-control" id="editImagemAluno" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="editImagemAluno" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarAluno')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarAluno')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i class="bi bi-save text-light"></i>
+                            Salvar Alterações</button>
                     </div>
                 </form>
             </div>
@@ -653,8 +688,8 @@
     <div class="modal fade" id="modalCadastrarCampus" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Cadastrar Campus</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square text-light"></i> Cadastrar Campus</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form method="post" action="/gestor/cadastrar-campus">
@@ -669,8 +704,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarCampus')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Cadastrar Campus</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalCadastrarCampus')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i
+                                class="bi bi-plus-circle text-light"></i> Cadastrar Campus</button>
                     </div>
                 </form>
             </div>
@@ -681,8 +718,8 @@
     <div class="modal fade" id="modalEditarCampus" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Campus</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square text-light"></i> Editar Campus</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formEditarCampus" method="post">
@@ -696,17 +733,20 @@
                             <textarea class="form-control" id="editEnderecoCampus" name="endereco" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="editAtivoCampus" name="ativo" value="true">
-                                <label class="form-check-label" for="editAtivoCampus">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="editAtivoCampus" name="ativo"
+                                    value="true">
+                                <label class="form-check-label ms-2" for="editAtivoCampus">
                                     Campus Ativo
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarCampus')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarCampus')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i class="bi bi-save text-light"></i>
+                            Salvar Alterações</button>
                     </div>
                 </form>
             </div>
@@ -717,8 +757,8 @@
     <div class="modal fade" id="modalEditarProfessor" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Professor</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square text-light"></i> Editar Professor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formEditarProfessor" method="post" enctype="multipart/form-data">
@@ -733,14 +773,16 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="editEmailProfessor" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="editEmailProfessor" name="email" required>
+                                    <input type="email" class="form-control" id="editEmailProfessor" name="email"
+                                        required>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editSenhaProfessor" class="form-label">Nova Senha (deixe em branco para manter a atual)</label>
+                                    <label for="editSenhaProfessor" class="form-label">Nova Senha (deixe em branco para
+                                        manter a atual)</label>
                                     <input type="password" class="form-control" id="editSenhaProfessor" name="senha">
                                 </div>
                             </div>
@@ -760,14 +802,17 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="editImagemProfessor" class="form-label">Nova Foto</label>
-                                    <input type="file" class="form-control" id="editImagemProfessor" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="editImagemProfessor" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarProfessor')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarProfessor')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i class="bi bi-save text-light"></i>
+                            Salvar Alterações</button>
                     </div>
                 </form>
             </div>
@@ -778,8 +823,8 @@
     <div class="modal fade" id="modalEditarGestor" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Gestor</h5>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square text-light"></i> Editar Gestor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formEditarGestor" method="post" enctype="multipart/form-data">
@@ -801,21 +846,25 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editSenhaGestor" class="form-label">Nova Senha (deixe em branco para manter a atual)</label>
+                                    <label for="editSenhaGestor" class="form-label">Nova Senha (deixe em branco para
+                                        manter a atual)</label>
                                     <input type="password" class="form-control" id="editSenhaGestor" name="senha">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="editImagemGestor" class="form-label">Nova Foto</label>
-                                    <input type="file" class="form-control" id="editImagemGestor" name="imagem" accept="image/*">
+                                    <input type="file" class="form-control" id="editImagemGestor" name="imagem"
+                                        accept="image/*">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarGestor')">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalEditarGestor')"><i
+                                class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-padrao text-light"><i class="bi bi-save text-light"></i>
+                            Salvar Alterações</button>
                     </div>
                 </form>
             </div>
@@ -826,10 +875,10 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
-    
+
     <script>
         // Inicializar abas do Bootstrap
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Garantir que as abas funcionem
             var triggerTabList = [].slice.call(document.querySelectorAll('#usuariosTabs button'))
             triggerTabList.forEach(function (triggerEl) {
@@ -838,13 +887,13 @@
                     var target = document.querySelector(triggerEl.getAttribute('data-bs-target'))
                     if (target) {
                         // Remover active de todas as abas
-                        document.querySelectorAll('#usuariosTabs button').forEach(function(btn) {
+                        document.querySelectorAll('#usuariosTabs button').forEach(function (btn) {
                             btn.classList.remove('active')
                         })
-                        document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                        document.querySelectorAll('.tab-pane').forEach(function (pane) {
                             pane.classList.remove('show', 'active')
                         })
-                        
+
                         // Ativar aba clicada
                         triggerEl.classList.add('active')
                         target.classList.add('show', 'active')
@@ -854,31 +903,31 @@
         });
 
         // Funções de busca e filtro
-        document.getElementById('buscarAlunos').addEventListener('input', function() {
+        document.getElementById('buscarAlunos').addEventListener('input', function () {
             filtrarTabela('tabelaAlunos', this.value);
         });
 
-        document.getElementById('buscarProfessores').addEventListener('input', function() {
+        document.getElementById('buscarProfessores').addEventListener('input', function () {
             filtrarTabela('tabelaProfessores', this.value);
         });
 
-        document.getElementById('buscarGestores').addEventListener('input', function() {
+        document.getElementById('buscarGestores').addEventListener('input', function () {
             filtrarTabela('tabelaGestores', this.value);
         });
 
-        document.getElementById('buscarCampus').addEventListener('input', function() {
+        document.getElementById('buscarCampus').addEventListener('input', function () {
             filtrarTabela('tabelaCampus', this.value);
         });
 
         // Filtro por curso
-        document.getElementById('filtroCursoAlunos').addEventListener('change', function() {
+        document.getElementById('filtroCursoAlunos').addEventListener('change', function () {
             filtrarPorCurso('tabelaAlunos', this.value);
         });
 
         function filtrarTabela(tabelaId, termo) {
             const tabela = document.getElementById(tabelaId);
             const linhas = tabela.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < linhas.length; i++) {
                 const linha = linhas[i];
                 const texto = linha.textContent.toLowerCase();
@@ -893,14 +942,14 @@
         function filtrarPorCurso(tabelaId, curso) {
             const tabela = document.getElementById(tabelaId);
             const linhas = tabela.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < linhas.length; i++) {
                 const linha = linhas[i];
                 const celulas = linha.getElementsByTagName('td');
-                
+
                 if (celulas.length > 0) {
                     const cursoLinha = celulas[3].textContent.trim(); // Curso está na 4ª coluna
-                    
+
                     if (curso === '' || cursoLinha === curso) {
                         linha.style.display = '';
                     } else {
@@ -919,7 +968,7 @@
             // Buscar dados do aluno na tabela
             const tabela = document.getElementById('tabelaAlunos');
             const linhas = tabela.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < linhas.length; i++) {
                 const linha = linhas[i];
                 const botaoEditar = linha.querySelector('button[onclick*="editarAluno(' + id + ')"]');
@@ -930,16 +979,16 @@
                     const email = celulas[2].textContent.trim();
                     const curso = celulas[3].textContent.trim();
                     const ano = celulas[4].textContent.trim();
-                    
+
                     // Preencher o modal
                     document.getElementById('editNomeAluno').value = nome;
                     document.getElementById('editEmailAluno').value = email;
                     document.getElementById('editCursoAluno').value = curso;
                     document.getElementById('editAnoAluno').value = ano;
-                    
+
                     // Configurar action do formulário
                     document.getElementById('formEditarAluno').action = '/gestor/editar-aluno/' + id;
-                    
+
                     // Abrir modal
                     if (typeof bootstrap !== 'undefined') {
                         const modal = new bootstrap.Modal(document.getElementById('modalEditarAluno'));
@@ -973,7 +1022,7 @@
             // Buscar dados do professor na tabela
             const tabela = document.getElementById('tabelaProfessores');
             const linhas = tabela.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < linhas.length; i++) {
                 const linha = linhas[i];
                 const botaoEditar = linha.querySelector('button[onclick*="editarProfessor(' + id + ')"]');
@@ -983,11 +1032,11 @@
                     const nome = celulas[1].textContent.trim();
                     const email = celulas[2].textContent.trim();
                     const campus = celulas[3].textContent.trim();
-                    
+
                     // Preencher o modal
                     document.getElementById('editNomeProfessor').value = nome;
                     document.getElementById('editEmailProfessor').value = email;
-                    
+
                     // Encontrar o campus correto no select
                     const campusSelect = document.getElementById('editCampusProfessor');
                     for (let j = 0; j < campusSelect.options.length; j++) {
@@ -996,10 +1045,10 @@
                             break;
                         }
                     }
-                    
+
                     // Configurar action do formulário
                     document.getElementById('formEditarProfessor').action = '/gestor/editar-professor/' + id;
-                    
+
                     // Abrir modal
                     if (typeof bootstrap !== 'undefined') {
                         const modal = new bootstrap.Modal(document.getElementById('modalEditarProfessor'));
@@ -1032,7 +1081,7 @@
             // Buscar dados do gestor na tabela
             const tabela = document.getElementById('tabelaGestores');
             const linhas = tabela.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < linhas.length; i++) {
                 const linha = linhas[i];
                 const botaoEditar = linha.querySelector('button[onclick*="editarGestor(' + id + ')"]');
@@ -1041,14 +1090,14 @@
                     const celulas = linha.getElementsByTagName('td');
                     const nome = celulas[1].textContent.trim();
                     const email = celulas[2].textContent.trim();
-                    
+
                     // Preencher o modal
                     document.getElementById('editNomeGestor').value = nome;
                     document.getElementById('editEmailGestor').value = email;
-                    
+
                     // Configurar action do formulário
                     document.getElementById('formEditarGestor').action = '/gestor/editar-gestor/' + id;
-                    
+
                     // Abrir modal
                     if (typeof bootstrap !== 'undefined') {
                         const modal = new bootstrap.Modal(document.getElementById('modalEditarGestor'));
@@ -1078,9 +1127,9 @@
             document.getElementById('editNomeCampus').value = nome;
             document.getElementById('editEnderecoCampus').value = endereco;
             document.getElementById('editAtivoCampus').checked = ativo;
-            
+
             document.getElementById('formEditarCampus').action = '/gestor/editar-campus/' + id;
-            
+
             // Verificar se Bootstrap está carregado
             if (typeof bootstrap !== 'undefined') {
                 const modal = new bootstrap.Modal(document.getElementById('modalEditarCampus'));
@@ -1137,10 +1186,10 @@
         }
 
         // Adicionar event listeners para fechar modais
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Fechar modais ao clicar no X
-            document.querySelectorAll('.btn-close').forEach(function(btn) {
-                btn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-close').forEach(function (btn) {
+                btn.addEventListener('click', function () {
                     const modal = this.closest('.modal');
                     if (modal) {
                         fecharModal(modal.id);
@@ -1149,8 +1198,8 @@
             });
 
             // Fechar modais ao clicar fora
-            document.querySelectorAll('.modal').forEach(function(modal) {
-                modal.addEventListener('click', function(e) {
+            document.querySelectorAll('.modal').forEach(function (modal) {
+                modal.addEventListener('click', function (e) {
                     if (e.target === this) {
                         fecharModal(this.id);
                     }

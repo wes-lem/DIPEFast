@@ -60,7 +60,7 @@
                 </li>
                 <li class="sidebar-item mt-3">
                     <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
-                        <i class="bi bi-people-fill"></i>
+                        <i class="bi bi-person-fill-gear"></i>
                         <span>Gerenciar Usuários</span>
                     </a>
                 </li>
@@ -158,13 +158,13 @@
                             <div class="card-footer">
                                 <div class="w-100">
                                     <a href="/gestor/turma/{{ turma.id }}/detalhes" class="btn btn-black btn-sm">
-                                        <i class="bi bi-eye text-light"></i> Ver
+                                        <i class="bi bi-eye c-padrao"></i> Detalhes
                                     </a>
                                     <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-black btn-sm">
-                                        <i class="bi bi-people text-light"></i> Alunos
+                                        <i class="bi bi-people c-padrao"></i> Alunos
                                     </a>
                                     <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-black btn-sm">
-                                        <i class="bi bi-file-text text-light"></i> Provas
+                                        <i class="bi bi-file-text c-padrao"></i> Provas
                                     </a>
                                 </div>
                             </div>

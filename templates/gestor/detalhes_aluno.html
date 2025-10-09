@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %} active">
                         <i class="bi bi-people-fill"></i>
                         <span>Alunos</span>
                     </a>
@@ -58,6 +58,12 @@
                     <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
+                    </a>
+                </li>
+                <li class="sidebar-item mt-3">
+                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>Gerenciar Usuários</span>
                     </a>
                 </li>
                 <div class="sidebar-item mt-3">

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+	<title>Professor - Relatórios</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+	<link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body id="topo">
+	<div class="wrapper">
+		<aside id="sidebar" class="shadow-lg">
+			<div class="d-flex justify-content-center">
+				<button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
+					<img src="/static/img/DipePreta.svg" width="40px" alt="">
+				</button>
+			</div>
+			<ul class="sidebar-nav">
+				<li class="sidebar-item">
+					<a href="/professor/dashboard" class="sidebar-link {% if request.url.path == '/professor/dashboard' %}active{% endif %}">
+						<i class="bi bi-house-door-fill"></i>
+						<span>Início</span>
+					</a>
+				</li>
+				<li class="sidebar-item mt-3">
+					<a href="/professor/turmas" class="sidebar-link {% if request.url.path == '/professor/turmas' or request.url.path.startswith('/professor/turma/') %}active{% endif %}">
+						<i class="bi bi-people-fill"></i>
+						<span>Turmas</span>
+					</a>
+				</li>
+				<li class="sidebar-item mt-3">
+					<a href="/professor/provas" class="sidebar-link {% if request.url.path == '/professor/provas' or request.url.path.startswith('/professor/prova/') %}active{% endif %}">
+						<i class="bi bi-file-earmark-text-fill"></i>
+						<span>Provas</span>
+					</a>
+				</li>
+				<li class="sidebar-item mt-3">
+					<a href="/professor/banco-questoes" class="sidebar-link {% if request.url.path == '/professor/banco-questoes' or request.url.path.startswith('/professor/questao/') %}active{% endif %}">
+						<i class="bi bi-question-circle-fill"></i>
+						<span>Banco de Questões</span>
+					</a>
+				</li>
+				<li class="sidebar-item mt-3">
+					<a href="/professor/relatorios" class="sidebar-link {% if request.url.path == '/professor/relatorios' %}active{% endif %}">
+						<i class="bi bi-graph-up"></i>
+						<span>Relatórios</span>
+					</a>
+				</li>
+				<div class="sidebar-item mt-3">
+					<form action="/sair" method="post" style="display: inline;">
+						<button type="submit" class="sidebar-link w-100 text-start">
+							<i class="bi bi-door-open-fill"></i>
+							<span class="fw-bold">Sair</span>
+						</button>
+					</form>
+				</div>
+			</ul>
+		</aside>
+
+		<div class="main">
+			<nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
+				<a class="navbar-brand" href="#">
+					<h4 class="mb-0">Relatórios</h4>
+				</a>
+				<div class="ms-auto">
+					<a class="btn btn-primary me-2" href="/professor/relatorios/export/pdf"><i class="bi bi-file-pdf"></i> Exportar PDF</a>
+					<a class="btn btn-secondary" href="/professor/relatorios/export/docx"><i class="bi bi-file-earmark-word"></i> Exportar DOCX</a>
+				</div>
+			</nav>
+
+			<div class="content-wrapper p-4">
+				<div class="row">
+					<div class="col-md-6 mb-4">
+						<div class="card h-100">
+							<div class="card-header bg-light">Médias por Prova</div>
+							<div class="card-body">
+								<canvas id="chartProvasMedias"></canvas>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 mb-4">
+						<div class="card h-100">
+							<div class="card-header bg-light">Participação por Prova</div>
+							<div class="card-body">
+								<canvas id="chartProvasParticipacao"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12 mb-4">
+						<div class="card h-100">
+							<div class="card-header bg-light">Médias por Matéria</div>
+							<div class="card-body">
+								<canvas id="chartMateriasMedias"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+				<script>
+					const dados = {{ dados | tojson }};
+					const provas = dados.provas;
+					const materias = dados.materias;
+
+					new Chart(document.getElementById('chartProvasMedias'), {
+						type: 'bar',
+						data: { labels: provas.labels, datasets: [{ label: 'Média (acertos)', data: provas.medias, backgroundColor: 'rgba(54, 162, 235, 0.5)' }] },
+						options: { responsive: true }
+					});
+
+					new Chart(document.getElementById('chartProvasParticipacao'), {
+						type: 'bar',
+						data: { labels: provas.labels, datasets: [{ label: 'Participantes', data: provas.participacao, backgroundColor: 'rgba(255, 159, 64, 0.5)' }] },
+						options: { responsive: true }
+					});
+
+					new Chart(document.getElementById('chartMateriasMedias'), {
+						type: 'line',
+						data: { labels: materias.labels, datasets: [{ label: 'Média por Matéria', data: materias.medias, borderColor: 'rgba(75, 192, 192, 1)' }] },
+						options: { responsive: true }
+					});
+				</script>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
+		crossorigin="anonymous"></script>
+	<script src="/static/js/menu.js"></script>
+</body>
+
+</html>
+
+

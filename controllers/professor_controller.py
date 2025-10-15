@@ -26,6 +26,8 @@ from dao.prova_questao_dao import ProvaQuestaoDAO
 from dao.notificacao_professor_dao import NotificacaoProfessorDAO
 
 from app_config import templates
+from services.relatorios_service import RelatoriosService
+from utils.export_service import pdf_response_from_html, docx_response_from_data
 
 # Configurações
 UPLOAD_DIR = Path("templates/static/uploads")
@@ -169,6 +171,44 @@ def dashboard_professor(
             "provas_recentes": provas_recentes
         }
     )
+
+# === RELATÓRIOS DO PROFESSOR ===
+@router.get("/professor/relatorios")
+def relatorios_professor(
+    request: Request,
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    return templates.TemplateResponse(
+        "professor/relatorios.html",
+        {"request": request, "dados": dados}
+    )
+
+@router.get("/professor/relatorios/export/pdf")
+def export_relatorios_professor_pdf(
+    request: Request,
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    # Renderiza o HTML do template em string
+    template = templates.get_template("professor/relatorios.html")
+    html = template.render(request=request, dados=dados)
+    return pdf_response_from_html(html, filename="relatorio_professor.pdf")
+
+@router.get("/professor/relatorios/export/docx")
+def export_relatorios_professor_docx(
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    sections = {
+        "Provas (médias)": {"labels": dados["provas"]["labels"], "medias": dados["provas"]["medias"]},
+        "Provas (participação)": {"labels": dados["provas"]["labels"], "medias": dados["provas"]["participacao"]},
+        "Médias por Matéria": dados["materias"],
+    }
+    return docx_response_from_data("Relatório do Professor", sections, filename="relatorio_professor.docx")
 
 # === ROTAS DE TURMAS ===
 

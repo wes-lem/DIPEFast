@@ -41,6 +41,8 @@ from utils.auth import verificar_gestor_sessao
 
 # Importar a instância templates do app_config
 from app_config import templates
+from services.relatorios_service import RelatoriosService
+from utils.export_service import pdf_response_from_html, docx_response_from_data
 
 def verificar_gestor_sessao(request: Request, db: Session = Depends(get_db)):
     """
@@ -1076,11 +1078,36 @@ async def relatorios_gestor(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    """Página de relatórios do gestor"""
+    """Página de relatórios do gestor com gráficos Chart.js"""
+    dados = RelatoriosService.get_gestor_report_data(db)
     return templates.TemplateResponse(
         "gestor/relatorios.html",
-        {"request": request}
+        {"request": request, "dados": dados}
     )
+
+@router.get("/gestor/relatorios/export/pdf")
+async def export_relatorios_gestor_pdf(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    dados = RelatoriosService.get_gestor_report_data(db)
+    template = templates.get_template("gestor/relatorios.html")
+    html = template.render(request=request, dados=dados)
+    return pdf_response_from_html(html, filename="relatorio_gestor.pdf")
+
+@router.get("/gestor/relatorios/export/docx")
+async def export_relatorios_gestor_docx(
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    dados = RelatoriosService.get_gestor_report_data(db)
+    sections = {
+        "Médias por Matéria": dados["materias"],
+        "Médias por Curso": dados["cursos"],
+        "Participação": dados["participacao"],
+    }
+    return docx_response_from_data("Relatório do Gestor", sections, filename="relatorio_gestor.docx")
 
 # ===== ROTAS DE GERENCIAMENTO DE USUÁRIOS =====
 

@@ -97,87 +97,70 @@
             <div class="content-wrapper p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Relatórios e Análises</h2>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>Em breve:</strong> Esta seção estará disponível em uma futura atualização do sistema.
+                    <div>
+                        <a class="btn btn-primary me-2" href="/gestor/relatorios/export/pdf">
+                            <i class="bi bi-file-pdf"></i> Exportar PDF
+                        </a>
+                        <a class="btn btn-secondary" href="/gestor/relatorios/export/docx">
+                            <i class="bi bi-file-earmark-word"></i> Exportar DOCX
+                        </a>
+                    </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="col-md-6 mb-4">
                         <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Relatório de Desempenho</h5>
-                                <p class="card-text">Análise detalhada do desempenho dos alunos em provas e formulários.</p>
-                                <button class="btn btn-outline-primary" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
+                            <div class="card-header bg-light">Médias por Matéria</div>
+                            <div class="card-body">
+                                <canvas id="chartMaterias"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="col-md-6 mb-4">
                         <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-people text-success" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Relatório de Turmas</h5>
-                                <p class="card-text">Estatísticas e análises por turma e professor.</p>
-                                <button class="btn btn-outline-success" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-file-earmark-text text-warning" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Relatório de Provas</h5>
-                                <p class="card-text">Análise comparativa entre provas diagnósticas e dos professores.</p>
-                                <button class="btn btn-outline-warning" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-download text-info" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Exportar Dados</h5>
-                                <p class="card-text">Exportar relatórios em PDF, Excel e outros formatos.</p>
-                                <button class="btn btn-outline-info" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-calendar text-danger" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Relatório Temporal</h5>
-                                <p class="card-text">Análise de tendências e evolução ao longo do tempo.</p>
-                                <button class="btn btn-outline-danger" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-pie-chart text-secondary" style="font-size: 3rem;"></i>
-                                <h5 class="card-title mt-3">Dashboard Avançado</h5>
-                                <p class="card-text">Visualizações interativas e dashboards personalizados.</p>
-                                <button class="btn btn-outline-secondary" disabled>
-                                    <i class="bi bi-clock"></i> Em breve
-                                </button>
+                            <div class="card-header bg-light">Médias por Curso</div>
+                            <div class="card-body">
+                                <canvas id="chartCursos"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">Participação</div>
+                            <div class="card-body">
+                                <canvas id="chartParticipacao"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const materias = {{ dados.materias | tojson }};
+                    const cursos = {{ dados.cursos | tojson }};
+                    const participacao = {{ dados.participacao | tojson }};
+
+                    new Chart(document.getElementById('chartMaterias'), {
+                        type: 'bar',
+                        data: { labels: materias.labels, datasets: [{ label: 'Média', data: materias.medias, backgroundColor: 'rgba(54, 162, 235, 0.5)' }] },
+                        options: { responsive: true }
+                    });
+
+                    new Chart(document.getElementById('chartCursos'), {
+                        type: 'bar',
+                        data: { labels: cursos.labels, datasets: [{ label: 'Média', data: cursos.medias, backgroundColor: 'rgba(153, 102, 255, 0.5)' }] },
+                        options: { responsive: true }
+                    });
+
+                    new Chart(document.getElementById('chartParticipacao'), {
+                        type: 'doughnut',
+                        data: { labels: participacao.labels, datasets: [{ data: participacao.data, backgroundColor: ['rgba(75, 192, 192, 0.6)','rgba(255, 99, 132, 0.6)'] }] },
+                        options: { responsive: true }
+                    });
+                </script>
             </div>
         </div>
     </div>

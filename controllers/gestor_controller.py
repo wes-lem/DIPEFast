@@ -1614,6 +1614,8 @@ def excluir_aluno(
     """Exclui um aluno permanentemente"""
     from models.aluno import Aluno
     from models.usuario import Usuario
+    from models.aluno_turma import AlunoTurma
+    from dao.aluno_turma_dao import AlunoTurmaDAO
     
     try:
         # Buscar o aluno
@@ -1621,20 +1623,47 @@ def excluir_aluno(
         if not aluno:
             raise HTTPException(status_code=404, detail="Aluno não encontrado")
         
-        # Verificar se o aluno tem turmas associadas
-        if aluno.aluno_turmas:
-            raise HTTPException(status_code=400, detail="Não é possível excluir aluno com turmas associadas")
+        # Remover aluno de todas as turmas primeiro
+        turmas_aluno = AlunoTurmaDAO.get_turmas_by_aluno(db, aluno_id)
+        for aluno_turma in turmas_aluno:
+            AlunoTurmaDAO.hard_remove_aluno_from_turma(db, aluno_id, aluno_turma.turma_id)
         
-        # Excluir o usuário (cascade vai excluir o aluno)
+        # Deletar dados relacionados (ordem importa devido a FKs)
+        # Respostas de formulário
+        RespostaFormularioDAO.delete_respostas_from_formulario_by_aluno(db, aluno_id, formulario_id=None)
+
+        # Respostas de prova
+        db.query(Resposta).filter(Resposta.aluno_id == aluno_id).delete(synchronize_session=False)
+
+        # Resultados de prova
+        db.query(Resultado).filter(Resultado.aluno_id == aluno_id).delete(synchronize_session=False)
+
+        # Notificações do aluno
+        db.query(Notificacao).filter(Notificacao.aluno_id == aluno_id).delete(synchronize_session=False)
+
+        # Deletar a imagem do aluno se existir
+        if aluno.imagem:
+            caminho_imagem = aluno.imagem.lstrip('/')
+            caminho_completo = os.path.join("static", caminho_imagem)
+            if os.path.exists(caminho_completo):
+                try:
+                    os.remove(caminho_completo)
+                    print(f"Imagem do aluno removida: {caminho_completo}")
+                except Exception as e:
+                    print(f"Erro ao remover imagem do aluno: {e}")
+
+        # Deletar o usuário (cascade vai excluir o aluno)
         usuario = db.query(Usuario).filter(Usuario.id == aluno.idUser).first()
         if usuario:
             db.delete(usuario)
         
         db.commit()
+        print(f"Aluno {aluno_id} e todos os dados relacionados removidos com sucesso.")
         return RedirectResponse(url="/gestor/gerenciar-usuarios", status_code=303)
         
     except Exception as e:
         db.rollback()
+        print(f"Erro ao remover aluno {aluno_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao excluir aluno: {str(e)}")
 
 @router.post("/gestor/excluir-professor/{professor_id}")

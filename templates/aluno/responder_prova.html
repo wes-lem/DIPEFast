@@ -177,8 +177,8 @@
                                     <i class="bi bi-info-circle"></i> 
                                     Responda todas as questões antes de enviar
                                 </div>
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="bi bi-check-circle"></i> Enviar Prova
+                                <button type="submit" class="btn btn-padrao text-light btn-lg">
+                                    <i class="bi bi-check-circle text-light"></i> Responder Prova
                                 </button>
                             </div>
                         </div>
@@ -188,46 +188,118 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
-        crossorigin="anonymous"></script>
+    <!-- Modal de Validação - Questões não respondidas -->
+    <div class="modal fade" id="validacaoModal" tabindex="-1" aria-labelledby="validacaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="validacaoModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Respostas: <span id="progressoAtual">0</span> de <span id="totalQuestoesModal">0</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="bi bi-question-circle display-1 text-warning mb-3"></i>
+                        <h5>Você ainda não respondeu todas as questões!</h5>
+                        <p class="text-muted">Por favor, responda todas as questões antes de enviar a prova.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação - Envio da prova -->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" aria-labelledby="confirmacaoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title" id="confirmacaoModalLabel">
+                        <i class="bi bi-check-circle-fill me-2 text-light"></i>
+                        Confirmar Envio
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="bi bi-send display-3 c-padrao mb-3"></i>
+                        <h5>Tem certeza que deseja enviar a prova?</h5>
+                        <p class="text-muted">Esta ação não pode ser desfeita. Após o envio, você não poderá alterar suas respostas.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-padrao text-light" id="confirmarEnvioBtn">
+                        <i class="bi bi-send me-2 text-light"></i>Enviar Prova
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
     
     <script>
+        // Inicializar modais
+        const validacaoModal = new bootstrap.Modal(document.getElementById('validacaoModal'));
+        const confirmacaoModal = new bootstrap.Modal(document.getElementById('confirmacaoModal'));
+        
         document.getElementById('provaForm').addEventListener('submit', function(e) {
-            const totalQuestoes = {{ prova.prova_questoes|length }};
+            e.preventDefault(); // Sempre prevenir envio padrão
+            
+            // 1. O total de questões que o formulário DEVE ter.
+            const totalQuestoes = parseInt('{{ prova.prova_questoes|length }}'); 
+            
+            // 2. Encontrar todos os radio buttons de todas as questões
+            const radios = document.querySelectorAll('input[name^="questao_"]');
+            
+            // 3. Agrupar os radio buttons pelo atributo 'name' (que deve ser o identificador da questão)
+            const grupos = {};
+            radios.forEach(radio => {
+                const name = radio.name;
+                if (!grupos[name]) {
+                    grupos[name] = [];
+                }
+                grupos[name].push(radio);
+            });
+    
             let respostasRespondidas = 0;
             
-            // Contar quantas questões foram respondidas
-            for (let i = 1; i <= totalQuestoes; i++) {
-                const radios = document.querySelectorAll(`input[name^="questao_"]`);
-                const grupos = {};
-                
-                radios.forEach(radio => {
-                    const name = radio.name;
-                    if (!grupos[name]) {
-                        grupos[name] = [];
-                    }
-                    grupos[name].push(radio);
-                });
-                
-                Object.values(grupos).forEach(grupo => {
-                    if (grupo.some(radio => radio.checked)) {
-                        respostasRespondidas++;
-                    }
-                });
-            }
-            
+            // 4. Contar UMA VEZ para cada grupo/questão se alguma opção foi marcada
+            Object.values(grupos).forEach(grupo => {
+                if (grupo.some(radio => radio.checked)) {
+                    respostasRespondidas++; // Incrementa SÓ UMA VEZ para a questão
+                }
+            });
+    
+            // AQUI ESTÁ A LÓGICA CORRETA: comparar as questões respondidas com o total.
             if (respostasRespondidas < totalQuestoes) {
-                e.preventDefault();
-                alert(`Você precisa responder todas as ${totalQuestoes} questões antes de enviar a prova.`);
+                // Mostrar modal de validação
+                document.getElementById('progressoAtual').textContent = respostasRespondidas;
+                document.getElementById('totalQuestoesModal').textContent = totalQuestoes;
+                validacaoModal.show();
                 return false;
             }
             
-            if (!confirm('Tem certeza que deseja enviar a prova? Esta ação não pode ser desfeita.')) {
-                e.preventDefault();
-                return false;
-            }
+            // Se todas as questões foram respondidas (respostasRespondidas === totalQuestoes)
+            confirmacaoModal.show();
+        });
+        
+        // Event listener para confirmar envio
+        document.getElementById('confirmarEnvioBtn').addEventListener('click', function() {
+            // Desabilitar botão para evitar múltiplos cliques
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
+            
+            // Enviar formulário
+            document.getElementById('provaForm').submit();
         });
     </script>
 </body>

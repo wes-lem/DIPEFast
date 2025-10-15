@@ -106,6 +106,31 @@
                                     </div>
                                     
                                     <div class="mb-3">
+                                        <label class="form-label">Data de Expiração das Provas</label>
+                                        <div>
+                                            {% if prova.prova_turmas %}
+                                                {% for prova_turma in prova.prova_turmas %}
+                                                <div class="mb-2 p-2 border rounded">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>Turma:</strong> {{ prova_turma.turma.nome }}<br>
+                                                            <strong>Expira em:</strong> {{ prova_turma.data_expiracao.strftime('%d/%m/%Y às %H:%M') }}
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-warning editar-data-btn" 
+                                                                data-prova-turma-id="{{ prova_turma.id }}" 
+                                                                data-data-atual="{{ prova_turma.data_expiracao.strftime('%Y-%m-%dT%H:%M') }}">
+                                                            <i class="bi bi-pencil"></i> Editar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Prova ainda não foi disponibilizada para nenhuma turma</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
                                         <label class="form-label">Status Atual</label>
                                         <div>
                                             <span class="badge 
@@ -132,7 +157,8 @@
                                         <div class="questao-selecionada mb-2 p-2 border rounded" data-questao-id="{{ questao_prova.questao_banco.id }}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span><strong>{{ loop.index }}.</strong> {{ questao_prova.questao_banco.enunciado[:50] }}...</span>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="removerQuestao({{ questao_prova.questao_banco.id }})">
+                                                <button type="button" class="btn btn-sm btn-danger remover-questao-btn" 
+                                                        data-questao-id="{{ questao_prova.questao_banco.id }}">
                                                     <i class="bi bi-x text-light"></i>
                                                 </button>
                                             </div>
@@ -156,17 +182,20 @@
                                 </div>
                                 <div class="card-body">
                                     {% if questoes_banco %}
-                                    <div class="row">
+                                    <div class="row" id="questoes-banco">
                                         {% for questao in questoes_banco %}
-                                        <div class="col-md-6 mb-3">
-                                            <div class="card questao-card" data-questao-id="{{ questao.id }}">
+                                        <div class="col-md-6 mb-3 questao-item" data-questao-id="{{ questao.id }}" 
+                                             {% if questao.id in questoes_ja_adicionadas %}style="display: none;"{% endif %}>
+                                            <div class="card questao-card">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ questao.enunciado[:50] }}...</h6>
                                                     <p class="card-text">
                                                         <strong>Matéria:</strong> {{ questao.materia }}<br>
                                                         <strong>Resposta:</strong> {{ questao.resposta_correta }}
                                                     </p>
-                                                    <button type="button" class="btn btn-sm btn-padrao text-light" onclick="adicionarQuestao({{ questao.id }}, '{{ questao.enunciado[:50] }}...')">
+                                                    <button type="button" class="btn btn-sm btn-padrao text-light adicionar-btn" 
+                                                            data-questao-id="{{ questao.id }}" 
+                                                            data-enunciado="{{ questao.enunciado[:50] }}...">
                                                         <i class="bi bi-plus text-light"></i> Adicionar
                                                     </button>
                                                 </div>
@@ -202,15 +231,40 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
-        crossorigin="anonymous"></script>
+    <!-- Modal para editar data de expiração -->
+    <div class="modal fade" id="editarDataModal" tabindex="-1" aria-labelledby="editarDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title" id="editarDataModalLabel">Editar Data de Expiração</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarDataForm">
+                        <div class="mb-3">
+                            <label for="novaDataExpiracao" class="form-label">Nova Data de Expiração</label>
+                            <input type="datetime-local" class="form-control" id="novaDataExpiracao" required>
+                            <div class="form-text">Selecione a nova data e hora de expiração da prova</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-padrao text-light" id="salvarDataBtn">Salvar Alteração</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
     
     <script>
         function adicionarQuestao(questaoId, enunciado) {
             // Verificar se a questão já foi adicionada
-            if (document.querySelector(`[data-questao-id="${questaoId}"]`)) {
+            if (document.querySelector(`.questao-selecionada[data-questao-id="${questaoId}"]`)) {
                 alert('Esta questão já foi adicionada à prova.');
                 return;
             }
@@ -238,11 +292,10 @@
             container.appendChild(questaoDiv);
             totalQuestoes.textContent = numero;
             
-            // Marcar questão como adicionada
-            const questaoCard = document.querySelector(`.questao-card[data-questao-id="${questaoId}"]`);
-            if (questaoCard) {
-                questaoCard.style.opacity = '0.5';
-                questaoCard.querySelector('button').disabled = true;
+            // Ocultar questão do banco
+            const questaoItem = document.querySelector(`.questao-item[data-questao-id="${questaoId}"]`);
+            if (questaoItem) {
+                questaoItem.style.display = 'none';
             }
         }
         
@@ -262,13 +315,107 @@
                     span.innerHTML = span.innerHTML.replace(/^\d+\./, `${numero}.`);
                 });
                 
-                // Reativar questão no banco
-                const questaoCard = document.querySelector(`.questao-card[data-questao-id="${questaoId}"]`);
-                if (questaoCard) {
-                    questaoCard.style.opacity = '1';
-                    questaoCard.querySelector('button').disabled = false;
+                // Mostrar questão novamente no banco
+                const questaoItem = document.querySelector(`.questao-item[data-questao-id="${questaoId}"]`);
+                if (questaoItem) {
+                    questaoItem.style.display = 'block';
                 }
             }
+        }
+        
+        // Variáveis globais para o modal
+        let provaTurmaIdAtual = null;
+        let modal = null;
+        
+        // Event listeners para todos os botões
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar modal
+            modal = new bootstrap.Modal(document.getElementById('editarDataModal'));
+            
+            // Botões de editar data
+            document.querySelectorAll('.editar-data-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const provaTurmaId = this.getAttribute('data-prova-turma-id');
+                    const dataAtual = this.getAttribute('data-data-atual');
+                    abrirModalEditarData(provaTurmaId, dataAtual);
+                });
+            });
+            
+            // Botão de salvar no modal
+            document.getElementById('salvarDataBtn').addEventListener('click', function() {
+                salvarDataExpiracao();
+            });
+            
+            // Botões de adicionar questão
+            document.querySelectorAll('.adicionar-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const questaoId = parseInt(this.getAttribute('data-questao-id'));
+                    const enunciado = this.getAttribute('data-enunciado');
+                    adicionarQuestao(questaoId, enunciado);
+                });
+            });
+            
+            // Botões de remover questão
+            document.querySelectorAll('.remover-questao-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const questaoId = parseInt(this.getAttribute('data-questao-id'));
+                    removerQuestao(questaoId);
+                });
+            });
+        });
+        
+        function abrirModalEditarData(provaTurmaId, dataAtual) {
+            provaTurmaIdAtual = provaTurmaId;
+            document.getElementById('novaDataExpiracao').value = dataAtual;
+            modal.show();
+        }
+        
+        function salvarDataExpiracao() {
+            const novaData = document.getElementById('novaDataExpiracao').value;
+            
+            if (!novaData) {
+                alert('Por favor, selecione uma data válida');
+                return;
+            }
+            
+            // Validar se a data é futura
+            const dataSelecionada = new Date(novaData);
+            const agora = new Date();
+            
+            if (dataSelecionada <= agora) {
+                alert('A data de expiração deve ser futura');
+                return;
+            }
+            
+            // Desabilitar botão para evitar múltiplos cliques
+            const salvarBtn = document.getElementById('salvarDataBtn');
+            salvarBtn.disabled = true;
+            salvarBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+            
+            // Enviar requisição para atualizar a data
+            fetch(`/professor/prova-turma/${provaTurmaIdAtual}/editar-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `data_expiracao=${encodeURIComponent(novaData)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    modal.hide();
+                    location.reload(); // Recarregar a página para mostrar a nova data
+                } else {
+                    alert('Erro ao atualizar a data de expiração');
+                    salvarBtn.disabled = false;
+                    salvarBtn.innerHTML = 'Salvar Alteração';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar a data de expiração');
+                salvarBtn.disabled = false;
+                salvarBtn.innerHTML = 'Salvar Alteração';
+            });
         }
     </script>
 </body>

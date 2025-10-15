@@ -3,12 +3,14 @@ from models.resultado import Resultado
 
 class ResultadoDAO:
     @staticmethod
-    def criar_resultado(db: Session, aluno_id: int, prova_id: int, acertos: int, situacao: str):
+    def criar_resultado(db: Session, aluno_id: int, prova_id: int, acertos: int, situacao: str, nota: float, total_questoes: int):
         novo_resultado = Resultado(
             aluno_id=aluno_id,
             prova_id=prova_id,
             acertos=acertos,
-            situacao=situacao
+            situacao=situacao,
+            nota=nota,
+            total_questoes=total_questoes
         )
         db.add(novo_resultado)
         db.commit()

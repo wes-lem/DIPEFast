@@ -557,11 +557,17 @@ async def salvar_resposta_prova(
         situacao = "Suficiente"
     
     # Criar resultado
+    # Calcular nota e total de questões
+    total_questoes = len(prova.prova_questoes)
+    nota = (respostas_corretas / total_questoes) * 10 if total_questoes > 0 else 0
+    
     resultado = Resultado(
         aluno_id=aluno.idAluno,
         prova_id=prova_id,
         acertos=respostas_corretas,
-        situacao=situacao
+        situacao=situacao,
+        nota=nota,
+        total_questoes=total_questoes
     )
     db.add(resultado)
     

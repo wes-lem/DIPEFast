@@ -197,12 +197,15 @@
     <script src="/static/js/menu.js"></script>
     
     <script>
-        // Configurar data mínima para hoje
-        const hoje = new Date();
-        const dataMinima = hoje.toISOString().slice(0, 16);
+        // Configurar data mínima para agora (permitir hora atual)
+        const agora = new Date();
+        const dataMinima = agora.toISOString().slice(0, 16);
         
         document.getElementById('data_inicio').min = dataMinima;
         document.getElementById('data_expiracao').min = dataMinima;
+        
+        // Definir valor padrão para data de início como agora
+        document.getElementById('data_inicio').value = dataMinima;
         
         // Validar se data de expiração é posterior à data de início
         document.getElementById('data_inicio').addEventListener('change', function() {

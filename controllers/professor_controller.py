@@ -1,26 +1,20 @@
 import os
-import shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Form, Request, UploadFile, File, Query, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from dao.database import get_db
-from models.professor import Professor
-from models.campus import Campus
-from models.turma import Turma, StatusTurma
-from models.aluno_turma import AlunoTurma, StatusAlunoTurma
-from models.banco_questoes import BancoQuestoes, StatusQuestao
+from models.banco_questoes import BancoQuestoes
 from models.prova import Prova
 from models.prova_questao import ProvaQuestao
 from models.prova_turma import ProvaTurma, StatusProvaTurma
 from models.resultado import Resultado
 from models.usuario import Usuario
-from models.aluno import Aluno
 
 from controllers.usuario_controller import verificar_sessao
 from dao.professor_dao import ProfessorDAO
@@ -29,7 +23,6 @@ from dao.turma_dao import TurmaDAO
 from dao.aluno_turma_dao import AlunoTurmaDAO
 from dao.banco_questoes_dao import BancoQuestoesDAO
 from dao.prova_questao_dao import ProvaQuestaoDAO
-from dao.prova_turma_dao import ProvaTurmaDAO
 from dao.notificacao_professor_dao import NotificacaoProfessorDAO
 
 from app_config import templates
@@ -365,7 +358,7 @@ async def criar_questao(
             buffer.write(await imagem.read())
         imagem_path = f"/static/uploads/questoes/{filename}"
     
-    questao = BancoQuestoesDAO.create(
+    BancoQuestoesDAO.create(
         db=db,
         professor_id=professor_id,
         enunciado=enunciado,
@@ -391,7 +384,6 @@ def provas_professor(
 ):
     """Lista provas do professor com informações de alunos que responderam"""
     from sqlalchemy.orm import joinedload
-    from sqlalchemy import func
     
     # Buscar provas com contagem de resultados
     provas = db.query(Prova).options(
@@ -586,9 +578,12 @@ def editar_prova_professor(
     # Buscar questões do banco do professor
     questoes_banco = BancoQuestoesDAO.get_by_professor(db, professor_id)
     
+    # Criar lista de IDs das questões já adicionadas à prova
+    questoes_ja_adicionadas = [pq.questao_banco_id for pq in prova.prova_questoes]
+    
     return templates.TemplateResponse(
         "professor/editar_prova.html",
-        {"request": request, "prova": prova, "questoes_banco": questoes_banco}
+        {"request": request, "prova": prova, "questoes_banco": questoes_banco, "questoes_ja_adicionadas": questoes_ja_adicionadas}
     )
 
 @router.post("/professor/prova/{prova_id}/editar")
@@ -624,6 +619,40 @@ def salvar_edicao_prova(
     
     db.commit()
     return RedirectResponse(url="/professor/provas", status_code=303)
+
+@router.post("/professor/prova-turma/{prova_turma_id}/editar-data")
+def editar_data_expiracao_prova_turma(
+    request: Request,
+    prova_turma_id: int,
+    data_expiracao: str = Form(...),
+    db: Session = Depends(get_db),
+    professor_id: int = Depends(verificar_professor_sessao)
+):
+    """Edita a data de expiração de uma prova disponibilizada para uma turma"""
+    from models.prova_turma import ProvaTurma
+    from datetime import datetime
+    
+    # Buscar a prova_turma
+    prova_turma = db.query(ProvaTurma).filter(
+        ProvaTurma.id == prova_turma_id,
+        ProvaTurma.professor_id == professor_id
+    ).first()
+    
+    if not prova_turma:
+        raise HTTPException(status_code=404, detail="Prova não encontrada")
+    
+    # Converter string para datetime
+    try:
+        nova_data = datetime.strptime(data_expiracao, "%Y-%m-%dT%H:%M")
+        prova_turma.data_expiracao = nova_data
+        db.commit()
+        
+        return {"success": True, "message": "Data de expiração atualizada com sucesso"}
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de data inválido")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar data: {str(e)}")
 
 @router.get("/professor/prova/{prova_id}/disponibilizar")
 def disponibilizar_prova_professor(

@@ -100,6 +100,10 @@ async def enviar_respostas(
         if resposta_aluno.strip().lower() == questao.resposta_correta.strip().lower():
             acertos += 1
 
+    # Calcula nota e total de questões
+    total_questoes = len(respostas)
+    nota = (acertos / total_questoes) * 10 if total_questoes > 0 else 0
+
     # Determina situação
     if acertos <= 5:
         situacao = "Insuficiente"
@@ -114,7 +118,9 @@ async def enviar_respostas(
         aluno_id=aluno.idAluno,
         prova_id=prova_id,
         acertos=acertos,
-        situacao=situacao
+        situacao=situacao,
+        nota=nota,
+        total_questoes=total_questoes
     )
 
     return RedirectResponse(url="/perfil", status_code=303)

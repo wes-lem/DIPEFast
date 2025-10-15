@@ -123,6 +123,7 @@ class ProvaTurmaDAO:
     def get_provas_for_aluno(db: Session, aluno_id: int):
         """Busca provas disponíveis para um aluno (baseado nas suas turmas)"""
         from models.aluno_turma import AlunoTurma, StatusAlunoTurma
+        from datetime import datetime
         
         # Busca turmas do aluno
         turmas_aluno = db.query(AlunoTurma.turma_id).filter(
@@ -130,16 +131,20 @@ class ProvaTurmaDAO:
             AlunoTurma.status == StatusAlunoTurma.ATIVO
         ).subquery()
         
-        # Busca provas ativas dessas turmas
+        agora = datetime.now()
+        
+        # Busca provas ativas dessas turmas que ainda não expiraram
         return db.query(ProvaTurma).filter(
             ProvaTurma.turma_id.in_(turmas_aluno),
-            ProvaTurma.status == StatusProvaTurma.ATIVA
+            ProvaTurma.status == StatusProvaTurma.ATIVA,
+            ProvaTurma.data_expiracao > agora
         ).all()
 
     @staticmethod
     def get_provas_expired_for_aluno(db: Session, aluno_id: int):
         """Busca provas expiradas para um aluno (para consulta)"""
         from models.aluno_turma import AlunoTurma, StatusAlunoTurma
+        from datetime import datetime
         
         # Busca turmas do aluno
         turmas_aluno = db.query(AlunoTurma.turma_id).filter(
@@ -147,10 +152,12 @@ class ProvaTurmaDAO:
             AlunoTurma.status == StatusAlunoTurma.ATIVO
         ).subquery()
         
-        # Busca provas expiradas dessas turmas
+        agora = datetime.now()
+        
+        # Busca provas expiradas dessas turmas (por data ou status)
         return db.query(ProvaTurma).filter(
             ProvaTurma.turma_id.in_(turmas_aluno),
-            ProvaTurma.status == StatusProvaTurma.EXPIRADA
+            ProvaTurma.data_expiracao < agora
         ).all()
 
     @staticmethod

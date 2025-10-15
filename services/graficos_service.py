@@ -167,6 +167,7 @@ class AnalyticsService:
             notas = [r.acertos for r in resultados_aluno]
             media = sum(notas) / len(notas) if notas else 0
             top_alunos_lista.append({
+                'idAluno': aluno.idAluno,
                 'nome': aluno.nome,
                 'turma': aluno.curso,
                 'nota_portugues': next((r.acertos for r in resultados_aluno if db.query(Prova).filter(Prova.id == r.prova_id, Prova.materia == 'Português').first()), 0),

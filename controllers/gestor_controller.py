@@ -27,6 +27,8 @@ from models.turma import Turma
 from models.banco_questoes import BancoQuestoes
 from models.prova_questao import ProvaQuestao
 from models.prova_turma import ProvaTurma
+from models.resposta_formulario import RespostaFormulario
+from models.pergunta_formulario import PerguntaFormulario
 
 from controllers.usuario_controller import verificar_sessao
 
@@ -36,6 +38,8 @@ from dao.resposta_formulario_dao import RespostaFormularioDAO
 from dao.professor_dao import ProfessorDAO
 from dao.campus_dao import CampusDAO
 from dao.turma_dao import TurmaDAO
+from dao.aluno_turma_dao import AlunoTurmaDAO
+from dao.prova_turma_dao import ProvaTurmaDAO
 
 from utils.auth import verificar_gestor_sessao
 
@@ -485,12 +489,12 @@ def detalhes_aluno_gestor(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao) # Protegido por gestor
 ):
-    """Exibe os detalhes e notas de um aluno específico para o gestor."""
+    """Exibe os detalhes completos de um aluno específico para o gestor."""
     aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
     if not aluno:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
-    # Buscar notas das provas (mantido, pois é específico para detalhes de um aluno)
+    # Notas agregadas antigas (mantém retrocompatibilidade se ainda for útil no topo)
     portugues = aliased(Prova)
     matematica = aliased(Prova)
     ciencias = aliased(Prova)
@@ -502,6 +506,63 @@ def detalhes_aluno_gestor(
     nota_ciencias = db.query(Resultado.acertos).join(ciencias, Resultado.prova_id == ciencias.id)\
         .filter(ciencias.materia == "Ciências", Resultado.aluno_id == aluno_id).scalar()
 
+    # Turmas do aluno (ativas)
+    turmas_aluno = AlunoTurmaDAO.get_turmas_with_details_by_aluno(db, aluno_id)
+
+    # Montar estrutura de provas por turma com resultado do aluno
+    turmas_provas_resultados = []
+    for at in turmas_aluno:
+        turma = at.turma
+        provas_turma = ProvaTurmaDAO.get_by_turma(db, turma.id)
+        provas_com_resultado = []
+        for pt in provas_turma:
+            resultado = db.query(Resultado).filter(
+                Resultado.aluno_id == aluno_id,
+                Resultado.prova_id == pt.prova_id
+            ).first()
+            provas_com_resultado.append({
+                "prova_turma": pt,
+                "resultado": resultado
+            })
+        turmas_provas_resultados.append({
+            "turma": turma,
+            "provas": provas_com_resultado
+        })
+
+    # Respostas socioeconômicas agregadas (todas as respostas do aluno)
+    respostas_rows = db.query(
+        RespostaFormulario,
+        PerguntaFormulario.enunciado,
+        PerguntaFormulario.tipo_pergunta,
+        PerguntaFormulario.opcoes
+    ).join(PerguntaFormulario, RespostaFormulario.pergunta_id == PerguntaFormulario.id)\
+     .filter(RespostaFormulario.aluno_id == aluno_id).all()
+
+    respostas_socioeconomicas = {}
+    import json as _json
+    for resposta_obj, enunciado, tipo_pergunta, opcoes_json in respostas_rows:
+        valor = None
+        if resposta_obj.resposta_opcoes:
+            try:
+                valor = _json.loads(resposta_obj.resposta_opcoes)
+            except Exception:
+                valor = resposta_obj.resposta_opcoes
+        elif resposta_obj.resposta_texto is not None:
+            valor = resposta_obj.resposta_texto
+        # Evita sobrescrever respostas repetidas; se houver múltiplas, acumula em lista
+        if enunciado in respostas_socioeconomicas:
+            existente = respostas_socioeconomicas[enunciado]
+            if isinstance(existente, list):
+                if isinstance(valor, list):
+                    existente.extend(valor)
+                else:
+                    existente.append(valor)
+                respostas_socioeconomicas[enunciado] = existente
+            else:
+                respostas_socioeconomicas[enunciado] = [existente] + (valor if isinstance(valor, list) else [valor])
+        else:
+            respostas_socioeconomicas[enunciado] = valor
+
     return templates.TemplateResponse(
         "gestor/detalhes_aluno.html",
         {
@@ -509,7 +570,9 @@ def detalhes_aluno_gestor(
             "aluno": aluno,
             "nota_portugues": nota_portugues,
             "nota_matematica": nota_matematica,
-            "nota_ciencias": nota_ciencias
+            "nota_ciencias": nota_ciencias,
+            "turmas_provas_resultados": turmas_provas_resultados,
+            "respostas_socioeconomicas": respostas_socioeconomicas
         }
     )
 

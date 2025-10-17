@@ -70,6 +70,7 @@ async def cadastrar_professor(
     campus_id: int = Form(...),
     especialidade: str = Form(None),
     foto: UploadFile = File(None),
+    foto_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     """Processa cadastro público de professor"""
@@ -99,12 +100,24 @@ async def cadastrar_professor(
     
     # Processar upload de foto
     imagem_path = None
-    if foto and foto.filename:
-        professor_upload_dir = os.path.join(UPLOAD_DIR, "professores")
-        os.makedirs(professor_upload_dir, exist_ok=True)
+    professor_upload_dir = os.path.join(UPLOAD_DIR, "professores")
+    os.makedirs(professor_upload_dir, exist_ok=True)
+    # Prioriza base64 recortado
+    if foto_cortada:
+        try:
+            import base64
+            header, b64data = foto_cortada.split(",", 1) if "," in foto_cortada else ("", foto_cortada)
+            img_bytes = base64.b64decode(b64data)
+            filename = f"professor_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+            file_location = os.path.join(professor_upload_dir, filename)
+            with open(file_location, "wb") as f:
+                f.write(img_bytes)
+            imagem_path = f"/static/uploads/professores/{filename}"
+        except Exception as e:
+            print(f"Falha ao salvar foto cortada do professor: {e}")
+    elif foto and foto.filename:
         filename = f"professor_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
         file_location = os.path.join(professor_upload_dir, filename)
-        
         with open(file_location, "wb") as buffer:
             buffer.write(await foto.read())
         imagem_path = f"/static/uploads/professores/{filename}"

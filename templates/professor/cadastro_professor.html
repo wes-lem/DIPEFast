@@ -79,8 +79,9 @@
                     </div>
                     
                     <div class="col text-center">
-                        <input type="file" name="foto" class="form-control mt-4 fs-4"
+                        <input type="file" id="fotoProfessor" name="foto" class="form-control mt-4 fs-4"
                             accept="image/*" placeholder="Foto de perfil (opcional)">
+                        <input type="hidden" id="fotoProfessorCortada" name="foto_cortada">
                     </div>
                     
                     <div class="col text-center">
@@ -94,6 +95,75 @@
             </div>
         </div>
     </section>
+    <!-- Modal Recorte Professor -->
+    <div class="modal fade" id="modalCropProfessor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recortar foto (1x1)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="cropImageProfessor" src="#" alt="Imagem para recorte" style="max-width:100%; display:none;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmCropProfessor" class="btn btn-padrao text-light">Confirmar recorte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+    <script>
+        (function(){
+            const fileInput = document.getElementById('fotoProfessor');
+            const hidden = document.getElementById('fotoProfessorCortada');
+            const cropImg = document.getElementById('cropImageProfessor');
+            const btnConfirm = document.getElementById('btnConfirmCropProfessor');
+            const form = document.querySelector('form[action="/professor/cadastrar"]');
+            const modalEl = document.getElementById('modalCropProfessor');
+            const modal = new bootstrap.Modal(modalEl);
+            let cropper = null;
+
+            fileInput.addEventListener('change', function(e){
+                const file = e.target.files && e.target.files[0];
+                if(!file) return;
+                const url = URL.createObjectURL(file);
+                cropImg.src = url;
+                cropImg.style.display = 'block';
+                setTimeout(() => {
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImg, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        movable: true,
+                        zoomable: true,
+                        scalable: false,
+                        responsive: true,
+                    });
+                }, 50);
+                modal.show();
+            });
+
+            btnConfirm.addEventListener('click', function(){
+                if(!cropper) return;
+                const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                hidden.value = dataUrl;
+                modal.hide();
+            });
+
+            form.addEventListener('submit', function(e){
+                if (fileInput.files && fileInput.files.length > 0 && !hidden.value) {
+                    e.preventDefault();
+                    modal.show();
+                }
+            });
+        })();
+    </script>
 
     <script src="https://kit.fontawesome.com/decee3670e.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

@@ -1231,6 +1231,7 @@ async def cadastrar_aluno(
     curso: str = Form(...),
     ano: int = Form(...),
     imagem: UploadFile = File(None),
+    imagem_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
@@ -1258,12 +1259,23 @@ async def cadastrar_aluno(
         
         # Processar imagem se fornecida
         imagem_path = None
-        if imagem and imagem.filename:
-            upload_dir = "templates/static/uploads/alunos"
-            os.makedirs(upload_dir, exist_ok=True)
+        upload_dir = "templates/static/uploads/alunos"
+        os.makedirs(upload_dir, exist_ok=True)
+        if imagem_cortada:
+            try:
+                import base64
+                header, b64data = imagem_cortada.split(",", 1) if "," in imagem_cortada else ("", imagem_cortada)
+                img_bytes = base64.b64decode(b64data)
+                filename = f"{usuario.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+                file_path = os.path.join(upload_dir, filename)
+                with open(file_path, "wb") as f:
+                    f.write(img_bytes)
+                imagem_path = "/static/uploads/alunos/" + filename
+            except Exception as e:
+                print(f"Falha ao salvar imagem cortada (aluno): {e}")
+        elif imagem and imagem.filename:
             filename = f"{usuario.id}_{imagem.filename}"
             file_path = os.path.join(upload_dir, filename)
-            
             with open(file_path, "wb") as buffer:
                 content = await imagem.read()
                 buffer.write(content)
@@ -1298,6 +1310,7 @@ async def cadastrar_professor(
     senha: str = Form(...),
     campus_id: int = Form(...),
     imagem: UploadFile = File(None),
+    imagem_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
@@ -1325,12 +1338,23 @@ async def cadastrar_professor(
         
         # Processar imagem se fornecida
         imagem_path = None
-        if imagem and imagem.filename:
-            upload_dir = "templates/static/uploads/professores"
-            os.makedirs(upload_dir, exist_ok=True)
+        upload_dir = "templates/static/uploads/professores"
+        os.makedirs(upload_dir, exist_ok=True)
+        if imagem_cortada:
+            try:
+                import base64
+                header, b64data = imagem_cortada.split(",", 1) if "," in imagem_cortada else ("", imagem_cortada)
+                img_bytes = base64.b64decode(b64data)
+                filename = f"{usuario.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+                file_path = os.path.join(upload_dir, filename)
+                with open(file_path, "wb") as f:
+                    f.write(img_bytes)
+                imagem_path = "/static/uploads/professores/" + filename
+            except Exception as e:
+                print(f"Falha ao salvar imagem cortada (professor): {e}")
+        elif imagem and imagem.filename:
             filename = f"{usuario.id}_{imagem.filename}"
             file_path = os.path.join(upload_dir, filename)
-            
             with open(file_path, "wb") as buffer:
                 content = await imagem.read()
                 buffer.write(content)
@@ -1359,6 +1383,7 @@ async def cadastrar_gestor(
     email: str = Form(...),
     senha: str = Form(...),
     imagem: UploadFile = File(None),
+    imagem_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
@@ -1386,12 +1411,23 @@ async def cadastrar_gestor(
         
         # Processar imagem se fornecida
         imagem_path = None
-        if imagem and imagem.filename:
-            upload_dir = "templates/static/uploads/gestores"
-            os.makedirs(upload_dir, exist_ok=True)
+        upload_dir = "templates/static/uploads/gestores"
+        os.makedirs(upload_dir, exist_ok=True)
+        if imagem_cortada:
+            try:
+                import base64
+                header, b64data = imagem_cortada.split(",", 1) if "," in imagem_cortada else ("", imagem_cortada)
+                img_bytes = base64.b64decode(b64data)
+                filename = f"{usuario.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+                file_path = os.path.join(upload_dir, filename)
+                with open(file_path, "wb") as f:
+                    f.write(img_bytes)
+                imagem_path = "/static/uploads/gestores/" + filename
+            except Exception as e:
+                print(f"Falha ao salvar imagem cortada (gestor): {e}")
+        elif imagem and imagem.filename:
             filename = f"{usuario.id}_{imagem.filename}"
             file_path = os.path.join(upload_dir, filename)
-            
             with open(file_path, "wb") as buffer:
                 content = await imagem.read()
                 buffer.write(content)

@@ -95,7 +95,9 @@ async def cadastrar_aluno(
     escola: Optional[str] = Form(None),
     forma_ingresso: Optional[str] = Form(None),
     acesso_internet: Optional[str] = Form(None),
+    observacoes: Optional[str] = Form(None),
     imagem: UploadFile = File(None),
+    imagem_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db),
 ):
     usuario = db.query(Usuario).filter(Usuario.id == idUser).first()
@@ -106,17 +108,31 @@ async def cadastrar_aluno(
         raise HTTPException(status_code=400, detail="Curso inválido")
 
     imagem_relativa = None
-    if imagem and imagem.filename:
-        upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
-        os.makedirs(upload_dir_aluno, exist_ok=True)
+    upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
+    os.makedirs(upload_dir_aluno, exist_ok=True)
 
+    # Se veio imagem cortada em base64, prioriza e salva como jpg
+    if imagem_cortada:
+        try:
+            import base64
+            header, b64data = imagem_cortada.split(",", 1) if "," in imagem_cortada else ("", imagem_cortada)
+            img_bytes = base64.b64decode(b64data)
+            filename = f"{idUser}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+            file_location = os.path.join(upload_dir_aluno, filename)
+            with open(file_location, "wb") as f:
+                f.write(img_bytes)
+            imagem_relativa = f"/static/uploads/alunos/{filename}"
+        except Exception as e:
+            print(f"Falha ao salvar imagem cortada: {e}")
+            # fallback para arquivo bruto se existir
+
+    # Caso não tenha imagem_cortada válida, usa o arquivo original (sem crop)
+    if not imagem_relativa and imagem and imagem.filename:
         filename = f"{idUser}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(imagem.filename).suffix}"
         file_location = os.path.join(upload_dir_aluno, filename)
-
         conteudo = await imagem.read()
         with open(file_location, "wb") as buffer:
             buffer.write(conteudo)
-
         imagem_relativa = f"/static/uploads/alunos/{filename}"
 
     # Converter acesso_internet para booleano
@@ -139,7 +155,8 @@ async def cadastrar_aluno(
         imagem=imagem_relativa,
         escola=escola,
         forma_ingresso=forma_ingresso,
-        acesso_internet=acesso_internet_bool
+        acesso_internet=acesso_internet_bool,
+        observacoes=observacoes
     )
 
     return RedirectResponse(url="/login", status_code=303)
@@ -283,7 +300,12 @@ async def editar_dados(
     origem_escolar: str = Form(...),
     curso: str = Form(...),
     ano: int = Form(...),
+    escola: Optional[str] = Form(None),
+    forma_ingresso: Optional[str] = Form(None),
+    acesso_internet: Optional[str] = Form(None),
+    observacoes: Optional[str] = Form(None),
     foto: UploadFile = File(None),
+    foto_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
@@ -298,28 +320,50 @@ async def editar_dados(
     aluno.origem_escolar = origem_escolar
     aluno.curso = curso
     aluno.ano = ano
+    aluno.escola = escola
+    aluno.forma_ingresso = forma_ingresso
+    if acesso_internet == "true":
+        aluno.acesso_internet = True
+    elif acesso_internet == "false":
+        aluno.acesso_internet = False
+    else:
+        aluno.acesso_internet = None
+    aluno.observacoes = observacoes
     
-    # Atualizar foto se fornecida
-    if foto and foto.filename:
+    # Atualizar foto se fornecida (prioriza base64 cortada)
+    if foto_cortada or (foto and foto.filename):
+        # Remover antiga se existir
         if aluno.imagem:
             caminho_antigo = aluno.imagem.lstrip('/')
             caminho_completo = os.path.join("templates", caminho_antigo)
             if os.path.exists(caminho_completo):
                 try:
                     os.remove(caminho_completo)
-                    print(f"Foto antiga removida: {caminho_completo}")
                 except Exception as e:
                     print(f"Erro ao remover foto antiga: {e}")
-        
-        filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
-        file_location = os.path.join(UPLOAD_DIR, "alunos", filename)
-        os.makedirs(os.path.dirname(file_location), exist_ok=True)
-        
-        conteudo = await foto.read()
-        with open(file_location, "wb") as buffer:
-            buffer.write(conteudo)
-        
-        aluno.imagem = f"/static/uploads/alunos/{filename}"
+
+        upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
+        os.makedirs(upload_dir_aluno, exist_ok=True)
+
+        if foto_cortada:
+            try:
+                import base64
+                header, b64data = foto_cortada.split(",", 1) if "," in foto_cortada else ("", foto_cortada)
+                img_bytes = base64.b64decode(b64data)
+                filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+                file_location = os.path.join(upload_dir_aluno, filename)
+                with open(file_location, "wb") as f:
+                    f.write(img_bytes)
+                aluno.imagem = f"/static/uploads/alunos/{filename}"
+            except Exception as e:
+                print(f"Falha ao salvar foto cortada: {e}")
+        elif foto and foto.filename:
+            filename = f"aluno_{aluno.idAluno}_{datetime.now().strftime('%Y%m%d%H%M%S')}{Path(foto.filename).suffix}"
+            file_location = os.path.join(upload_dir_aluno, filename)
+            conteudo = await foto.read()
+            with open(file_location, "wb") as buffer:
+                buffer.write(conteudo)
+            aluno.imagem = f"/static/uploads/alunos/{filename}"
     
     db.commit()
     return RedirectResponse(url="/perfil", status_code=303)

@@ -477,8 +477,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemAluno" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemAluno" name="imagem"
-                                        accept="image/*">
+                                    <input type="file" class="form-control" id="imagemAluno" name="imagem" accept="image/*">
+                                    <input type="hidden" id="imagemAlunoCortada" name="imagem_cortada">
                                 </div>
                             </div>
                         </div>
@@ -543,8 +543,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemProfessor" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemProfessor" name="imagem"
-                                        accept="image/*">
+                                    <input type="file" class="form-control" id="imagemProfessor" name="imagem" accept="image/*">
+                                    <input type="hidden" id="imagemProfessorCortada" name="imagem_cortada">
                                 </div>
                             </div>
                         </div>
@@ -595,8 +595,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagemGestor" class="form-label">Foto</label>
-                                    <input type="file" class="form-control" id="imagemGestor" name="imagem"
-                                        accept="image/*">
+                                    <input type="file" class="form-control" id="imagemGestor" name="imagem" accept="image/*">
+                                    <input type="hidden" id="imagemGestorCortada" name="imagem_cortada">
                                 </div>
                             </div>
                         </div>
@@ -875,6 +875,75 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
     <script src="/static/js/menu.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+    <!-- Modal Recorte Global -->
+    <div class="modal fade" id="modalCropGestor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recortar foto (1x1)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="cropImageGestor" src="#" alt="Imagem para recorte" style="max-width:100%; display:none;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnConfirmCropGestor" class="btn btn-padrao text-light">Confirmar recorte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function(){
+            const modalEl = document.getElementById('modalCropGestor');
+            const modal = new bootstrap.Modal(modalEl);
+            const cropImg = document.getElementById('cropImageGestor');
+            const btnConfirm = document.getElementById('btnConfirmCropGestor');
+            let cropper = null;
+            let targetHidden = null;
+
+            function setupCropper(file, hiddenInput){
+                if(!file) return;
+                targetHidden = hiddenInput;
+                const url = URL.createObjectURL(file);
+                cropImg.src = url;
+                cropImg.style.display = 'block';
+                setTimeout(() => {
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImg, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        movable: true,
+                        zoomable: true,
+                        scalable: false,
+                        responsive: true,
+                    });
+                }, 50);
+                modal.show();
+            }
+
+            document.getElementById('imagemAluno')?.addEventListener('change', function(e){
+                setupCropper(e.target.files && e.target.files[0], document.getElementById('imagemAlunoCortada'));
+            });
+            document.getElementById('imagemProfessor')?.addEventListener('change', function(e){
+                setupCropper(e.target.files && e.target.files[0], document.getElementById('imagemProfessorCortada'));
+            });
+            document.getElementById('imagemGestor')?.addEventListener('change', function(e){
+                setupCropper(e.target.files && e.target.files[0], document.getElementById('imagemGestorCortada'));
+            });
+
+            btnConfirm.addEventListener('click', function(){
+                if(!cropper || !targetHidden) return;
+                const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                targetHidden.value = dataUrl;
+                modal.hide();
+            });
+        })();
+    </script>
 
     <script>
         // Inicializar abas do Bootstrap

@@ -408,3 +408,8 @@ textarea:not(:placeholder-shown) { background-color: white; }
     color: #16a34a; 
     border-color: #e9ecef; 
 }
+
+.img-container > img {
+    max-width: 100%;
+    display: block; /* O Cropper.js recomenda isso */
+}

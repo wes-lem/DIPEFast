@@ -21,21 +21,21 @@ def wait_for_db(db_url: str):
     retry_delay = 3
     retries = 0
 
-    print("⏳ Aguardando o banco de dados ficar disponível...")
+    print("Aguardando o banco de dados ficar disponivel...")
 
     while retries < max_retries:
         try:
             temp_engine = create_engine(db_url, connect_args={"charset": "utf8mb4"})
             with temp_engine.connect() as connection:
                 connection.execute(text("SELECT 1"))
-            print("✅ Conexão com o banco de dados bem-sucedida!")
+            print("Conexao com o banco de dados bem-sucedida!")
             return temp_engine
         except OperationalError:
             retries += 1
-            print(f"🔌 Banco de dados ainda não está pronto. Tentando novamente em {retry_delay}s... ({retries}/{max_retries})")
+            print(f"Banco de dados ainda nao esta pronto. Tentando novamente em {retry_delay}s... ({retries}/{max_retries})")
             time.sleep(retry_delay)
 
-    print("🚨 Não foi possível conectar ao banco de dados após várias tentativas. Abortando.")
+    print("Nao foi possivel conectar ao banco de dados apos varias tentativas. Abortando.")
     exit(1)
 
 engine = wait_for_db(DATABASE_URL)

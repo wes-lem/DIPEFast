@@ -12,7 +12,7 @@ def criar_gestor_padrao():
         usuario_existente = db.query(Usuario).filter(Usuario.email == email_gestor_padrao).first()
         
         if not usuario_existente:
-            print("Criando gestor padrão...")
+            print("Criando gestor padro...")
             
             senha_padrao_texto = "@dipe2025"
             nome_padrao = "Gestor"
@@ -26,9 +26,9 @@ def criar_gestor_padrao():
             db.add(novo_gestor)
             
             db.commit()
-            print("✅ Gestor padrão criado com sucesso!")
+            print(" Gestor padro criado com sucesso!")
         else:
-            print("ℹ️ Gestor padrão já existe. Nenhuma ação necessária.")
+            print(" Gestor padro j existe. Nenhuma ao necessria.")
 
     finally:
         db.close()

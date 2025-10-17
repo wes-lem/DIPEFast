@@ -26,7 +26,7 @@ from dao.prova_questao_dao import ProvaQuestaoDAO
 from dao.notificacao_professor_dao import NotificacaoProfessorDAO
 
 from app_config import templates
-from services.relatorios_service import RelatoriosService
+from services.relatorios_service import RelatorioService
 from utils.export_service import pdf_response_from_html, docx_response_from_data
 
 # Configurações
@@ -179,7 +179,7 @@ def relatorios_professor(
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
-    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    dados = RelatorioService.get_professor_report_data(db, professor_id)
     return templates.TemplateResponse(
         "professor/relatorios.html",
         {"request": request, "dados": dados}
@@ -191,7 +191,7 @@ def export_relatorios_professor_pdf(
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
-    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    dados = RelatorioService.get_professor_report_data(db, professor_id)
     # Renderiza o HTML do template em string
     template = templates.get_template("professor/relatorios.html")
     html = template.render(request=request, dados=dados)
@@ -202,7 +202,7 @@ def export_relatorios_professor_docx(
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
-    dados = RelatoriosService.get_professor_report_data(db, professor_id)
+    dados = RelatorioService.get_professor_report_data(db, professor_id)
     sections = {
         "Provas (médias)": {"labels": dados["provas"]["labels"], "medias": dados["provas"]["medias"]},
         "Provas (participação)": {"labels": dados["provas"]["labels"], "medias": dados["provas"]["participacao"]},

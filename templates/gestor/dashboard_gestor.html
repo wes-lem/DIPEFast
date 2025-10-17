@@ -23,7 +23,7 @@
                 <div class="sidebar-logo me-4">
                 </div>
             </div>
-                        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
                 <li class="sidebar-item">
                     <a href="/gestor/dashboard"
                         class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
@@ -88,31 +88,36 @@
                 </a>
             </div>
 
-            
-            
+
+
         </aside>
 
         <div class="main p-4 bg-pattern">
             <!-- Cabeçalho + Filtros Globais -->
-            <div class="d-flex flex-wrap align-items-center justify-content-end mb-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center">
+                    <a href="/gestor/dashboard/relatorio" class="btn btn-padrao-dark btn-sm text-light">
+                        <i class="bi bi-file-earmark-text text-light me-2"></i>Gerar Relatório
+                    </a>
+                </div>
                 <div class="d-flex bg-secundaria rounded-4 borda px-3 py-2" style="gap: 16px;">
                     <div class="d-flex flex-column justify-content-center p-2">
                         <h4 class="fs-5 f-libre mb-1">Bem-vindo(a) {{ gestor.nome }},</h4>
                         <p class="fs-6 m-0">Acompanhe o desempenho geral e as estatísticas do sistema.</p>
-                        </div>
+                    </div>
                     <div class="d-flex align-items-center">
                         <img src="/{{ gestor.imagem or 'static/img/user.jpg' }}" alt="Foto de perfil"
                             class="rounded-circle" style="width: 56px; height: 56px; object-fit: cover;">
                     </div>
-                    </div>
                 </div>
+            </div>
 
             <!-- KPIs compactos -->
             <div class="row g-3 mb-3">
                 <div class="col-6 col-md-3">
                     <div class="card border-0">
                         <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                                <div>
+                            <div>
                                 <div class="text-muted small">Total de Alunos</div>
                                 <div class="fs-5">{{ dados.cards.total_alunos }}</div>
                             </div>
@@ -123,7 +128,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0">
                         <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                                <div>
+                            <div>
                                 <div class="text-muted small">Provas Realizadas</div>
                                 <div class="fs-5">{{ dados.cards.total_provas }}</div>
                             </div>
@@ -134,7 +139,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0">
                         <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                                <div>
+                            <div>
                                 <div class="text-muted small">Média Geral</div>
                                 <div class="fs-5">{{ dados.cards.media_geral }}</div>
                             </div>
@@ -145,30 +150,33 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0">
                         <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                                <div>
+                            <div>
                                 <div class="text-muted small">% Suficiente</div>
                                 <div class="fs-5">{{ dados.cards.percentual_suficiente }}%</div>
                             </div>
                             <i class="bi bi-patch-check-fill text-success fs-4"></i>
                         </div>
                     </div>
-                                        </div>
-                                    </div>
+                </div>
+            </div>
 
             <!-- Abas -->
             <ul class="nav nav-tabs" id="abasDashboard" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="tab-visao" data-bs-toggle="tab" data-bs-target="#pane-visao"
-                        type="button" role="tab" aria-controls="pane-visao" aria-selected="true"><i class="bi-bar-chart-line me-2"></i>Visão Geral</button>
+                        type="button" role="tab" aria-controls="pane-visao" aria-selected="true"><i
+                            class="bi-bar-chart-line me-2"></i>Visão Geral</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-turmas" data-bs-toggle="tab" data-bs-target="#pane-turmas"
-                        type="button" role="tab" aria-controls="pane-turmas" aria-selected="false"><i class="bi-house-door me-2"></i> Análise de
+                        type="button" role="tab" aria-controls="pane-turmas" aria-selected="false"><i
+                            class="bi-house-door me-2"></i> Análise de
                         Turmas</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-alunos" data-bs-toggle="tab" data-bs-target="#pane-alunos"
-                        type="button" role="tab" aria-controls="pane-alunos" aria-selected="false"><i class="bi-speedometer2 me-2"></i> Desempenho dos
+                        type="button" role="tab" aria-controls="pane-alunos" aria-selected="false"><i
+                            class="bi-speedometer2 me-2"></i> Desempenho dos
                         Alunos</button>
                 </li>
             </ul>
@@ -181,14 +189,14 @@
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Desempenho por Disciplina</h6>
                                 <canvas id="graficoDisciplina" height="200"></canvas>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                         <div class="col-lg-6">
                             <div class="bg-branco borda rounded-4 p-3 h-100">
-                                            <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
+                                <h6 class="m-0 fw-semi">Distribuição das Notas</h6>
                                 <canvas id="graficoDistribuicao" height="200"></canvas>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="bg-branco borda rounded-4 p-3">
                                 <h6 class="m-0 fw-semi">Progressão dos Alunos</h6>
@@ -205,16 +213,16 @@
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Comparação entre Turmas</h6>
                                 <canvas id="graficoTurmas" height="200"></canvas>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Taxa de Participação</h6>
                                 <canvas id="graficoParticipacao" height="200"></canvas>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                         <div class="col-12">
-                                        <div class="bg-branco borda rounded-4 p-3">
+                            <div class="bg-branco borda rounded-4 p-3">
                                 <h6 class="m-0 fw-semi">Número de Alunos por Turma</h6>
                                 <canvas id="graficoAlunosTurma" height="160"></canvas>
                             </div>
@@ -229,8 +237,8 @@
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Alunos por Idade</h6>
                                 <canvas id="graficoPerfil" height="200"></canvas>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                         <div class="col-md-4">
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Distribuição por Zona</h6>
@@ -241,45 +249,45 @@
                             <div class="bg-branco borda rounded-4 p-3 h-100">
                                 <h6 class="m-0 fw-semi">Municípios</h6>
                                 <canvas id="graficoCidade" height="200"></canvas>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
                         <div class="col-12">
-                    <div class="bg-branco borda rounded-3 p-3">
+                            <div class="bg-branco borda rounded-3 p-3">
                                 <h6 class="m-0 fw-semi mb-3 fs-5 fw-bold"><i
                                         class="bi bi-trophy-fill text-warning me-2"></i> Top 10 Alunos</h6>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Foto</th>
-                                        <th>Nome</th>
-                                        <th>Turma</th>
-                                        <th>Português</th>
-                                        <th>Matemática</th>
-                                        <th>Ciências</th>
-                                        <th>Média</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for aluno in dados.top_alunos %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Foto</th>
+                                                <th>Nome</th>
+                                                <th>Turma</th>
+                                                <th>Português</th>
+                                                <th>Matemática</th>
+                                                <th>Ciências</th>
+                                                <th>Média</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for aluno in dados.top_alunos %}
                                             <tr onclick="window.location.href='/alunos/{{ aluno.idAluno }}';"
                                                 style="cursor: pointer;">
-                                        <td>
+                                                <td>
                                                     <img src="{{ aluno.foto }}" alt="{{ aluno.nome }}"
                                                         class="rounded-circle"
-                                                style="width: 40px; height: 40px; object-fit: cover;">
-                                        </td>
-                                        <td>{{ aluno.nome }}</td>
-                                        <td>{{ aluno.turma }}</td>
-                                        <td>{{ aluno.nota_portugues }}</td>
-                                        <td>{{ aluno.nota_matematica }}</td>
-                                        <td>{{ aluno.nota_ciencias }}</td>
-                                        <td>{{ aluno.media }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                                </td>
+                                                <td>{{ aluno.nome }}</td>
+                                                <td>{{ aluno.turma }}</td>
+                                                <td>{{ aluno.nota_portugues }}</td>
+                                                <td>{{ aluno.nota_matematica }}</td>
+                                                <td>{{ aluno.nota_ciencias }}</td>
+                                                <td>{{ aluno.media }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

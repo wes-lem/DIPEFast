@@ -9,9 +9,9 @@ def migrar_banco():
     """Migra o banco de dados para incluir as novas colunas e tabelas"""
     db = SessionLocal()
     try:
-        print("🔄 Iniciando migração do banco de dados...")
+        print(" Iniciando migrao do banco de dados...")
         
-        # Verificar se a coluna professor_id já existe na tabela provas
+        # Verificar se a coluna professor_id j existe na tabela provas
         result = db.execute(text("""
             SELECT COLUMN_NAME 
             FROM INFORMATION_SCHEMA.COLUMNS 
@@ -19,7 +19,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Adicionando coluna professor_id na tabela provas...")
+            print(" Adicionando coluna professor_id na tabela provas...")
             db.execute(text("ALTER TABLE provas ADD COLUMN professor_id INT"))
             db.execute(text("ALTER TABLE provas ADD COLUMN titulo VARCHAR(255)"))
             db.execute(text("ALTER TABLE provas ADD COLUMN status VARCHAR(50) DEFAULT 'rascunho'"))
@@ -27,9 +27,9 @@ def migrar_banco():
             
             # Adicionar foreign key constraint
             db.execute(text("ALTER TABLE provas ADD CONSTRAINT fk_provas_professor FOREIGN KEY (professor_id) REFERENCES professores(id)"))
-            print("✅ Colunas adicionadas na tabela provas")
+            print(" Colunas adicionadas na tabela provas")
         else:
-            print("✅ Coluna professor_id já existe na tabela provas")
+            print(" Coluna professor_id j existe na tabela provas")
         
         # Verificar se a tabela campus existe
         result = db.execute(text("""
@@ -39,7 +39,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela campus...")
+            print(" Criando tabela campus...")
             db.execute(text("""
                 CREATE TABLE campus (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,9 +48,9 @@ def migrar_banco():
                     ativo BOOLEAN DEFAULT TRUE
                 )
             """))
-            print("✅ Tabela campus criada")
+            print(" Tabela campus criada")
         else:
-            print("✅ Tabela campus já existe")
+            print(" Tabela campus j existe")
         
         # Verificar se a tabela professores existe
         result = db.execute(text("""
@@ -60,7 +60,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela professores...")
+            print(" Criando tabela professores...")
             db.execute(text("""
                 CREATE TABLE professores (
                     id INT PRIMARY KEY,
@@ -73,9 +73,9 @@ def migrar_banco():
                     FOREIGN KEY (campus_id) REFERENCES campus(id)
                 )
             """))
-            print("✅ Tabela professores criada")
+            print(" Tabela professores criada")
         else:
-            print("✅ Tabela professores já existe")
+            print(" Tabela professores j existe")
         
         # Verificar se a tabela turmas existe
         result = db.execute(text("""
@@ -85,7 +85,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela turmas...")
+            print(" Criando tabela turmas...")
             db.execute(text("""
                 CREATE TABLE turmas (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,9 +100,9 @@ def migrar_banco():
                     FOREIGN KEY (campus_id) REFERENCES campus(id)
                 )
             """))
-            print("✅ Tabela turmas criada")
+            print(" Tabela turmas criada")
         else:
-            print("✅ Tabela turmas já existe")
+            print(" Tabela turmas j existe")
         
         # Verificar se a tabela aluno_turmas existe
         result = db.execute(text("""
@@ -112,7 +112,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela aluno_turmas...")
+            print(" Criando tabela aluno_turmas...")
             db.execute(text("""
                 CREATE TABLE aluno_turmas (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -124,9 +124,9 @@ def migrar_banco():
                     FOREIGN KEY (turma_id) REFERENCES turmas(id)
                 )
             """))
-            print("✅ Tabela aluno_turmas criada")
+            print(" Tabela aluno_turmas criada")
         else:
-            print("✅ Tabela aluno_turmas já existe")
+            print(" Tabela aluno_turmas j existe")
         
         # Verificar se a tabela banco_questoes existe
         result = db.execute(text("""
@@ -136,7 +136,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela banco_questoes...")
+            print(" Criando tabela banco_questoes...")
             db.execute(text("""
                 CREATE TABLE banco_questoes (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,9 +155,9 @@ def migrar_banco():
                     FOREIGN KEY (professor_id) REFERENCES professores(id)
                 )
             """))
-            print("✅ Tabela banco_questoes criada")
+            print(" Tabela banco_questoes criada")
         else:
-            print("✅ Tabela banco_questoes já existe")
+            print(" Tabela banco_questoes j existe")
         
         # Verificar se a tabela prova_questoes existe
         result = db.execute(text("""
@@ -167,7 +167,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela prova_questoes...")
+            print(" Criando tabela prova_questoes...")
             db.execute(text("""
                 CREATE TABLE prova_questoes (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -178,9 +178,9 @@ def migrar_banco():
                     FOREIGN KEY (questao_id) REFERENCES banco_questoes(id)
                 )
             """))
-            print("✅ Tabela prova_questoes criada")
+            print(" Tabela prova_questoes criada")
         else:
-            print("✅ Tabela prova_questoes já existe")
+            print(" Tabela prova_questoes j existe")
         
         # Verificar se a tabela prova_turmas existe
         result = db.execute(text("""
@@ -190,7 +190,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela prova_turmas...")
+            print(" Criando tabela prova_turmas...")
             db.execute(text("""
                 CREATE TABLE prova_turmas (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -206,9 +206,9 @@ def migrar_banco():
                     FOREIGN KEY (professor_id) REFERENCES professores(id)
                 )
             """))
-            print("✅ Tabela prova_turmas criada")
+            print(" Tabela prova_turmas criada")
         else:
-            print("✅ Tabela prova_turmas já existe")
+            print(" Tabela prova_turmas j existe")
         
         # Verificar se a tabela notificacoes_professor existe
         result = db.execute(text("""
@@ -218,7 +218,7 @@ def migrar_banco():
         """))
         
         if not result.fetchone():
-            print("📝 Criando tabela notificacoes_professor...")
+            print(" Criando tabela notificacoes_professor...")
             db.execute(text("""
                 CREATE TABLE notificacoes_professor (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -231,15 +231,15 @@ def migrar_banco():
                     FOREIGN KEY (professor_id) REFERENCES professores(id)
                 )
             """))
-            print("✅ Tabela notificacoes_professor criada")
+            print(" Tabela notificacoes_professor criada")
         else:
-            print("✅ Tabela notificacoes_professor já existe")
+            print(" Tabela notificacoes_professor j existe")
         
         db.commit()
-        print("🎉 Migração do banco de dados concluída com sucesso!")
+        print(" Migrao do banco de dados concluda com sucesso!")
         
     except Exception as e:
-        print(f"❌ Erro durante a migração: {e}")
+        print(f" Erro durante a migrao: {e}")
         db.rollback()
         raise
     finally:

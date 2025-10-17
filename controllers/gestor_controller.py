@@ -45,7 +45,7 @@ from utils.auth import verificar_gestor_sessao
 
 # Importar a instância templates do app_config
 from app_config import templates
-from services.relatorios_service import RelatoriosService
+from services.relatorios_service import RelatorioService
 from utils.export_service import pdf_response_from_html, docx_response_from_data
 
 def verificar_gestor_sessao(request: Request, db: Session = Depends(get_db)):
@@ -1142,7 +1142,7 @@ async def relatorios_gestor(
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
     """Página de relatórios do gestor com gráficos Chart.js"""
-    dados = RelatoriosService.get_gestor_report_data(db)
+    dados = RelatorioService.get_gestor_report_data(db)
     return templates.TemplateResponse(
         "gestor/relatorios.html",
         {"request": request, "dados": dados}
@@ -1154,7 +1154,7 @@ async def export_relatorios_gestor_pdf(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    dados = RelatoriosService.get_gestor_report_data(db)
+    dados = RelatorioService.get_gestor_report_data(db)
     template = templates.get_template("gestor/relatorios.html")
     html = template.render(request=request, dados=dados)
     return pdf_response_from_html(html, filename="relatorio_gestor.pdf")
@@ -1164,7 +1164,7 @@ async def export_relatorios_gestor_docx(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    dados = RelatoriosService.get_gestor_report_data(db)
+    dados = RelatorioService.get_gestor_report_data(db)
     sections = {
         "Médias por Matéria": dados["materias"],
         "Médias por Curso": dados["cursos"],
@@ -1819,3 +1819,42 @@ def excluir_gestor(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao excluir gestor: {str(e)}")
+
+# === ROTA PARA GERAR RELATÓRIO DO DASHBOARD ===
+
+@router.get("/gestor/dashboard/relatorio")
+async def gerar_relatorio_dashboard(
+    request: Request,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """
+    Gera e baixa um relatório DOCX completo com todas as informações do dashboard.
+    """
+    try:
+        # Gerar o relatório usando o serviço
+        relatorio_buffer = RelatorioService.gerar_relatorio_geral_dashboard(db, gestor_id)
+        
+        # Criar nome do arquivo com timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"relatorio_geral_dashboard_{timestamp}.docx"
+        
+        # Retornar o arquivo para download
+        from fastapi.responses import Response
+        headers = {
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        }
+        
+        return Response(
+            content=relatorio_buffer.read(),
+            headers=headers,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+        
+    except Exception as e:
+        print(f"Erro ao gerar relatório: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro ao gerar relatório: {str(e)}"
+        )

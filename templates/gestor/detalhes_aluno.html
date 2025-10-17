@@ -108,56 +108,69 @@
             </div>
             <div class="row">
                 <div class="col-md-4 pe-0">
-
                     <div class="card">
                         <div class="card-header bg-padrao text-light">
                             <h5 class="m-0 fw-semi">Perfil</h5>
                         </div>
-                        <div class="card-body d-flex">
+                        <div class="card-body d-flex align-items-center">
                             <img src="{{ aluno.imagem or '/static/img/user.png' }}" alt="" width="100px" height="100px"
                                 class="rounded-3" style="object-fit: cover;">
-                            <div class="h-100 ms-3 w-100">
-                                <div class="align-self-center">
-                                    <strong>{{ aluno.nome }}</strong><br>
-                                    <strong class="m-0">{{ aluno.idade }} anos</strong>
+
+                            <div class="d-flex flex-column w-100 px-3 gap-2">
+                                <div>
+                                    <strong class="fs-5">{{ aluno.nome }}</strong><br>
                                 </div>
-                                <hr class="hr m-0">
-                                <div class="align-self-center">
-                                    <strong>{{ aluno.ano }}° ano</strong><br>
-                                    <strong>{{ aluno.curso }}</strong>
+                                <div class="d-flex justify-content-between">
+                                    <div class="text-center">
+                                        <p class="m-0">Ano</p>
+                                        <strong>{{ aluno.ano }}° ano</strong><br>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div class="text-center">
+                                        <p class="m-0">Curso</p>
+                                        <strong><i class="bi bi-mortarboard-fill c-padrao me-1"></i>{{aluno.curso}}</strong>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div class="text-center">
+                                        <p class="m-0">Idade</p>
+                                        <strong class="m-0">{{ aluno.idade }} anos</strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-8">
-                    <div class="bg-padrao rounded-3 p-2">
-                        <h6 class="m-0 text-light fw-semi">Resultado da Avaliação Diagnóstica</h6>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <div class="bg-branco borda rounded-4 py-2 flex-grow-1 text-center">
-                                <h6 class="fw-bold m-0 c-portugues pb-2">Português</h6>
-                                <hr class="hr m-0">
-                                <p class="fs-6 m-0 fw-semi">Acertos:</p>
-                                <h1 class="m-0 fw-bolder c-portugues">{{ nota_portugues or '--' }}</h1>
-                            </div>
+                <div class="col-md-8 d-flex">
+                    <div class="card h-100 w-100">
+                        <div class="card-header bg-padrao text-light">
+                            <h5 class="m-0 fw-semi">Resultado da Avaliação Diagnóstica</h5>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-branco borda rounded-4 py-2 flex-grow-1 text-center">
-                                <h6 class="fw-bold m-0 c-matematica pb-2">Matemática</h6>
-                                <hr class="hr m-0">
-                                <p class="fs-6 m-0 fw-semi">Acertos:</p>
-                                <h1 class="m-0 fw-bolder c-matematica">{{ nota_matematica or '--' }}</h1>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="bg-branco borda rounded-4 py-2 flex-grow-1 text-center">
-                                <h6 class="fw-bold m-0 c-ciencias pb-2">Ciências</h6>
-                                <hr class="hr m-0">
-                                <p class="fs-6 m-0 fw-semi">Acertos:</p>
-                                <h1 class="m-0 fw-bolder c-ciencias">{{ nota_ciencias or '--' }}</h1>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-around align-items-center h-100">
+                                <div class="text-center">
+                                    <strong class="m-0 fs-5">Português</strong>
+                                    <div class="d-flex align-items-center">
+                                        <strong class="fs-6 m-0 fw-semi me-3">Acertos:</strong>
+                                        <h1 class="m-0 fw-bolder c-portugues">{{ nota_portugues or '--' }}</h1>
+                                    </div>
+                                </div>
+                                <div class="vr"></div>
+                                <div class="text-center">
+                                    <strong class="m-0 fs-5">Matemática</strong>
+                                    <div class="d-flex align-items-center">
+                                        <strong class="fs-6 m-0 fw-semi me-3">Acertos:</strong>
+                                        <h1 class="m-0 fw-bolder c-matematica">{{ nota_matematica or '--' }}</h1>
+                                    </div>
+                                </div>
+                                <div class="vr"></div>
+                                <div class="text-center">
+                                    <strong class="m-0 fs-5">Ciências</strong>
+                                    <div class="d-flex align-items-center">
+                                        <strong class="fs-6 m-0 fw-semi me-3">Acertos:</strong>
+                                        <h1 class="m-0 fw-bolder c-ciencias">{{ nota_ciencias or '0' }}</h1>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -282,20 +295,21 @@
                                                             <td>{{ '%.1f' % r.nota if r else '—' }}</td>
                                                             <td>
                                                                 {% if r and r.nota is not none %}
-                                                                    {% if r.nota >= 6,66 %}
-                                                                        <span class="badge bg-success">Suficiente</span>
-                                                                    {% elif r.nota >= 3,33 %}
-                                                                        <span class="badge bg-warning text-dark">Regular</span>
-                                                                    {% else %}
-                                                                        <span class="badge bg-danger">Insuficiente</span>
-                                                                    {% endif %}
+                                                                {% if r.nota >= 6,66 %}
+                                                                <span class="badge bg-success">Suficiente</span>
+                                                                {% elif r.nota >= 3,33 %}
+                                                                <span class="badge bg-warning text-dark">Regular</span>
                                                                 {% else %}
-                                                                    <span class="text-muted">Sem resultado</span>
+                                                                <span class="badge bg-danger">Insuficiente</span>
+                                                                {% endif %}
+                                                                {% else %}
+                                                                <span class="text-muted">Sem resultado</span>
                                                                 {% endif %}
                                                             </td>
                                                             <td class="text-end">
                                                                 <a href="/gestor/prova/{{ pt.prova_id }}/detalhes"
-                                                                    class="btn btn-sm btn-black text-light"><i class="bi bi-eye c-padrao"></i> Ver
+                                                                    class="btn btn-sm btn-black text-light"><i
+                                                                        class="bi bi-eye c-padrao"></i> Ver
                                                                     prova</a>
                                                             </td>
                                                         </tr>
@@ -344,8 +358,8 @@
                                     <div class="borda rounded p-3 h-100">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <h5 class="m-0">Observações</h5>
-                                            <button type="button" class="btn btn-sm btn-warning"
-                                                data-bs-toggle="modal" data-bs-target="#editarObservacoesModal">
+                                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                                data-bs-target="#editarObservacoesModal">
                                                 <i class="bi bi-pencil-fill me-1"></i>Editar
                                             </button>
                                         </div>
@@ -370,7 +384,8 @@
 
     <!-- Modal de Edição de Aluno (já existente, mas ajustado para os novos campos) -->
 
-    <div class="modal fade" id="editarAlunoModal" tabindex="-1" aria-labelledby="editarAlunoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editarAlunoModal" tabindex="-1" aria-labelledby="editarAlunoModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -378,68 +393,94 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/gestor/alunos/{{ aluno.idAluno }}/editar" method="post" enctype="multipart/form-data">
+                    <form action="/gestor/alunos/{{ aluno.idAluno }}/editar" method="post"
+                        enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-4 text-center mb-4">
                                 <div class="position-relative d-inline-block">
-                                    <img src="{{ aluno.imagem or '/static/img/user.png' }}" alt="Foto de perfil" style="width: 200px; height: 200px; object-fit: cover;">
+                                    <img src="{{ aluno.imagem or '/static/img/user.png' }}" alt="Foto de perfil"
+                                        style="width: 200px; height: 200px; object-fit: cover;">
                                 </div>
                             </div>
                             <div class="col-md-8">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="nome" name="nome" value="{{ aluno.nome }}" required>
+                                        <label for="nome" class="form-label">Nome Completo <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nome" name="nome"
+                                            value="{{ aluno.nome }}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="idade" class="form-label">Idade <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="idade" name="idade" value="{{ aluno.idade }}" required>
+                                        <label for="idade" class="form-label">Idade <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="idade" name="idade"
+                                            value="{{ aluno.idade }}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="municipio" class="form-label">Município <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="municipio" name="municipio" value="{{ aluno.municipio }}" required>
+                                        <label for="municipio" class="form-label">Município <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="municipio" name="municipio"
+                                            value="{{ aluno.municipio }}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="zona" class="form-label">Zona <span class="text-danger">*</span></label>
+                                        <label for="zona" class="form-label">Zona <span
+                                                class="text-danger">*</span></label>
                                         <select class="form-select" id="zona" name="zona" required>
-                                            <option value="urbana" {% if aluno.zona=='urbana' %}selected{% endif %}>Urbana</option>
-                                            <option value="rural" {% if aluno.zona=='rural' %}selected{% endif %}>Rural</option>
+                                            <option value="urbana" {% if aluno.zona=='urbana' %}selected{% endif %}>
+                                                Urbana</option>
+                                            <option value="rural" {% if aluno.zona=='rural' %}selected{% endif %}>Rural
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="origem_escolar" class="form-label">Origem Escolar <span class="text-danger">*</span></label>
+                                        <label for="origem_escolar" class="form-label">Origem Escolar <span
+                                                class="text-danger">*</span></label>
                                         <select class="form-select" id="origem_escolar" name="origem_escolar" required>
-                                            <option value="publica" {% if aluno.origem_escolar=='publica' %}selected{% endif %}>Pública</option>
-                                            <option value="particular" {% if aluno.origem_escolar=='particular' %}selected{% endif %}>Particular</option>
+                                            <option value="publica" {% if aluno.origem_escolar=='publica' %}selected{%
+                                                endif %}>Pública</option>
+                                            <option value="particular" {% if aluno.origem_escolar=='particular'
+                                                %}selected{% endif %}>Particular</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="escola" class="form-label">Escola</label>
-                                        <input type="text" class="form-control" id="escola" name="escola" value="{{ aluno.escola or '' }}">
+                                        <input type="text" class="form-control" id="escola" name="escola"
+                                            value="{{ aluno.escola or '' }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="forma_ingresso" class="form-label">Forma de Ingresso</label>
-                                        <input type="text" class="form-control" id="forma_ingresso" name="forma_ingresso" value="{{ aluno.forma_ingresso or '' }}">
+                                        <input type="text" class="form-control" id="forma_ingresso"
+                                            name="forma_ingresso" value="{{ aluno.forma_ingresso or '' }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="acesso_internet" class="form-label">Acesso à Internet</label>
                                         <select class="form-select" id="acesso_internet" name="acesso_internet">
-                                            <option value="true" {% if aluno.acesso_internet==True %}selected{% endif %}>Sim</option>
-                                            <option value="false" {% if aluno.acesso_internet==False %}selected{% endif %}>Não</option>
-                                            <option value="" {% if aluno.acesso_internet is none %}selected{% endif %}>Não Informado</option>
+                                            <option value="true" {% if aluno.acesso_internet==True %}selected{% endif
+                                                %}>Sim</option>
+                                            <option value="false" {% if aluno.acesso_internet==False %}selected{% endif
+                                                %}>Não</option>
+                                            <option value="" {% if aluno.acesso_internet is none %}selected{% endif %}>
+                                                Não Informado</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="curso" class="form-label">Curso <span class="text-danger">*</span></label>
+                                        <label for="curso" class="form-label">Curso <span
+                                                class="text-danger">*</span></label>
                                         <select name="curso" class="form-select border-0 bg-cinza" required>
-                                            <option value="Redes de Computadores" {% if aluno.curso=='Redes de Computadores' %}selected{% endif %}>Redes de Computadores</option>
-                                            <option value="Agropecuária" {% if aluno.curso=='Agropecuária' %}selected{% endif %}>Agropecuária</option>
-                                            <option value="Partiu IF" {% if aluno.curso=='Partiu IF' %}selected{% endif %}>Partiu IF</option>
+                                            <option value="Redes de Computadores" {% if
+                                                aluno.curso=='Redes de Computadores' %}selected{% endif %}>Redes de
+                                                Computadores</option>
+                                            <option value="Agropecuária" {% if aluno.curso=='Agropecuária' %}selected{%
+                                                endif %}>Agropecuária</option>
+                                            <option value="Partiu IF" {% if aluno.curso=='Partiu IF' %}selected{% endif
+                                                %}>Partiu IF</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="ano" class="form-label">Ano <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="ano" name="ano" value="{{ aluno.ano }}" required>
+                                        <label for="ano" class="form-label">Ano <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="ano" name="ano"
+                                            value="{{ aluno.ano }}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="foto" class="form-label">Foto de Perfil</label>
@@ -460,7 +501,8 @@
 
 
     <!-- Modal de Edição de Observações -->
-    <div class="modal fade" id="editarObservacoesModal" tabindex="-1" aria-labelledby="editarObservacoesModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editarObservacoesModal" tabindex="-1" aria-labelledby="editarObservacoesModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -471,7 +513,8 @@
                     <form action="/gestor/alunos/{{ aluno.idAluno }}/editar-observacoes" method="post">
                         <div class="mb-3">
                             <label for="observacoes" class="form-label">Observações</label>
-                            <textarea class="form-control" id="observacoes" name="observacoes" rows="5">{{ aluno.observacoes or '' }}</textarea>
+                            <textarea class="form-control" id="observacoes" name="observacoes"
+                                rows="5">{{ aluno.observacoes or '' }}</textarea>
                         </div>
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -483,44 +526,47 @@
         </div>
 
 
-    <!-- Modal de Confirmação de Exclusão -->
-    <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="confirmarExclusaoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmarExclusaoModalLabel">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Tem certeza que deseja remover o aluno <strong>{{ aluno.nome }}</strong>?</p>
-                    <p class="text-danger">Esta ação é irreversível e removerá todos os dados relacionados ao aluno (respostas de provas, resultados, respostas de formulários, etc.).</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form action="/gestor/alunos/{{ aluno.idAluno }}/remover" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger">Remover Aluno</button>
-                    </form>
+        <!-- Modal de Confirmação de Exclusão -->
+        <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="confirmarExclusaoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmarExclusaoModalLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja remover o aluno <strong>{{ aluno.nome }}</strong>?</p>
+                        <p class="text-danger">Esta ação é irreversível e removerá todos os dados relacionados ao aluno
+                            (respostas de provas, resultados, respostas de formulários, etc.).</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form action="/gestor/alunos/{{ aluno.idAluno }}/remover" method="post"
+                            style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Remover Aluno</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="/static/js/menu.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
-    <script>
-        // Preview da imagem selecionada (inalterado)
-        document.getElementById('foto').addEventListener('change', function (e) {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.querySelector('img[alt="Foto de perfil"]').src = e.target.result;
+        <script src="/static/js/menu.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+        <script>
+            // Preview da imagem selecionada (inalterado)
+            document.getElementById('foto').addEventListener('change', function (e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.querySelector('img[alt="Foto de perfil"]').src = e.target.result;
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
                 }
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
-    </script>
+            });
+        </script>
 </body>
 
 </html>

@@ -164,7 +164,6 @@
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
     <script>
         (function () {
-            // --- 1. Seleção de Elementos ---
             const inputFile = document.getElementById('imagem');
             const hiddenCropped = document.getElementById('imagem_cortada');
             const cropImg = document.getElementById('cropImage');
@@ -173,11 +172,8 @@
             const labelFoto = document.getElementById('labelFoto'); // O label que contém o preview
             const cropModalEl = document.getElementById('modalCrop');
 
-            // --- 2. Inicialização de Variáveis ---
             const cropModal = new bootstrap.Modal(cropModalEl);
             let cropper = null;
-
-            // --- 3. Lógica Principal ---
 
             /**
              * Quando o usuário seleciona um arquivo de imagem.
@@ -186,9 +182,7 @@
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
 
-                // Gera uma URL temporária para o arquivo e a define como fonte da imagem no modal
                 cropImg.src = URL.createObjectURL(file);
-                // Abre o modal de recorte
                 cropModal.show();
             });
 
@@ -197,15 +191,13 @@
              * Este é o momento correto para inicializar o Cropper.js, pois o elemento está visível e com as dimensões corretas.
              */
             cropModalEl.addEventListener('shown.bs.modal', function () {
-                // Garante que não haja uma instância antiga rodando
                 if (cropper) {
                     cropper.destroy();
                 }
-                // Cria a instância do Cropper
                 cropper = new Cropper(cropImg, {
-                    aspectRatio: 1,      // Proporção quadrada
-                    viewMode: 1,         // Restringe a área de corte aos limites da imagem
-                    autoCropArea: 1,     // Inicia com a área de corte maximizada
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
                     movable: true,
                     zoomable: true,
                     scalable: false,

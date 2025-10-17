@@ -147,8 +147,8 @@
                                 <h6 class="mb-0">{{ prova.titulo }}</h6>
                                 <span class="badge 
                                     {% if prova.status == 'ativa' %}bg-white c-padrao
-                                    {% elif prova.status == 'rascunho' %}bg-white c-warning
-                                    {% elif prova.status == 'expirada' %}bg-white c-danger
+                                    {% elif prova.status == 'rascunho' %}bg-white text-warning
+                                    {% elif prova.status == 'expirada' %}bg-white text-danger
                                     {% else %}bg-white c-secondary{% endif %}">
                                     {{ prova.status.title() }}
                                 </span>

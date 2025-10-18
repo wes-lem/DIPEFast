@@ -159,7 +159,7 @@
                                                     <strong>Professor:</strong> {{ prova_turma.turma.professor.nome if prova_turma.turma.professor else 'N/A' }}<br>
                                                     <strong>Campus:</strong> {{ prova_turma.turma.campus.nome if prova_turma.turma.campus else 'N/A' }}<br>
                                                     <strong>Status:</strong> 
-                                                    <span class="badge bg-{{ 'success' if prova_turma.status.value == 'ativa' else 'secondary' }}">
+                                                    <span class="badge bg-{{ 'success' if prova_turma.status.value == 'ativa' else 'danger' }}">
                                                         {{ prova_turma.status.value.title() }}
                                                     </span>
                                                 </p>

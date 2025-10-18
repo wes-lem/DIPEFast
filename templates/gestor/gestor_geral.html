@@ -118,10 +118,10 @@
                     <div class="row g-4">
                         {% for aluno, nota_portugues, nota_matematica, nota_ciencias in alunos %}
                         {% set media = ((nota_portugues or 0) + (nota_matematica or 0) + (nota_ciencias or 0)) / 3 %}
-                        {% if media <= 5 %}
+                        {% if media <= 3.33 %}
                             {% set situacao = "Insuficiente" %}
                             {% set cor = "danger" %}
-                        {% elif media <= 10 %}
+                        {% elif media <= 6.66 %}
                             {% set situacao = "Regular" %}
                             {% set cor = "warning" %}
                         {% else %}

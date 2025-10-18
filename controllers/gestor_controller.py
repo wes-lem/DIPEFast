@@ -86,6 +86,10 @@ def cadastro_prova_page(
     gestor_id: int = Depends(verificar_gestor_sessao) # Protegido por gestor
 ):
     """Exibe a página de cadastro de provas e lista as provas existentes."""
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     provas = db.query(Prova).all()
     provas_info = []
     
@@ -345,21 +349,21 @@ def listar_alunos(
     # Subquery para calcular a média das notas
     media_subquery = (
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
             .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
             0,
         ) +
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
             .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
             0,
         ) +
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
             .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
@@ -370,21 +374,21 @@ def listar_alunos(
     query = db.query(
         Aluno,
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
             .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
             0,
         ).label("nota_portugues"),
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
             .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
             0,
         ).label("nota_matematica"),
         func.coalesce(
-            db.query(Resultado.acertos)
+            db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
             .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
             .scalar_subquery(),
@@ -411,14 +415,14 @@ def listar_alunos(
     if origem_escolar:
         query = query.filter(Aluno.origem_escolar == origem_escolar)
 
-    # Filtro por situação baseado na média calculada
+    # Filtro por situação baseado na média calculada (nota de 0-10)
     if situacao:
         if situacao == "suficiente":
-            query = query.filter(media_subquery >= 10)
+            query = query.filter(media_subquery > 6.66)
         elif situacao == "regular":
-            query = query.filter(media_subquery.between(5, 10))
+            query = query.filter(media_subquery.between(3.34, 6.66))
         elif situacao == "insuficiente":
-            query = query.filter(media_subquery < 5)
+            query = query.filter(media_subquery <= 3.33)
 
     alunos = query.all()
 
@@ -499,11 +503,11 @@ def detalhes_aluno_gestor(
     matematica = aliased(Prova)
     ciencias = aliased(Prova)
 
-    nota_portugues = db.query(Resultado.acertos).join(portugues, Resultado.prova_id == portugues.id)\
+    nota_portugues = db.query(Resultado.nota).join(portugues, Resultado.prova_id == portugues.id)\
         .filter(portugues.materia == "Português", Resultado.aluno_id == aluno_id).scalar()
-    nota_matematica = db.query(Resultado.acertos).join(matematica, Resultado.prova_id == matematica.id)\
+    nota_matematica = db.query(Resultado.nota).join(matematica, Resultado.prova_id == matematica.id)\
         .filter(matematica.materia == "Matemática", Resultado.aluno_id == aluno_id).scalar()
-    nota_ciencias = db.query(Resultado.acertos).join(ciencias, Resultado.prova_id == ciencias.id)\
+    nota_ciencias = db.query(Resultado.nota).join(ciencias, Resultado.prova_id == ciencias.id)\
         .filter(ciencias.materia == "Ciências", Resultado.aluno_id == aluno_id).scalar()
 
     # Turmas do aluno (ativas)
@@ -910,6 +914,10 @@ def listar_provas_professores(
 ):
     """Lista todas as provas criadas pelos professores"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     provas = db.query(Prova).options(
         joinedload(Prova.professor),
         joinedload(Prova.prova_questoes)
@@ -995,6 +1003,10 @@ def provas_turma_gestor(
     from sqlalchemy.orm import joinedload
     from models.prova_turma import ProvaTurma
     
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     # Buscar turma com dados relacionados
     turma = db.query(Turma).options(
         joinedload(Turma.professor),
@@ -1071,6 +1083,10 @@ def detalhes_prova_gestor(
 ):
     """Detalhes de uma prova específica com turmas e resultados"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     prova = db.query(Prova).options(
         joinedload(Prova.professor),
         joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco),
@@ -1100,6 +1116,10 @@ def turmas_prova_gestor(
 ):
     """Lista turmas de uma prova específica"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     prova = db.query(Prova).options(
         joinedload(Prova.professor),
         joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma)
@@ -1122,6 +1142,10 @@ def resultados_prova_gestor(
 ):
     """Resultados de uma prova específica"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     prova = db.query(Prova).options(
         joinedload(Prova.professor),
         joinedload(Prova.resultados).joinedload(Resultado.aluno)

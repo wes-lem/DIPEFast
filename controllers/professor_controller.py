@@ -438,6 +438,10 @@ def provas_professor(
     """Lista provas do professor com informações de alunos que responderam"""
     from sqlalchemy.orm import joinedload
     
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     # Buscar provas com contagem de resultados
     provas = db.query(Prova).options(
         joinedload(Prova.resultados).joinedload(Resultado.aluno)
@@ -447,7 +451,8 @@ def provas_professor(
     for prova in provas:
         prova.alunos_responderam = len(prova.resultados)
         if prova.resultados:
-            prova.nota_media = sum(r.acertos for r in prova.resultados) / len(prova.resultados)
+            # Calcular média das notas (0-10) em vez de acertos
+            prova.nota_media = sum(r.nota for r in prova.resultados) / len(prova.resultados)
         else:
             prova.nota_media = 0
     
@@ -587,6 +592,10 @@ def visualizar_prova_professor(
 ):
     """Visualiza uma prova específica do professor com alunos que responderam"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     prova = db.query(Prova).options(
         joinedload(Prova.prova_questoes).joinedload(ProvaQuestao.questao_banco),
         joinedload(Prova.prova_turmas).joinedload(ProvaTurma.turma),
@@ -599,9 +608,10 @@ def visualizar_prova_professor(
     # Calcular estatísticas
     prova.alunos_responderam = len(prova.resultados)
     if prova.resultados:
-        prova.nota_media = sum(r.acertos for r in prova.resultados) / len(prova.resultados)
-        prova.maior_nota = max(r.acertos for r in prova.resultados)
-        prova.menor_nota = min(r.acertos for r in prova.resultados)
+        # Usar notas (0-10) em vez de acertos
+        prova.nota_media = sum(r.nota for r in prova.resultados) / len(prova.resultados)
+        prova.maior_nota = max(r.nota for r in prova.resultados)
+        prova.menor_nota = min(r.nota for r in prova.resultados)
     else:
         prova.nota_media = 0
         prova.maior_nota = 0
@@ -716,6 +726,10 @@ def disponibilizar_prova_professor(
 ):
     """Página para disponibilizar uma prova para turmas"""
     from sqlalchemy.orm import joinedload
+    
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
     prova = db.query(Prova).options(
         joinedload(Prova.prova_questoes)
     ).filter(Prova.id == prova_id, Prova.professor_id == professor_id).first()

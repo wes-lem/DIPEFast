@@ -175,14 +175,13 @@
             const cropModal = new bootstrap.Modal(cropModalEl);
             let cropper = null;
 
-            /**
-             * Quando o usuário seleciona um arquivo de imagem.
-             */
             inputFile.addEventListener('change', function (e) {
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
 
+                // Gera uma URL temporária para o arquivo e a define como fonte da imagem no modal
                 cropImg.src = URL.createObjectURL(file);
+                // Abre o modal de recorte
                 cropModal.show();
             });
 
@@ -195,9 +194,9 @@
                     cropper.destroy();
                 }
                 cropper = new Cropper(cropImg, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    autoCropArea: 1,
+                    aspectRatio: 1,      // Proporção quadrada
+                    viewMode: 1,         // Restringe a área de corte aos limites da imagem
+                    autoCropArea: 1,     // Inicia com a área de corte maximizada
                     movable: true,
                     zoomable: true,
                     scalable: false,
@@ -235,13 +234,9 @@
                 // Armazena a imagem base64 no input hidden para ser enviada com o formulário
                 hiddenCropped.value = dataUrl;
 
-                // --- A MÁGICA ACONTECE AQUI ---
-                // Substitui todo o conteúdo da label pela nova imagem
                 labelFoto.innerHTML = `<img src="${dataUrl}" class="img-fluid rounded-3" style="object-fit: cover; width: 100%; height: 100%;">`;
-                // Remove o padding da label para que a imagem preencha todo o espaço
                 labelFoto.classList.remove('py-4');
 
-                // Fecha o modal
                 cropModal.hide();
             });
 

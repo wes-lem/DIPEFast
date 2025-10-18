@@ -287,7 +287,7 @@ class AnalyticsService:
             ).scalar() or 0
             
             if resultado:
-                nota = float(resultado.acertos)
+                nota = float(resultado.nota)
                 status = resultado.situacao
                 url_prova = f"/aluno/prova/{prova.id}/consultar"
             else:
@@ -331,13 +331,28 @@ class AnalyticsService:
                     "status": prova_turma.status,
                     "resultado": resultado if resultado and resultado.prova_id == prova_turma.prova.id else None
                 })
+
+            provas_ids = [pt.prova_id for pt in provas_turmas]
+
+            max_questoes = db.query(
+                func.count(ProvaQuestao.id)
+            ).join(Prova).filter(
+                Prova.id.in_(provas_ids)
+            ).group_by(Prova.id).order_by(
+                func.count(ProvaQuestao.id).desc()
+            ).limit(1).scalar() or 0
+
+            max_chart_value = max_questoes
+            if max_chart_value > 0 and max_chart_value % 5 != 0:
+                max_chart_value = ((max_chart_value // 5) + 1) * 5
         
         return {
             "aluno": aluno,
             "materias": materias_info,
             "provas_turmas": provas_turmas_info,
             "dados_grafico_pizza": dados_grafico_pizza,
-            "dados_grafico_barra": dados_grafico_barra
+            "dados_grafico_barra": dados_grafico_barra,
+            "maxChartValue": max_chart_value if max_chart_value > 0 else 10
         }
     
     @staticmethod

@@ -254,6 +254,8 @@
         const dadosPizza = JSON.parse('{{ dados_grafico_pizza | tojson | safe }}');
         const dadosBarra = JSON.parse('{{ dados_grafico_barra | tojson | safe }}');
 
+        const maxChartValue = JSON.parse('{{ maxChartValue | tojson | safe }}');
+
         // Gráfico de Pizza
         new Chart(document.getElementById('graficoPizza'), {
             type: 'doughnut',
@@ -295,7 +297,7 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        max: 15,
+                        max: maxChartValue,
                         title: {
                             display: true,
                             text: 'Nota'

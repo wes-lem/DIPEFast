@@ -41,6 +41,10 @@ def listar_provas(request: Request, user_id: int = Depends(verificar_sessao), db
 # Página para o aluno responder a prova
 @router.get("/prova/{prova_id}")
 def responder_prova(request: Request, prova_id: int, db: Session = Depends(get_db)):
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     prova = db.query(Prova).filter(Prova.id == prova_id).first()
     if not prova:
         raise HTTPException(status_code=404, detail="Prova não encontrada")
@@ -65,6 +69,10 @@ async def enviar_respostas(
     db: Session = Depends(get_db),
     user_id: int = Depends(verificar_sessao),
 ):
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     # Verifica se o aluno existe
     aluno = db.query(Aluno).filter_by(idUser=user_id).first()
     if not aluno:
@@ -102,15 +110,8 @@ async def enviar_respostas(
 
     # Calcula nota e total de questões
     total_questoes = len(respostas)
-    nota = (acertos / total_questoes) * 10 if total_questoes > 0 else 0
-
-    # Determina situação
-    if acertos <= 5:
-        situacao = "Insuficiente"
-    elif acertos <= 10:
-        situacao = "Regular"
-    else:
-        situacao = "Suficiente"
+    from utils.nota_service import calcular_nota_e_situacao
+    nota, situacao = calcular_nota_e_situacao(acertos, total_questoes)
 
     # Salva o resultado
     ResultadoDAO.criar_resultado(
@@ -157,6 +158,10 @@ def resultado_detalhado_prova(
     user_id: int = Depends(verificar_sessao),
     db: Session = Depends(get_db)
 ):
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    from dao.prova_turma_dao import ProvaTurmaDAO
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     # Verifica se o aluno existe
     aluno = db.query(Aluno).filter_by(idUser=user_id).first()
     if not aluno:
@@ -243,13 +248,14 @@ def resultado_provas(request: Request, aluno_id: int, db: Session = Depends(get_
                 pontuacao[questao.materia] += 1
 
     situacoes = {}
+    from utils.nota_service import calcular_nota_e_situacao
     for materia, acertos in pontuacao.items():
-        if acertos <= 5:
-            situacoes[materia] = "Insuficiente"
-        elif acertos <= 10:
-            situacoes[materia] = "Regular"
+        total = total_questoes[materia]
+        if total > 0:
+            _, situacao = calcular_nota_e_situacao(acertos, total)
+            situacoes[materia] = situacao
         else:
-            situacoes[materia] = "Suficiente"
+            situacoes[materia] = "Insuficiente"
 
     return templates.TemplateResponse(
         "aluno/resultado.html", {"request": request, "pontuacao": pontuacao, "situacoes": situacoes}

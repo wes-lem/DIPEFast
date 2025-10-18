@@ -187,6 +187,8 @@ def perfil(
     dados_grafico_pizza = aluno_profile_data['dados_grafico_pizza']
     dados_grafico_barra = aluno_profile_data['dados_grafico_barra']
 
+    max_chart_value = aluno_profile_data.get('maxChartValue', 10)
+
     # Verifica formulários não respondidos e cria notificações
     NotificacaoDAO.verificar_formularios_nao_respondidos(db)
 
@@ -224,6 +226,7 @@ def perfil(
             "provas_turmas": aluno_profile_data.get('provas_turmas', []),
             "dados_grafico_pizza": dados_grafico_pizza,
             "dados_grafico_barra": dados_grafico_barra,
+            "maxChartValue": max_chart_value,
             "formularios_pendentes": formularios_pendentes,
             "notificacoes": notificacoes
         },
@@ -435,6 +438,9 @@ def provas_aluno(
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
     
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     # Buscar provas ativas das turmas do aluno
     provas_ativas = ProvaTurmaDAO.get_provas_for_aluno(db, aluno.idAluno)
     
@@ -517,6 +523,9 @@ def responder_prova_aluno(
     user_id: str = Depends(verificar_sessao)
 ):
     """Página para o aluno responder uma prova"""
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
@@ -547,6 +556,9 @@ async def salvar_resposta_prova(
     user_id: str = Depends(verificar_sessao)
 ):
     """Salva as respostas do aluno para uma prova"""
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    ProvaTurmaDAO.check_and_update_expired(db)
+    
     aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:
         return RedirectResponse(url="/login", status_code=303)
@@ -592,18 +604,10 @@ async def salvar_resposta_prova(
             if resposta_aluno == questao_prova.questao_banco.resposta_correta:
                 respostas_corretas += 1
     
-    # Determinar situação baseada nos acertos
-    if respostas_corretas <= 5:
-        situacao = "Insuficiente"
-    elif respostas_corretas <= 10:
-        situacao = "Regular"
-    else:
-        situacao = "Suficiente"
-    
-    # Criar resultado
-    # Calcular nota e total de questões
+    # Calcular nota e situação
     total_questoes = len(prova.prova_questoes)
-    nota = (respostas_corretas / total_questoes) * 10 if total_questoes > 0 else 0
+    from utils.nota_service import calcular_nota_e_situacao
+    nota, situacao = calcular_nota_e_situacao(respostas_corretas, total_questoes)
     
     resultado = Resultado(
         aluno_id=aluno.idAluno,
@@ -626,6 +630,8 @@ def consultar_prova_aluno(
     db: Session = Depends(get_db),
     user_id: str = Depends(verificar_sessao)
 ):
+    # Verificar e atualizar provas expiradas antes de qualquer visualização
+    ProvaTurmaDAO.check_and_update_expired(db)
     """Página para o aluno consultar uma prova (expirada ou já respondida)"""
     aluno = db.query(Aluno).filter(Aluno.idUser == int(user_id)).first()
     if not aluno:

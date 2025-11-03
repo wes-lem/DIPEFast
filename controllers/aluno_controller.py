@@ -592,13 +592,23 @@ async def salvar_resposta_prova(
         resposta_aluno = form_data.get(f"questao_{questao_id}")
         
         if resposta_aluno:
-            # Criar resposta
-            resposta = Resposta(
-                aluno_id=aluno.idAluno,
-                questao_id=questao_id,
-                resposta=resposta_aluno
-            )
-            db.add(resposta)
+            # Verificar se já existe uma resposta para esta questão (evitar duplicatas)
+            resposta_existente = db.query(Resposta).filter(
+                Resposta.aluno_id == aluno.idAluno,
+                Resposta.questao_id == questao_id
+            ).first()
+            
+            if resposta_existente:
+                # Atualizar resposta existente
+                resposta_existente.resposta = resposta_aluno
+            else:
+                # Criar nova resposta
+                resposta = Resposta(
+                    aluno_id=aluno.idAluno,
+                    questao_id=questao_id,
+                    resposta=resposta_aluno
+                )
+                db.add(resposta)
             
             # Verificar se está correta
             if resposta_aluno == questao_prova.questao_banco.resposta_correta:
@@ -659,9 +669,19 @@ def consultar_prova_aluno(
     ).first()
     
     # Buscar as respostas do aluno para esta prova
-    respostas_aluno = db.query(Resposta).filter(
+    # Usando uma subquery para pegar apenas a resposta mais recente de cada questão
+    from sqlalchemy import func
+    subq = db.query(
+        Resposta.questao_id,
+        func.max(Resposta.id).label('max_id')
+    ).filter(
         Resposta.aluno_id == aluno.idAluno,
         Resposta.questao_id.in_([pq.questao_banco_id for pq in prova.prova_questoes])
+    ).group_by(Resposta.questao_id).subquery()
+    
+    respostas_aluno = db.query(Resposta).join(
+        subq,
+        (Resposta.questao_id == subq.c.questao_id) & (Resposta.id == subq.c.max_id)
     ).all()
     
     # Determinar o status da prova

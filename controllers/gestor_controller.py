@@ -352,6 +352,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
             .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         ) +
@@ -359,6 +361,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
             .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         ) +
@@ -366,6 +370,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
             .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         )
@@ -377,6 +383,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
             .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_portugues"),
@@ -384,6 +392,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
             .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_matematica"),
@@ -391,6 +401,8 @@ def listar_alunos(
             db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
             .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
+            .order_by(Resultado.id.desc())
+            .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_ciencias"),
@@ -504,11 +516,14 @@ def detalhes_aluno_gestor(
     ciencias = aliased(Prova)
 
     nota_portugues = db.query(Resultado.nota).join(portugues, Resultado.prova_id == portugues.id)\
-        .filter(portugues.materia == "Português", Resultado.aluno_id == aluno_id).scalar()
+        .filter(portugues.materia == "Português", Resultado.aluno_id == aluno_id)\
+        .order_by(Resultado.id.desc()).limit(1).scalar()
     nota_matematica = db.query(Resultado.nota).join(matematica, Resultado.prova_id == matematica.id)\
-        .filter(matematica.materia == "Matemática", Resultado.aluno_id == aluno_id).scalar()
+        .filter(matematica.materia == "Matemática", Resultado.aluno_id == aluno_id)\
+        .order_by(Resultado.id.desc()).limit(1).scalar()
     nota_ciencias = db.query(Resultado.nota).join(ciencias, Resultado.prova_id == ciencias.id)\
-        .filter(ciencias.materia == "Ciências", Resultado.aluno_id == aluno_id).scalar()
+        .filter(ciencias.materia == "Ciências", Resultado.aluno_id == aluno_id)\
+        .order_by(Resultado.id.desc()).limit(1).scalar()
 
     # Turmas do aluno (ativas)
     turmas_aluno = AlunoTurmaDAO.get_turmas_with_details_by_aluno(db, aluno_id)

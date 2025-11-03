@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from dao.database import get_db
-from models.banco_questoes import BancoQuestoes
+from models.banco_questoes import BancoQuestoes, StatusQuestao
 from models.prova import Prova
 from models.prova_questao import ProvaQuestao
 from models.prova_turma import ProvaTurma, StatusProvaTurma
@@ -356,18 +356,26 @@ def banco_questoes(
     search: Optional[str] = Query(None),
     materia: Optional[str] = Query(None)
 ):
-    """Lista questões do banco do professor"""
-    questoes = BancoQuestoesDAO.search_questoes(db, professor_id, search, materia)
-    materias = BancoQuestoesDAO.get_materias_by_professor(db, professor_id)
+    """Lista questões do banco do professor (próprias + públicas)"""
+    # Buscar questões disponíveis (próprias + públicas)
+    questoes = BancoQuestoesDAO.search_available_questoes(db, professor_id, search, materia)
+    # Separar questões próprias e públicas para exibição
+    questoes_proprias = [q for q in questoes if q.professor_id == professor_id]
+    questoes_publicas = [q for q in questoes if q.professor_id != professor_id]
+    # Buscar matérias de questões disponíveis
+    materias = BancoQuestoesDAO.get_materias_available(db, professor_id)
     
     return templates.TemplateResponse(
         "professor/banco_questoes.html",
         {
             "request": request,
             "questoes": questoes,
+            "questoes_proprias": questoes_proprias,
+            "questoes_publicas": questoes_publicas,
             "materias": materias,
             "search": search,
-            "materia_selected": materia
+            "materia_selected": materia,
+            "professor_id": professor_id
         }
     )
 
@@ -827,18 +835,32 @@ def visualizar_questao_professor(
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
-    """Visualiza uma questão específica do professor"""
+    """Visualiza uma questão específica (própria ou pública)"""
+    from sqlalchemy import or_
+    # Permitir visualizar questões próprias ou públicas de outros
     questao = db.query(BancoQuestoes).filter(
-        BancoQuestoes.id == questao_id, 
-        BancoQuestoes.professor_id == professor_id
+        BancoQuestoes.id == questao_id,
+        BancoQuestoes.status == StatusQuestao.ATIVA,
+        or_(
+            BancoQuestoes.professor_id == professor_id,
+            BancoQuestoes.publica == True
+        )
     ).first()
     
     if not questao:
         raise HTTPException(status_code=404, detail="Questão não encontrada")
     
+    # Verificar se é questão própria ou pública
+    is_own = questao.professor_id == professor_id
+    
     return templates.TemplateResponse(
         "professor/visualizar_questao.html",
-        {"request": request, "questao": questao}
+        {
+            "request": request, 
+            "questao": questao,
+            "is_own": is_own,
+            "professor_id": professor_id
+        }
     )
 
 @router.get("/professor/questao/{questao_id}/editar")

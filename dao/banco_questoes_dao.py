@@ -165,6 +165,18 @@ class BancoQuestoesDAO:
             BancoQuestoes.professor_id == professor_id,
             BancoQuestoes.status == StatusQuestao.ATIVA
         ).all()
+    
+    @staticmethod
+    def get_materias_available(db: Session, professor_id: int):
+        """Busca matérias únicas de questões disponíveis (próprias + públicas)"""
+        from sqlalchemy import distinct, or_
+        return db.query(distinct(BancoQuestoes.materia)).filter(
+            BancoQuestoes.status == StatusQuestao.ATIVA,
+            or_(
+                BancoQuestoes.professor_id == professor_id,
+                BancoQuestoes.publica == True
+            )
+        ).all()
 
     @staticmethod
     def get_count_by_professor(db: Session, professor_id: int):
@@ -177,10 +189,30 @@ class BancoQuestoesDAO:
 
     @staticmethod
     def search_questoes(db: Session, professor_id: int, search_term: str = None, materia: str = None):
-        """Busca questões com filtros"""
+        """Busca questões com filtros (apenas do próprio professor)"""
         query = db.query(BancoQuestoes).filter(
             BancoQuestoes.professor_id == professor_id,
             BancoQuestoes.status == StatusQuestao.ATIVA
+        )
+        
+        if search_term:
+            query = query.filter(BancoQuestoes.enunciado.ilike(f"%{search_term}%"))
+        
+        if materia:
+            query = query.filter(BancoQuestoes.materia == materia)
+        
+        return query.all()
+    
+    @staticmethod
+    def search_available_questoes(db: Session, professor_id: int, search_term: str = None, materia: str = None):
+        """Busca questões disponíveis (próprias + públicas) com filtros"""
+        from sqlalchemy import or_
+        query = db.query(BancoQuestoes).filter(
+            BancoQuestoes.status == StatusQuestao.ATIVA,
+            or_(
+                BancoQuestoes.professor_id == professor_id,
+                BancoQuestoes.publica == True
+            )
         )
         
         if search_term:

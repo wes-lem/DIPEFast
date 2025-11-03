@@ -92,29 +92,44 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-2">
                                 <strong>Matéria:</strong> {{ questao.materia }}
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-2">
                                 <strong>Status:</strong> 
                                 <span class="badge 
-                                    {% if questao.status.value == 'ativa' %}bg-success
+                                    {% if questao.status.value == 'ativa' or questao.status.value == 'ATIVA' %}bg-success
                                     {% else %}bg-secondary{% endif %}">
-                                    {{ questao.status.value.title() }}
+                                    {{ questao.status.value.title() if questao.status.value else 'Ativa' }}
                                 </span>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-2">
                                 <strong>Resposta Correta:</strong> 
                                 <span class="badge bg-success">{{ questao.resposta_correta }}</span>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-2">
                                 <strong>Criada em:</strong> {{ questao.data_criacao.strftime('%d/%m/%Y %H:%M') }}
                             </div>
                         </div>
+                        {% if questao.publica %}
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <span class="badge bg-info">
+                                    <i class="bi bi-globe"></i> Questão Pública
+                                </span>
+                                {% if not is_own %}
+                                <span class="badge bg-secondary ms-2">
+                                    <i class="bi bi-person"></i> Por outro professor
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <!-- Ações -->
+                {% if is_own %}
                 <div class="card mb-4">
                     <div class="card-header bg-padrao text-light">
                         <h5 class="mb-0">Ações</h5>
@@ -130,6 +145,21 @@
                         </div>
                     </div>
                 </div>
+                {% else %}
+                <div class="card mb-4 border-success">
+                    <div class="card-header bg-success text-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-globe"></i> Questão Pública
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> 
+                            Esta é uma questão pública de outro professor. Você pode visualizá-la, mas não pode editá-la ou excluí-la.
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Questão -->
                 <div class="card">

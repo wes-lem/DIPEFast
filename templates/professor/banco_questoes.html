@@ -79,7 +79,7 @@
 
             <div class="content-wrapper p-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h2>Suas Questões</h2>
+                    <h2>Banco de Questões</h2>
                     <a href="/professor/banco-questoes/criar" class="btn btn-padrao text-light">
                         <i class="bi bi-plus-circle text-light"></i> Nova Questão
                     </a>
@@ -122,11 +122,16 @@
 
                 <!-- Lista de Questões -->
                 {% if questoes %}
-                <div class="row">
-                    {% for questao in questoes %}
+                <!-- Seção: Suas Questões -->
+                {% if questoes_proprias %}
+                <h4 class="mb-3 mt-4">
+                    <i class="bi bi-person-circle"></i> Suas Questões ({{ questoes_proprias|length }})
+                </h4>
+                <div class="row mb-4">
+                    {% for questao in questoes_proprias %}
                     <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header">
+                        <div class="card h-100 border-primary">
+                            <div class="card-header bg-primary text-light">
                                 <h5 class="card-title m-0">Matéria: {{ questao.materia }}</h5>
                             </div>
                             <div class="card-body">
@@ -143,6 +148,13 @@
                                         <strong>Criada em:</strong> {{ questao.data_criacao.strftime('%d/%m/%Y') }}
                                     </small>
                                 </div>
+                                {% if questao.publica %}
+                                <div class="mb-2">
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-globe"></i> Pública
+                                    </span>
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="card-footer">
                                 <div class="w-100">
@@ -162,9 +174,60 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
+                
+                <!-- Seção: Questões Públicas -->
+                {% if questoes_publicas %}
+                <h4 class="mb-3 mt-4">
+                    <i class="bi bi-globe"></i> Questões Públicas ({{ questoes_publicas|length }})
+                </h4>
+                <div class="row mb-4">
+                    {% for questao in questoes_publicas %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 border-success">
+                            <div class="card-header bg-success text-light">
+                                <h5 class="card-title m-0">
+                                    <i class="bi bi-globe"></i> Matéria: {{ questao.materia }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    {{ questao.enunciado[:100] }}{% if questao.enunciado|length > 100 %}...{% endif %}
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <strong>Resposta correta:</strong> {{ questao.resposta_correta }}
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <strong>Criada em:</strong> {{ questao.data_criacao.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-person"></i> Por outro professor
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="w-100">
+                                    <a href="/professor/questao/{{ questao.id }}/visualizar" class="btn btn-black btn-sm">
+                                        <i class="bi bi-eye c-padrao"></i> Ver
+                                    </a>
+                                    <span class="text-muted small">
+                                        <i class="bi bi-info-circle"></i> Questão pública - somente visualização
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% else %}
                 <div class="text-center py-5">
-                    <i class="bi bi-question-circle display-1 text-muted"></i>
+                    <i class="bi bi-question-circle display-3 c-padrao"></i>
                     <h3 class="text-muted mt-3">Nenhuma questão encontrada</h3>
                     <p class="text-muted">
                         {% if search or materia_selected %}
@@ -173,8 +236,8 @@
                             Crie sua primeira questão para começar a montar suas provas.
                         {% endif %}
                     </p>
-                    <a href="/professor/banco-questoes/criar" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle"></i> Criar Primeira Questão
+                    <a href="/professor/banco-questoes/criar" class="btn btn-padrao text-light btn-lg mt-3">
+                        <i class="bi bi-plus-circle text-light"></i> Criar Primeira Questão
                     </a>
                 </div>
                 {% endif %}

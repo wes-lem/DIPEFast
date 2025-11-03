@@ -47,7 +47,10 @@ class BancoQuestoesDAO:
     def get_available_for_professor(db: Session, professor_id: int, materia: str = None):
         """Busca questões disponíveis para um professor (suas próprias + públicas de outros)"""
         from sqlalchemy import or_
-        query = db.query(BancoQuestoes).filter(
+        from sqlalchemy.orm import joinedload
+        query = db.query(BancoQuestoes).options(
+            joinedload(BancoQuestoes.professor)
+        ).filter(
             BancoQuestoes.status == StatusQuestao.ATIVA,
             or_(
                 BancoQuestoes.professor_id == professor_id,
@@ -207,7 +210,10 @@ class BancoQuestoesDAO:
     def search_available_questoes(db: Session, professor_id: int, search_term: str = None, materia: str = None):
         """Busca questões disponíveis (próprias + públicas) com filtros"""
         from sqlalchemy import or_
-        query = db.query(BancoQuestoes).filter(
+        from sqlalchemy.orm import joinedload
+        query = db.query(BancoQuestoes).options(
+            joinedload(BancoQuestoes.professor)
+        ).filter(
             BancoQuestoes.status == StatusQuestao.ATIVA,
             or_(
                 BancoQuestoes.professor_id == professor_id,

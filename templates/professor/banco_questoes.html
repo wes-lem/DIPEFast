@@ -187,7 +187,7 @@
                         <div class="card h-100 border-success">
                             <div class="card-header bg-success text-light">
                                 <h5 class="card-title m-0">
-                                    <i class="bi bi-globe"></i> Matéria: {{ questao.materia }}
+                                    Matéria: {{ questao.materia }}
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -206,7 +206,7 @@
                                 </div>
                                 <div class="mb-2">
                                     <span class="badge bg-info">
-                                        <i class="bi bi-person"></i> Por outro professor
+                                        <i class="bi bi-person"></i> Por: {{ questao.professor.nome if questao.professor else 'Professor' }}
                                     </span>
                                 </div>
                             </div>

@@ -164,6 +164,9 @@
                                                                     <span class="badge bg-success ms-2">Pública</span>
                                                                 </label>
                                                                 {{ questao.enunciado[:100] }}{% if questao.enunciado|length > 100 %}...{% endif %}
+                                                                <small class="text-muted mt-1">
+                                                                    <i class="bi bi-person"></i> Por: {{ questao.professor.nome if questao.professor else 'Professor' }}
+                                                                </small>
                                                             </p>
                                                         </div>
                                                     </div>

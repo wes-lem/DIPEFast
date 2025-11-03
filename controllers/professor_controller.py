@@ -837,8 +837,11 @@ def visualizar_questao_professor(
 ):
     """Visualiza uma questão específica (própria ou pública)"""
     from sqlalchemy import or_
+    from sqlalchemy.orm import joinedload
     # Permitir visualizar questões próprias ou públicas de outros
-    questao = db.query(BancoQuestoes).filter(
+    questao = db.query(BancoQuestoes).options(
+        joinedload(BancoQuestoes.professor)
+    ).filter(
         BancoQuestoes.id == questao_id,
         BancoQuestoes.status == StatusQuestao.ATIVA,
         or_(

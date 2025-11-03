@@ -649,12 +649,13 @@ async def editar_aluno(
     # Atualizar foto se fornecida
     if foto:
         # Criar diretório se não existir
-        os.makedirs("static/uploads/fotos", exist_ok=True)
+        fotos_upload_dir = os.path.join(UPLOAD_DIR, "fotos")
+        os.makedirs(fotos_upload_dir, exist_ok=True)
         
         # Gerar nome único para o arquivo
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"foto_{aluno_id}_{timestamp}.jpg"
-        filepath = f"static/uploads/fotos/{filename}"
+        filepath = os.path.join(fotos_upload_dir, filename)
         
         # Salvar arquivo
         with open(filepath, "wb") as buffer:

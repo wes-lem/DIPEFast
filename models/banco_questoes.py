@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from dao.database import Base
@@ -23,6 +23,7 @@ class BancoQuestoes(Base):
     resposta_correta = Column(String(1), nullable=False)  # A, B, C, D ou E
     materia = Column(String(100), nullable=False)
     status = Column(Enum(StatusQuestao), default=StatusQuestao.ATIVA, nullable=False)
+    publica = Column(Boolean, default=False, nullable=False)  # True = pública (outros professores podem usar), False = privada
     data_criacao = Column(DateTime, server_default=func.current_timestamp())
 
     # Relacionamentos

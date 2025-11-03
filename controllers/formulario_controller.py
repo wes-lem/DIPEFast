@@ -49,9 +49,21 @@ def cadastrar_formulario_page(
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
     """Página para o gestor cadastrar um novo formulário."""
+    from dao.turma_dao import TurmaDAO
+    from dao.campus_dao import CampusDAO
+    
+    turmas = TurmaDAO.get_all(db)
+    campus = CampusDAO.get_all(db)
+    cursos = ["Redes de Computadores", "Agropecuária", "Partiu IF"]
+    
     return templates.TemplateResponse(
         "gestor/cadastrar_formulario.html",
-        {"request": request}
+        {
+            "request": request,
+            "turmas": turmas,
+            "campus": campus,
+            "cursos": cursos
+        }
     )
 
 @router.post("/gestor/formularios/cadastrar")
@@ -60,6 +72,9 @@ async def cadastrar_formulario(
     titulo: str = Form(...),
     descricao: Optional[str] = Form(None),
     perguntas_json: str = Form(...),
+    turma_id: Optional[str] = Form(None),
+    campus_id: Optional[str] = Form(None),
+    curso: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
@@ -69,10 +84,30 @@ async def cadastrar_formulario(
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Formato JSON inválido para perguntas.")
 
+    # Converter strings vazias para None e depois para int se necessário
+    turma_id_int = None
+    if turma_id and turma_id.strip() != "":
+        try:
+            turma_id_int = int(turma_id)
+        except ValueError:
+            turma_id_int = None
+    
+    campus_id_int = None
+    if campus_id and campus_id.strip() != "":
+        try:
+            campus_id_int = int(campus_id)
+        except ValueError:
+            campus_id_int = None
+    
+    curso_final = curso if curso and curso.strip() != "" else None
+
     novo_formulario = FormularioDAO.create(
         db=db,
         titulo=titulo,
-        descricao=descricao
+        descricao=descricao,
+        turma_id=turma_id_int,
+        campus_id=campus_id_int,
+        curso=curso_final
     )
 
     # Adicionar perguntas
@@ -85,9 +120,39 @@ async def cadastrar_formulario(
             opcoes=json.dumps(p_data.get("opcoes")) if p_data.get("opcoes") else None 
             #
         )
+    
+    # Buscar alunos que devem receber o formulário baseado nos filtros
+    alunos_para_notificar = []
+    
+    if turma_id_int:
+        # Se direcionado a uma turma, buscar alunos dessa turma
+        from models.aluno_turma import AlunoTurma
+        aluno_turmas = db.query(AlunoTurma).filter(
+            AlunoTurma.turma_id == turma_id_int,
+            AlunoTurma.status == 'ativo'
+        ).all()
+        aluno_ids = [at.aluno_id for at in aluno_turmas]
+        alunos_para_notificar = db.query(Aluno).filter(Aluno.idAluno.in_(aluno_ids)).all()
+    elif campus_id_int:
+        # Se direcionado a um campus, buscar alunos das turmas desse campus
+        from models.turma import Turma
+        from models.aluno_turma import AlunoTurma
+        turmas_campus = db.query(Turma).filter(Turma.campus_id == campus_id_int).all()
+        turma_ids = [t.id for t in turmas_campus]
+        aluno_turmas = db.query(AlunoTurma).filter(
+            AlunoTurma.turma_id.in_(turma_ids),
+            AlunoTurma.status == 'ativo'
+        ).all()
+        aluno_ids = [at.aluno_id for at in aluno_turmas]
+        alunos_para_notificar = db.query(Aluno).filter(Aluno.idAluno.in_(aluno_ids)).all()
+    elif curso_final:
+        # Se direcionado a um curso, buscar alunos desse curso
+        alunos_para_notificar = db.query(Aluno).filter(Aluno.curso == curso_final).all()
+    else:
+        # Se não tem filtro, notificar todos os alunos
+        alunos_para_notificar = db.query(Aluno).all()
         
-    alunos = db.query(Aluno).all()
-    for aluno in alunos:
+    for aluno in alunos_para_notificar:
         NotificacaoDAO.criar_notificacao_para_novo_formulario(
             db=db,
             aluno_id=aluno.idAluno,
@@ -180,7 +245,8 @@ async def listar_formularios_aluno(
     # Verifica formulários não respondidos e cria notificações
     NotificacaoDAO.verificar_formularios_nao_respondidos(db)
     
-    formularios = FormularioDAO.get_all(db)
+    # Buscar formulários filtrados para o aluno (baseado em turma/campus/curso)
+    formularios = FormularioDAO.get_for_aluno(db, aluno.idAluno)
     formularios_com_status = []
     
     for formulario in formularios:
@@ -382,6 +448,20 @@ async def deletar_formulario(
     if not success:
         # Se o formulário não foi encontrado, lança um erro 404.
         raise HTTPException(status_code=404, detail="Formulário não encontrado.")
+    
+    # Remover todas as notificações relacionadas a este formulário
+    from models.notificacao import Notificacao
+    from sqlalchemy import or_
+    # Remove notificações que apontam para este formulário (exato ou com parâmetros)
+    notificacoes = db.query(Notificacao).filter(
+        or_(
+            Notificacao.link == f"/aluno/formularios/{formulario_id}",
+            Notificacao.link.like(f"/aluno/formularios/{formulario_id}%")
+        )
+    ).all()
+    for notif in notificacoes:
+        db.delete(notif)
+    db.commit()
     
     # Redireciona de volta para a lista de formulários após a exclusão.
     return RedirectResponse(url="/gestor/formularios", status_code=303)

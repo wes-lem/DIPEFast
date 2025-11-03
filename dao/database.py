@@ -11,9 +11,12 @@ pymysql.install_as_MySQLdb()
 
 load_dotenv()
 
+# Verificar se estamos em modo de teste
+TESTING = os.getenv("TESTING") == "1"
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not DATABASE_URL:
+if not TESTING and not DATABASE_URL:
     raise ValueError("A variável de ambiente DATABASE_URL não foi definida.")
 
 def wait_for_db(db_url: str):
@@ -38,13 +41,25 @@ def wait_for_db(db_url: str):
     print("Nao foi possivel conectar ao banco de dados apos varias tentativas. Abortando.")
     exit(1)
 
-engine = wait_for_db(DATABASE_URL)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Só conectar ao banco se não estivermos em modo de teste
+if not TESTING:
+    engine = wait_for_db(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+else:
+    # Em modo de teste, criar um engine dummy que será sobrescrito
+    engine = None
+    SessionLocal = None
 
 Base = declarative_base()
 
 def get_db():
+    # Em modo de teste, esta função será sobrescrita pela fixture
+    # Mas ainda precisa ter uma implementação válida para não quebrar imports
+    if SessionLocal is None:
+        # Modo de teste - retornar None (será sobrescrito)
+        yield None
+        return
+    
     db = SessionLocal()
     try:
         yield db

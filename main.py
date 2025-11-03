@@ -29,7 +29,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.get("/")
 def home(request: Request):
-    return templates.TemplateResponse("aluno/login.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/healthz")
 def health_check():

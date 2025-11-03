@@ -13,3 +13,4 @@ class Campus(Base):
     # Relacionamentos
     professores = relationship("Professor", back_populates="campus")
     turmas = relationship("Turma", back_populates="campus")
+    formularios = relationship("Formulario", back_populates="campus")

@@ -26,3 +26,4 @@ class Turma(Base):
     campus = relationship("Campus", back_populates="turmas")
     aluno_turmas = relationship("AlunoTurma", back_populates="turma", cascade="all, delete-orphan")
     prova_turmas = relationship("ProvaTurma", back_populates="turma", cascade="all, delete-orphan")
+    formularios = relationship("Formulario", back_populates="turma")

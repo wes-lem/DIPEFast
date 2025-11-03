@@ -395,6 +395,7 @@ async def criar_questao(
     resposta_correta: str = Form(...),
     materia: str = Form(...),
     imagem: UploadFile = File(None),
+    publica: Optional[str] = Form(None),  # "on" se checkbox marcado, None se não marcado
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
@@ -411,6 +412,9 @@ async def criar_questao(
             buffer.write(await imagem.read())
         imagem_path = f"/static/uploads/questoes/{filename}"
     
+    # Converter checkbox para boolean
+    is_publica = publica == "on"
+    
     BancoQuestoesDAO.create(
         db=db,
         professor_id=professor_id,
@@ -422,7 +426,8 @@ async def criar_questao(
         opcao_e=opcao_e,
         resposta_correta=resposta_correta,
         materia=materia,
-        imagem=imagem_path
+        imagem=imagem_path,
+        publica=is_publica
     )
     
     return RedirectResponse(url="/professor/banco-questoes", status_code=303)
@@ -464,14 +469,25 @@ def provas_professor(
 @router.get("/professor/provas/criar")
 def criar_prova_page(
     request: Request,
+    materia: Optional[str] = None,
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
     """Página para criar nova prova"""
-    questoes = BancoQuestoesDAO.get_active_by_professor(db, professor_id)
+    # Buscar questões disponíveis (próprias + públicas de outros)
+    questoes = BancoQuestoesDAO.get_available_for_professor(db, professor_id, materia)
+    # Separar questões próprias e públicas para exibição
+    questoes_proprias = [q for q in questoes if q.professor_id == professor_id]
+    questoes_publicas = [q for q in questoes if q.professor_id != professor_id]
+    
     return templates.TemplateResponse(
         "professor/criar_prova.html",
-        {"request": request, "questoes": questoes}
+        {
+            "request": request, 
+            "questoes": questoes,
+            "questoes_proprias": questoes_proprias,
+            "questoes_publicas": questoes_publicas
+        }
     )
 
 @router.post("/professor/provas/criar")
@@ -859,6 +875,7 @@ def salvar_edicao_questao(
     resposta_correta: str = Form(...),
     materia: str = Form(...),
     imagem: UploadFile = File(None),
+    publica: Optional[str] = Form(None),  # "on" se checkbox marcado, None se não marcado
     db: Session = Depends(get_db),
     professor_id: int = Depends(verificar_professor_sessao)
 ):
@@ -880,6 +897,7 @@ def salvar_edicao_questao(
     questao.opcao_e = opcao_e
     questao.resposta_correta = resposta_correta
     questao.materia = materia
+    questao.publica = publica == "on"  # Atualizar status público/privado
     
     # Processar upload de imagem se fornecido
     if imagem and imagem.filename:

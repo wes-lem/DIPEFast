@@ -118,6 +118,18 @@
                                                value="{{ questao.materia }}" required>
                                         <div class="form-text">Ex: Matemática, Português, História, etc.</div>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="publica" name="publica" {% if questao.publica %}checked{% endif %}>
+                                            <label class="form-check-label" for="publica">
+                                                <strong>Tornar questão pública</strong>
+                                            </label>
+                                            <div class="form-text">
+                                                Questões públicas podem ser utilizadas por outros professores em suas provas.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

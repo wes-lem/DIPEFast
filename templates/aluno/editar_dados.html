@@ -201,16 +201,18 @@
     <div class="modal fade" id="modalCropEdit" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Recortar foto (1x1)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-crop text-light"></i> Recortar foto (1x1)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <img id="cropImageEdit" src="#" alt="Imagem para recorte" style="max-width:100%; display:none;" />
+                <div class="modal-body h-100">
+                    <div class="img-container" style="max-height: 50vh;">
+                        <img id="cropImageEdit" src="#" alt="Imagem para recorte" />
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btnConfirmCropEdit" class="btn btn-padrao text-light">Confirmar recorte</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                    <button type="button" id="btnConfirmCropEdit" class="btn btn-padrao text-light"><i class="bi bi-check-circle text-light"></i> Confirmar recorte</button>
                 </div>
             </div>
         </div>
@@ -233,19 +235,29 @@
                 const url = URL.createObjectURL(file);
                 cropImg.src = url;
                 cropImg.style.display = 'block';
-                setTimeout(() => {
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(cropImg, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        movable: true,
-                        zoomable: true,
-                        scalable: false,
-                        responsive: true,
-                    });
-                }, 50);
                 modal.show();
+            });
+
+            modalEl.addEventListener('shown.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    movable: true,
+                    zoomable: true,
+                    scalable: false,
+                    responsive: true,
+                });
+            });
+
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
             });
 
             btnConfirm.addEventListener('click', function(){

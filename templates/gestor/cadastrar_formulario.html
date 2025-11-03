@@ -97,9 +97,49 @@
                                 <input type="text" class="form-control" id="titulo" name="titulo" required>
                             </div>
 
-                            <div>
+                            <div class="mb-3">
                                 <label for="descricao" class="form-label">Descrição</label>
                                 <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h6 class="mb-3">Direcionamento do Formulário (Opcional)</h6>
+                            <p class="text-muted small mb-3">Deixe todos os campos em branco para disponibilizar o formulário para todos os alunos.</p>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="turma_id" class="form-label">Turma Específica</label>
+                                    <select class="form-control" id="turma_id" name="turma_id">
+                                        <option value="">Selecione uma turma (opcional)</option>
+                                        {% for turma in turmas %}
+                                        <option value="{{ turma.id }}">{{ turma.nome }} ({{ turma.codigo }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Direcionar apenas para uma turma específica</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="campus_id" class="form-label">Campus</label>
+                                    <select class="form-control" id="campus_id" name="campus_id">
+                                        <option value="">Selecione um campus (opcional)</option>
+                                        {% for campu in campus %}
+                                        <option value="{{ campu.id }}">{{ campu.nome }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Direcionar para todos os alunos de um campus</div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="curso" class="form-label">Curso</label>
+                                    <select class="form-control" id="curso" name="curso">
+                                        <option value="">Selecione um curso (opcional)</option>
+                                        {% for curso_item in cursos %}
+                                        <option value="{{ curso_item }}">{{ curso_item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Direcionar para todos os alunos de um curso</div>
+                                </div>
                             </div>
                         </div>
                     </div>

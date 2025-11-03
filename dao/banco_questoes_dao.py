@@ -5,7 +5,7 @@ class BancoQuestoesDAO:
     @staticmethod
     def create(db: Session, professor_id: int, enunciado: str, opcao_a: str, opcao_b: str, 
                opcao_c: str, opcao_d: str, opcao_e: str, resposta_correta: str, 
-               materia: str, imagem: str = None):
+               materia: str, imagem: str = None, publica: bool = False):
         """Cria uma nova questão no banco"""
         questao = BancoQuestoes(
             professor_id=professor_id,
@@ -17,7 +17,8 @@ class BancoQuestoesDAO:
             opcao_e=opcao_e,
             resposta_correta=resposta_correta,
             materia=materia,
-            imagem=imagem
+            imagem=imagem,
+            publica=publica
         )
         db.add(questao)
         db.commit()
@@ -41,6 +42,32 @@ class BancoQuestoesDAO:
             BancoQuestoes.professor_id == professor_id,
             BancoQuestoes.status == StatusQuestao.ATIVA
         ).all()
+    
+    @staticmethod
+    def get_available_for_professor(db: Session, professor_id: int, materia: str = None):
+        """Busca questões disponíveis para um professor (suas próprias + públicas de outros)"""
+        from sqlalchemy import or_
+        query = db.query(BancoQuestoes).filter(
+            BancoQuestoes.status == StatusQuestao.ATIVA,
+            or_(
+                BancoQuestoes.professor_id == professor_id,
+                BancoQuestoes.publica == True
+            )
+        )
+        if materia:
+            query = query.filter(BancoQuestoes.materia == materia)
+        return query.all()
+    
+    @staticmethod
+    def get_public_questoes(db: Session, materia: str = None):
+        """Busca questões públicas de todos os professores"""
+        query = db.query(BancoQuestoes).filter(
+            BancoQuestoes.status == StatusQuestao.ATIVA,
+            BancoQuestoes.publica == True
+        )
+        if materia:
+            query = query.filter(BancoQuestoes.materia == materia)
+        return query.all()
 
     @staticmethod
     def get_by_materia(db: Session, materia: str):

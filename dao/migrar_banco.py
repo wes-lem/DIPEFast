@@ -151,6 +151,7 @@ def migrar_banco():
                     resposta_correta VARCHAR(1) NOT NULL,
                     materia VARCHAR(100) NOT NULL,
                     status ENUM('ativa', 'arquivada') DEFAULT 'ativa',
+                    publica BOOLEAN DEFAULT FALSE NOT NULL,
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (professor_id) REFERENCES professores(id)
                 )
@@ -158,6 +159,16 @@ def migrar_banco():
             print(" Tabela banco_questoes criada")
         else:
             print(" Tabela banco_questoes j existe")
+            # Adicionar coluna publica se não existir
+            result_col = db.execute(text("""
+                SELECT COLUMN_NAME 
+                FROM INFORMATION_SCHEMA.COLUMNS 
+                WHERE TABLE_NAME = 'banco_questoes' AND COLUMN_NAME = 'publica'
+            """))
+            if not result_col.fetchone():
+                print(" Adicionando coluna publica na tabela banco_questoes...")
+                db.execute(text("ALTER TABLE banco_questoes ADD COLUMN publica BOOLEAN DEFAULT FALSE NOT NULL"))
+                print(" Coluna publica adicionada")
         
         # Verificar se a tabela prova_questoes existe
         result = db.execute(text("""
@@ -234,6 +245,31 @@ def migrar_banco():
             print(" Tabela notificacoes_professor criada")
         else:
             print(" Tabela notificacoes_professor j existe")
+        
+        # Verificar se a tabela formularios existe e adicionar campos de direcionamento
+        result = db.execute(text("""
+            SELECT TABLE_NAME 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_NAME = 'formularios'
+        """))
+        
+        if result.fetchone():
+            # Adicionar colunas de direcionamento se não existirem
+            result_col = db.execute(text("""
+                SELECT COLUMN_NAME 
+                FROM INFORMATION_SCHEMA.COLUMNS 
+                WHERE TABLE_NAME = 'formularios' AND COLUMN_NAME = 'turma_id'
+            """))
+            if not result_col.fetchone():
+                print(" Adicionando colunas de direcionamento na tabela formularios...")
+                db.execute(text("ALTER TABLE formularios ADD COLUMN turma_id INT NULL"))
+                db.execute(text("ALTER TABLE formularios ADD COLUMN campus_id INT NULL"))
+                db.execute(text("ALTER TABLE formularios ADD COLUMN curso VARCHAR(100) NULL"))
+                db.execute(text("ALTER TABLE formularios ADD CONSTRAINT fk_formularios_turma FOREIGN KEY (turma_id) REFERENCES turmas(id)"))
+                db.execute(text("ALTER TABLE formularios ADD CONSTRAINT fk_formularios_campus FOREIGN KEY (campus_id) REFERENCES campus(id)"))
+                print(" Colunas de direcionamento adicionadas")
+            else:
+                print(" Colunas de direcionamento j existem na tabela formularios")
         
         db.commit()
         print(" Migrao do banco de dados concluda com sucesso!")

@@ -5,10 +5,13 @@ import json
 
 class FormularioDAO:
     @staticmethod
-    def create(db: Session, titulo: str, descricao: str):
+    def create(db: Session, titulo: str, descricao: str, turma_id: int = None, campus_id: int = None, curso: str = None):
         formulario = Formulario(
             titulo=titulo,
-            descricao=descricao
+            descricao=descricao,
+            turma_id=turma_id,
+            campus_id=campus_id,
+            curso=curso
         )
         db.add(formulario)
         db.commit()
@@ -26,6 +29,64 @@ class FormularioDAO:
     @staticmethod
     def get_active(db: Session):
         return db.query(Formulario).all()
+    
+    @staticmethod
+    def get_for_aluno(db: Session, aluno_id: int):
+        """Busca formulários disponíveis para um aluno específico baseado em turma/campus/curso"""
+        from models.aluno import Aluno
+        from models.aluno_turma import AlunoTurma
+        
+        aluno = db.query(Aluno).filter(Aluno.idAluno == aluno_id).first()
+        if not aluno:
+            return []
+        
+        # Buscar turmas do aluno
+        aluno_turmas = db.query(AlunoTurma).filter(
+            AlunoTurma.aluno_id == aluno_id,
+            AlunoTurma.status == 'ativo'
+        ).all()
+        turma_ids = [at.turma_id for at in aluno_turmas]
+        
+        # Buscar campus das turmas do aluno
+        campus_ids = []
+        if turma_ids:
+            from models.turma import Turma
+            turmas = db.query(Turma).filter(Turma.id.in_(turma_ids)).all()
+            campus_ids = [t.campus_id for t in turmas]
+        
+        # Buscar formulários que:
+        # 1. Não têm nenhum filtro (turma_id, campus_id, curso são None) - para todos
+        # 2. São direcionados à turma do aluno
+        # 3. São direcionados ao campus do aluno
+        # 4. São direcionados ao curso do aluno
+        from sqlalchemy import or_, and_
+        
+        conditions = []
+        
+        # Formulários sem filtro (para todos)
+        conditions.append(
+            and_(
+                Formulario.turma_id.is_(None),
+                Formulario.campus_id.is_(None),
+                Formulario.curso.is_(None)
+            )
+        )
+        
+        # Formulários direcionados à turma do aluno
+        if turma_ids:
+            conditions.append(Formulario.turma_id.in_(turma_ids))
+        
+        # Formulários direcionados ao campus do aluno
+        if campus_ids:
+            conditions.append(Formulario.campus_id.in_(campus_ids))
+        
+        # Formulários direcionados ao curso do aluno
+        if aluno.curso:
+            conditions.append(Formulario.curso == aluno.curso)
+        
+        query = db.query(Formulario).filter(or_(*conditions))
+        
+        return query.all()
 
     @staticmethod
     def add_pergunta(

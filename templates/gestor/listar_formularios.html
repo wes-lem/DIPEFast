@@ -65,10 +65,11 @@
           </a>
         </li>
         <li class="sidebar-item mt-3">
-            <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
-                <i class="bi bi-person-fill-gear"></i>
-                <span>Gerenciar Usuários</span>
-            </a>
+          <a href="/gestor/gerenciar-usuarios"
+            class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+            <i class="bi bi-person-fill-gear"></i>
+            <span>Gerenciar Usuários</span>
+          </a>
         </li>
         <div class="sidebar-item mt-3">
           <form action="/sair" method="post" style="display: inline;">
@@ -120,6 +121,8 @@
                   <td>{{ form.data_criacao }}</td>
                   <td>{{ form.total_respondedores }}</td>
                   <td>
+                    <a href="/gestor/formularios/{{ form.id }}/resultados" class="btn btn-sm btn-info me-2">
+                      <i class="bi bi-bar-chart-fill text-light"></i> Dashboard</a>
                     <a href="/gestor/formularios/{{ form.id }}/respostas" class="btn btn-sm btn-black me-2"><i
                         class="bi bi-eye c-padrao"></i> Ver Respostas</a>
 

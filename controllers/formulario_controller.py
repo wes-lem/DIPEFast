@@ -10,6 +10,7 @@ from dao.formulario_dao import FormularioDAO
 from dao.pergunta_formulario_dao import PerguntaFormularioDAO # Adicionado: DAO de Perguntas
 from dao.resposta_formulario_dao import RespostaFormularioDAO
 from dao.notificacao_dao import NotificacaoDAO
+from services.formulario_analytics_service import FormularioAnalyticsService
 
 from models.aluno import Aluno
 
@@ -465,3 +466,37 @@ async def deletar_formulario(
     
     # Redireciona de volta para a lista de formulários após a exclusão.
     return RedirectResponse(url="/gestor/formularios", status_code=303)
+
+@router.get("/gestor/formularios/{formulario_id}/resultados")
+def dashboard_resultados_formulario(
+    request: Request,
+    formulario_id: int,
+    db: Session = Depends(get_db),
+    gestor_id: int = Depends(verificar_gestor_sessao)
+):
+    """Dashboard de resultados de um formulário com gráficos dinâmicos."""
+    analytics_data = FormularioAnalyticsService.get_formulario_analytics(db, formulario_id)
+    
+    if not analytics_data:
+        raise HTTPException(status_code=404, detail="Formulário não encontrado.")
+    
+    # Buscar respostas de texto para cada pergunta de texto
+    respostas_texto_por_pergunta = []
+    for pergunta in analytics_data["perguntas"]:
+        if pergunta.tipo_pergunta == 'texto':
+            respostas_texto = FormularioAnalyticsService.get_respostas_texto_agregadas(
+                db, formulario_id, pergunta.id
+            )
+            respostas_texto_por_pergunta.append({
+                "pergunta": pergunta,
+                "respostas": respostas_texto
+            })
+    
+    return templates.TemplateResponse(
+        "gestor/dashboard_resultados_formulario.html",
+        {
+            "request": request,
+            "analytics": analytics_data,
+            "respostas_texto_por_pergunta": respostas_texto_por_pergunta
+        }
+    )

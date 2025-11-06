@@ -225,7 +225,7 @@
                         <div class="col-md-2 col-sm-6">
                             <a class="card text-center shadow h-100 border-{{cor}}" href="/alunos/{{ aluno.idAluno }}">
                                 <div>
-                                    <img src="{{ aluno.imagem }}" class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
+                                    <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
                                 </div>
                                 <div class="card-body pt-0">
                                     <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>

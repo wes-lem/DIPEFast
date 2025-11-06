@@ -647,23 +647,33 @@ async def editar_aluno(
         aluno.acesso_internet = None
 
     # Atualizar foto se fornecida
-    if foto:
+    if foto and foto.filename:
+        # Remover imagem antiga se existir
+        if aluno.imagem:
+            caminho_antigo = aluno.imagem.lstrip('/')
+            caminho_completo = os.path.join("templates", caminho_antigo)
+            if os.path.exists(caminho_completo):
+                try:
+                    os.remove(caminho_completo)
+                except Exception as e:
+                    print(f"Erro ao remover imagem antiga: {e}")
+        
         # Criar diretório se não existir
-        fotos_upload_dir = os.path.join(UPLOAD_DIR, "fotos")
-        os.makedirs(fotos_upload_dir, exist_ok=True)
+        upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
+        os.makedirs(upload_dir_aluno, exist_ok=True)
         
         # Gerar nome único para o arquivo
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"foto_{aluno_id}_{timestamp}.jpg"
-        filepath = os.path.join(fotos_upload_dir, filename)
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f"aluno_{aluno_id}_{timestamp}{Path(foto.filename).suffix}"
+        filepath = os.path.join(upload_dir_aluno, filename)
         
         # Salvar arquivo
+        content = await foto.read()
         with open(filepath, "wb") as buffer:
-            content = await foto.read()
             buffer.write(content)
         
-        # Atualizar caminho da foto no banco
-        aluno.foto = f"/static/uploads/fotos/{filename}"
+        # Atualizar caminho da imagem no banco
+        aluno.imagem = f"/static/uploads/alunos/{filename}"
 
     db.commit()
     return RedirectResponse(url=f"/alunos/{aluno_id}", status_code=303)

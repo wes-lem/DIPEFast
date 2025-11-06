@@ -9,6 +9,9 @@ services:
     environment:
       DATABASE_URL: mysql+pymysql://user:password@db:3306/dipe
 
+    volumes:
+      - /home/dipe/DIPEFast/templates/static:/app/templates/static
+
     depends_on:
       db:
         condition: service_healthy

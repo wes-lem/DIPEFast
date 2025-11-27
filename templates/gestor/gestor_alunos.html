@@ -240,7 +240,7 @@
                             {% endif %} 
                             {# --------------------------------------- #}
                 
-                            <div class="col-md-2 col-sm-6">
+                            <div class="col-lg-2 col-md-3 col-sm-6">
                                 <a class="card text-center shadow h-100 border-{{cor}}" href="/alunos/{{ aluno.idAluno }}">
                                     <div>
                                         <img src="{{ aluno.imagem or '/static/img/user.jpg' }}"
@@ -248,8 +248,7 @@
                                     </div>
                                     <div class="card-body pt-0">
                                         <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
-                                        {# Opcional: Mostrar a média para conferir #}
-                                        {# <small class="text-muted">{{ "%.1f"|format(media) }}</small> #}
+                                        <small class="text-{{ cor }} fw-bold">{{ "%.1f"|format(media) }}</small>
                                     </div>
                                 </a>
                             </div>

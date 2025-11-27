@@ -29,3 +29,14 @@ Para reiniciar os containers:
 ```bash
 docker compose restart
 ```
+
+Para voltar para produção comente a linha 
+```bash
+volumes:
+    # - .:/app  # Mapeia toda a raiz do projeto para /app no container
+    - /home/dipe/DIPEFast/templates/static:/app/templates/static
+```
+Para reiniciar os containers:
+```bash
+docker compose up -d --build
+```

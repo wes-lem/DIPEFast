@@ -46,34 +46,18 @@ O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o a
 - Git
 - Docker e Docker Compose
 
-Docker e Docker Compose
-
 ### Instalação
 1. Clone o repositório
-2. Criar o ambiente virtual
-```bash
-python -m venv venv
-```
-3. Subir a aplicação
+2. Subir a aplicação
 ```bash
 docker compose up -d --build
 ```
-4. Acesse o sistema: Abra o navegador e acesse:
+3. Acesse o sistema: Abra o navegador e acesse:
 ```bash
 URL: http://localhost:8080
 ```
 
-### Github commands
-```
-# 1. Busca as atualizações mais recentes do repositório remoto
-git fetch origin
-
-# 2. Reseta sua branch local para ser uma cópia exata da remota
-git reset --hard origin/main
-
-# 3. (Opcional) Remove todos os arquivos e diretórios não rastreados
-git clean -fd
-```
+[📘 Ver Guia de Comandos Docker](utils/docker.md)
 
 ## 📊 Estrutura do Projeto
 ```
@@ -145,8 +129,5 @@ DIPE/
 └── requirements.txt
 ```
 
-## 📄 Licença
-Este projeto é de uso acadêmico.
-
 ## ✉️ Equipe de Desenvolvimento
-Desenvolvido por Weslem Rodrigues e Iasmin Azevedo, como projeto de Arquitetura de Sistemas do IFCE - Campus Boa Viagem, demonstrando a aplicação de padrões arquiteturais modernos em soluções educacionais.
+Desenvolvido por Weslem Rodrigues, Iasmin Azevedo.

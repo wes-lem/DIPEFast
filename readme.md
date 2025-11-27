@@ -43,8 +43,10 @@ O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o a
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
-- Python 3.10 ou superior
-- MySQL
+- Git
+- Docker e Docker Compose
+
+Docker e Docker Compose
 
 ### Instalação
 1. Clone o repositório
@@ -52,23 +54,13 @@ O DIPE é um sistema web desenvolvido em FastAPI e tecnologias modernas para o a
 ```bash
 python -m venv venv
 ```
-3. Ativar o ambiente virtual
-No Windows
+3. Subir a aplicação
 ```bash
-.\venv\Scripts\activate
+docker compose up -d --build
 ```
-Linux e macOS
+4. Acesse o sistema: Abra o navegador e acesse:
 ```bash
-source venv/bin/activate
-```
-4. Instalar dependências:
-```bash
-pip install -r requirements.txt
-```
-5. Configure o banco de dados MySQL
-6. Execute o servidor:
-```bash
-python main.py
+URL: http://localhost:8080
 ```
 
 ### Github commands

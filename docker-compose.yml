@@ -1,6 +1,5 @@
 services:
   app:
-    # Define o serviço principal da aplicação
     build: .
     restart: always
     ports:
@@ -10,7 +9,8 @@ services:
       DATABASE_URL: mysql+pymysql://user:password@db:3306/dipe
 
     volumes:
-      - /home/dipe/DIPEFast/templates/static:/app/templates/static
+      - .:/app  # Mapeia toda a raiz do projeto para /app no container
+    # - /home/dipe/DIPEFast/templates/static:/app/templates/static
 
     depends_on:
       db:
@@ -19,6 +19,8 @@ services:
   db:
     image: mysql:8.0
     restart: always
+    ports:
+      - "3307:3306"
 
     environment:
       MYSQL_ROOT_PASSWORD: root_password

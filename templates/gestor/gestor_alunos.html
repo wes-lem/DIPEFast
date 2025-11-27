@@ -23,9 +23,10 @@
                 <div class="sidebar-logo me-4">
                 </div>
             </div>
-                        <ul class="sidebar-nav">
+            <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/gestor/dashboard" class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                    <a href="/gestor/dashboard"
+                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
                         <i class="bi bi-house-door-fill"></i>
                         <span>Início</span>
                     </a>
@@ -37,31 +38,36 @@
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/professores" class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                    <a href="/gestor/professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
                         <i class="bi bi-person-badge-fill"></i>
                         <span>Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/turmas" class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                    <a href="/gestor/turmas"
+                        class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
                         <i class="bi bi-collection-fill"></i>
                         <span>Turmas</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas-professores" class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                    <a href="/gestor/provas-professores"
+                        class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
                         <i class="bi bi-file-earmark-check-fill"></i>
                         <span>Provas dos Professores</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios" class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                    <a href="/gestor/formularios"
+                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
                         <i class="bi bi-clipboard2-fill"></i>
                         <span>Formulários</span>
                     </a>
                 </li>
                 <li class="sidebar-item mt-3">
-                    <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                    <a href="/gestor/gerenciar-usuarios"
+                        class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
                         <i class="bi bi-person-fill-gear"></i>
                         <span>Gerenciar Usuários</span>
                     </a>
@@ -82,124 +88,133 @@
                 </a>
             </div>
 
-            
-            
+
+
         </aside>
 
         <div class="main p-4 bg-pattern">
             <div class="row px-2">
                 <div class="col-12 p-0 mb-3 d-flex justify-content-end">
-                    <a href="/alunos/cadastrar" class="btn btn-padrao text-light"><i class="bi bi-plus-circle text-light"></i> Cadastrar Aluno</a>
+                    <a href="/alunos/cadastrar" class="btn btn-padrao text-light"><i
+                            class="bi bi-plus-circle text-light"></i> Cadastrar Aluno</a>
                 </div>
                 <div class="col-12 p-0">
                     <div class="accordion" id="accordionFiltros">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button bg-padrao text-light" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="true"
-                                aria-controls="collapseFiltros">
-                                Filtros
+                                    data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="true"
+                                    aria-controls="collapseFiltros">
+                                    Filtros
                                 </button>
                             </h2>
-                        <div id="collapseFiltros" class="accordion-collapse collapse show" data-bs-parent="#accordionFiltros">
-                            <div class="accordion-body">
-                                        <!-- Filtros principais -->
-                                        <div class="row g-3 mb-3">
+                            <div id="collapseFiltros" class="accordion-collapse collapse show"
+                                data-bs-parent="#accordionFiltros">
+                                <div class="accordion-body">
+                                    <!-- Filtros principais -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-3 col-sm-6">
+                                            <label for="filtro-nome" class="form-label">Nome</label>
+                                            <input type="text" class="form-control" id="filtro-nome"
+                                                placeholder="Buscar por nome">
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <label for="filtro-curso" class="form-label">Curso</label>
+                                            <select name="curso" id="filtro-curso" class="form-select">
+                                                <option value="">Todos os cursos</option>
+                                                <option value="Redes de Computadores">Redes de Computadores</option>
+                                                <option value="Agropecuária">Agropecuária</option>
+                                                <option value="Partiu IF">Partiu IF</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6">
+                                            <label for="filtro-situacao" class="form-label">Situação</label>
+                                            <select name="situacao" id="filtro-situacao" class="form-select">
+                                                <option value="">Todas</option>
+                                                <option value="suficiente">Suficiente</option>
+                                                <option value="regular">Regular</option>
+                                                <option value="insuficiente">Insuficiente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6">
+                                            <label for="filtro-ano" class="form-label">Ano</label>
+                                            <select name="ano" id="filtro-ano" class="form-select">
+                                                <option value="">Todos</option>
+                                                <option value="1">1º ano</option>
+                                                <option value="2">2º ano</option>
+                                                <option value="3">3º ano</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 col-sm-6 d-flex align-items-end">
+                                            <button class="btn btn-padrao text-light px-4 w-100" id="btn-filtrar">
+                                                <i class="bi bi-funnel-fill text-light"></i> Filtrar
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filtros avançados (colapsáveis) -->
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <button class="btn btn-secondary btn-sm" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#filtros-avancados">
+                                                Filtros Avançados <i class="bi bi-chevron-down text-light"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="collapse" id="filtros-avancados">
+                                        <div class="row g-3 mt-2">
                                             <div class="col-md-3 col-sm-6">
-                                                <label for="filtro-nome" class="form-label">Nome</label>
-                                                <input type="text" class="form-control" id="filtro-nome" placeholder="Buscar por nome">
+                                                <label for="filtro-idade-min" class="form-label">Idade Mínima</label>
+                                                <input type="number" class="form-control" id="filtro-idade-min" min="10"
+                                                    max="100">
                                             </div>
                                             <div class="col-md-3 col-sm-6">
-                                                <label for="filtro-curso" class="form-label">Curso</label>
-                                                <select name="curso" id="filtro-curso" class="form-select">
-                                                    <option value="">Todos os cursos</option>
-                                                    <option value="Redes de Computadores">Redes de Computadores</option>
-                                                    <option value="Agropecuária">Agropecuária</option>
-                                                    <option value="Partiu IF">Partiu IF</option>
+                                                <label for="filtro-idade-max" class="form-label">Idade Máxima</label>
+                                                <input type="number" class="form-control" id="filtro-idade-max" min="10"
+                                                    max="100">
+                                            </div>
+                                            <div class="col-md-3 col-sm-6">
+                                                <label for="filtro-municipio" class="form-label">Município</label>
+                                                <select name="municipio" id="filtro-municipio" class="form-select">
+                                                    <option value="">Todos os municípios</option>
+                                                    {% for municipio in municipios_disponiveis %}
+                                                    <option value="{{ municipio }}">{{ municipio }}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
-                                            <div class="col-md-2 col-sm-6">
-                                                <label for="filtro-situacao" class="form-label">Situação</label>
-                                                <select name="situacao" id="filtro-situacao" class="form-select">
+                                            <div class="col-md-3 col-sm-6">
+                                                <label for="filtro-zona" class="form-label">Zona</label>
+                                                <select name="zona" id="filtro-zona" class="form-select">
                                                     <option value="">Todas</option>
-                                                    <option value="suficiente">Suficiente</option>
-                                                    <option value="regular">Regular</option>
-                                                    <option value="insuficiente">Insuficiente</option>
+                                                    <option value="urbana">Urbana</option>
+                                                    <option value="rural">Rural</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-2 col-sm-6">
-                                                <label for="filtro-ano" class="form-label">Ano</label>
-                                                <select name="ano" id="filtro-ano" class="form-select">
-                                                    <option value="">Todos</option>
-                                                    <option value="1">1º ano</option>
-                                                    <option value="2">2º ano</option>
-                                                    <option value="3">3º ano</option>
+                                            <div class="col-md-3 col-sm-6">
+                                                <label for="filtro-origem-escolar" class="form-label">Origem
+                                                    Escolar</label>
+                                                <select name="origem_escolar" id="filtro-origem-escolar"
+                                                    class="form-select">
+                                                    <option value="">Todas</option>
+                                                    <option value="publica">Pública</option>
+                                                    <option value="privada">Privada</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-2 col-sm-6 d-flex align-items-end">
-                                                <button class="btn btn-padrao text-light px-4 w-100" id="btn-filtrar">
-                                                    <i class="bi bi-funnel-fill text-light"></i> Filtrar
+                                            <div class="col-md-3 col-sm-6 d-flex align-items-end">
+                                                <button class="btn btn-danger me-2" id="btn-limpar-filtros">
+                                                    <i class="bi bi-trash3-fill text-light"></i> Limpar
                                                 </button>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Filtros avançados (colapsáveis) -->
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filtros-avancados">
-                                                    Filtros Avançados <i class="bi bi-chevron-down text-light"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="collapse" id="filtros-avancados">
-                                            <div class="row g-3 mt-2">
-                                                <div class="col-md-3 col-sm-6">
-                                                    <label for="filtro-idade-min" class="form-label">Idade Mínima</label>
-                                                    <input type="number" class="form-control" id="filtro-idade-min" min="10" max="100">
-                                                </div>
-                                                <div class="col-md-3 col-sm-6">
-                                                    <label for="filtro-idade-max" class="form-label">Idade Máxima</label>
-                                                    <input type="number" class="form-control" id="filtro-idade-max" min="10" max="100">
-                                                </div>
-                                                <div class="col-md-3 col-sm-6">
-                                                    <label for="filtro-municipio" class="form-label">Município</label>
-                                                    <select name="municipio" id="filtro-municipio" class="form-select">
-                                                        <option value="">Todos os municípios</option>
-                                                        {% for municipio in municipios_disponiveis %}
-                                                        <option value="{{ municipio }}">{{ municipio }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3 col-sm-6">
-                                                    <label for="filtro-zona" class="form-label">Zona</label>
-                                                    <select name="zona" id="filtro-zona" class="form-select">
-                                                        <option value="">Todas</option>
-                                                        <option value="urbana">Urbana</option>
-                                                        <option value="rural">Rural</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3 col-sm-6">
-                                                    <label for="filtro-origem-escolar" class="form-label">Origem Escolar</label>
-                                                    <select name="origem_escolar" id="filtro-origem-escolar" class="form-select">
-                                                        <option value="">Todas</option>
-                                                        <option value="publica">Pública</option>
-                                                        <option value="privada">Privada</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3 col-sm-6 d-flex align-items-end">
-                                                    <button class="btn btn-danger me-2" id="btn-limpar-filtros">
-                                                        <i class="bi bi-trash3-fill text-light"></i> Limpar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Filtros aplicados -->
-                                        <div id="filtros-aplicados" class="mt-3" style="display: none;" {% if filtros_aplicados %}data-filtros='{{ filtros_aplicados|tojson }}'{% endif %}>
-                                            <small class="text-muted">Filtros aplicados:</small>
-                                            <div id="tags-filtros" class="d-flex flex-wrap gap-2 mt-1"></div>
-                                        </div>
+                                    <!-- Filtros aplicados -->
+                                    <div id="filtros-aplicados" class="mt-3" style="display: none;" {% if
+                                        filtros_aplicados %}data-filtros='{{ filtros_aplicados|tojson }}' {% endif %}>
+                                        <small class="text-muted">Filtros aplicados:</small>
+                                        <div id="tags-filtros" class="d-flex flex-wrap gap-2 mt-1"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -209,34 +224,41 @@
                 <div class="col-12 p-0 mt-3">
                     <h1 class="fw-bold c-black mb-2 fs-2">Alunos</h1>
                     <div class="row g-4">
-                        {% for aluno, nota_portugues, nota_matematica, nota_ciencias, media_geral in alunos %}
-                        {% set media = media_geral %}
-                        {% if media <= 3.33 %}
-                            {% set situacao = "Insuficiente" %}
-                            {% set cor = "danger" %}
-                        {% elif media <= 6.66 %}
-                            {% set situacao = "Regular" %}
-                            {% set cor = "warning" %}
-                        {% else %}
-                            {% set situacao = "Suficiente" %}
-                            {% set cor = "success" %}
-                        {% endif %}
+                        {% for aluno, nota_portugues, nota_matematica, nota_ciencias, media_geral in alunos|sort(attribute='0.nome') %}
+                            {% set media = media_geral %}
+                            {% if media <= 5 %} 
+                                {% set situacao = "Insuficiente" %} 
+                                {% set cor = "danger" %} 
+                            
+                            {% elif media < 8 %} 
+                                {% set situacao = "Regular" %} 
+                                {% set cor = "warning" %} 
+                            
+                            {% else %} 
+                                {% set situacao = "Suficiente" %} 
+                                {% set cor = "success" %} 
+                            {% endif %} 
+                            {# --------------------------------------- #}
                 
-                        <div class="col-md-2 col-sm-6">
-                            <a class="card text-center shadow h-100 border-{{cor}}" href="/alunos/{{ aluno.idAluno }}">
-                                <div>
-                                    <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
-                                </div>
-                                <div class="card-body pt-0">
-                                    <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
-                                </div>
-                            </a>
-                        </div>
+                            <div class="col-md-2 col-sm-6">
+                                <a class="card text-center shadow h-100 border-{{cor}}" href="/alunos/{{ aluno.idAluno }}">
+                                    <div>
+                                        <img src="{{ aluno.imagem or '/static/img/user.jpg' }}"
+                                                class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
+                                        {# Opcional: Mostrar a média para conferir #}
+                                        {# <small class="text-muted">{{ "%.1f"|format(media) }}</small> #}
+                                    </div>
+                                </a>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -331,7 +353,7 @@
                     closeBtn.setAttribute('data-filtro-key', key);
 
                     // Adicionar event listener específico
-                    closeBtn.addEventListener('click', function(e) {
+                    closeBtn.addEventListener('click', function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         const filtroKey = this.getAttribute('data-filtro-key');
@@ -456,7 +478,7 @@
 
         // Permitir filtrar pressionando Enter nos campos de input
         document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
-            input.addEventListener('keypress', function(e) {
+            input.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     aplicarFiltros();
                 }
@@ -474,7 +496,7 @@
 
     <script>
         // Verificar e mostrar filtros aplicados vindos do backend
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const filtrosAplicadosEl = document.getElementById('filtros-aplicados');
             const filtrosData = filtrosAplicadosEl.getAttribute('data-filtros');
 

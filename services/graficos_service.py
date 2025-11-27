@@ -4,6 +4,48 @@ from models.aluno import Aluno
 from models.prova import Prova
 from models.resultado import Resultado
 from models.gestor import Gestor # Para buscar dados do gestor, se necessário
+import unicodedata
+
+def normalizar_materia(materia: str) -> str:
+    """
+    Normaliza o nome da matéria removendo acentos, convertendo para minúsculas
+    e tratando variações de 'Ciências'
+    """
+    if not materia:
+        return ""
+    
+    # Remove acentos
+    materia_sem_acento = unicodedata.normalize('NFD', materia)
+    materia_sem_acento = ''.join(char for char in materia_sem_acento if unicodedata.category(char) != 'Mn')
+    
+    # Converte para minúsculas
+    materia_lower = materia_sem_acento.lower().strip()
+    
+    # Trata variações de Ciências (incluindo "Ciências da Natureza")
+    if 'ciencias' in materia_lower or 'ciencia' in materia_lower:
+        return 'ciencias'
+    
+    # Trata variações de Português
+    if 'portugues' in materia_lower:
+        return 'portugues'
+    
+    # Trata variações de Matemática
+    if 'matematica' in materia_lower:
+        return 'matematica'
+    
+    return materia_lower
+
+def obter_materia_padrao(materia_normalizada: str) -> str:
+    """
+    Retorna o nome padrão da matéria baseado na versão normalizada
+    """
+    if materia_normalizada == 'ciencias':
+        return 'Ciências'
+    elif materia_normalizada == 'portugues':
+        return 'Português'
+    elif materia_normalizada == 'matematica':
+        return 'Matemática'
+    return materia_normalizada.title()
 
 class AnalyticsService:
     @staticmethod
@@ -79,23 +121,63 @@ class AnalyticsService:
             'data': [i[1] for i in idades]
         }
 
-        # Desempenho por disciplina
+        # Desempenho por disciplina (agrupando variações de capitalização e acentuação)
+        # Buscar todas as matérias distintas das provas
+        materias_distintas = db.query(Prova.materia).distinct().all()
+        materias_dict = {}  # {materia_normalizada: [materias_originais]}
+        
+        for (materia_original,) in materias_distintas:
+            materia_norm = normalizar_materia(materia_original)
+            if materia_norm not in materias_dict:
+                materias_dict[materia_norm] = []
+            materias_dict[materia_norm].append(materia_original)
+        
+        # Calcular média de acertos para cada matéria normalizada
+        desempenho_data = []
+        desempenho_labels = []
+        
+        # Ordem padrão: Português, Matemática, Ciências
+        ordem_materias = ['portugues', 'matematica', 'ciencias']
+        
+        for materia_norm in ordem_materias:
+            if materia_norm in materias_dict:
+                # Buscar todas as variações desta matéria
+                materias_variacoes = materias_dict[materia_norm]
+                # Calcular média considerando todas as variações
+                media = db.query(func.avg(Resultado.acertos)).join(
+                    Prova, Resultado.prova_id == Prova.id
+                ).filter(
+                    Prova.materia.in_(materias_variacoes)
+                ).scalar() or 0
+                
+                desempenho_labels.append(obter_materia_padrao(materia_norm))
+                desempenho_data.append(float(media))
+        
+        # Adicionar outras matérias que não sejam as três padrão (se houver)
+        for materia_norm, materias_originais in materias_dict.items():
+            if materia_norm not in ordem_materias:
+                media = db.query(func.avg(Resultado.acertos)).join(
+                    Prova, Resultado.prova_id == Prova.id
+                ).filter(
+                    Prova.materia.in_(materias_originais)
+                ).scalar() or 0
+                
+                # Usar a primeira matéria original como label (ou normalizar)
+                desempenho_labels.append(materias_originais[0])
+                desempenho_data.append(float(media))
+        
         desempenho_disciplina = {
-            'labels': ['Português', 'Matemática', 'Ciências'],
-            'data': [
-                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Português").scalar() or 0),
-                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Matemática").scalar() or 0),
-                float(db.query(func.avg(Resultado.acertos)).join(Prova, Resultado.prova_id == Prova.id).filter(Prova.materia == "Ciências").scalar() or 0)
-            ]
+            'labels': desempenho_labels,
+            'data': desempenho_data
         }
 
-        # Distribuição das notas
+        # Distribuição das notas (usando a coluna situacao que já está salva no banco)
         distribuicao_notas = {
             'labels': ['Insuficiente', 'Regular', 'Suficiente'],
             'data': [
-                db.query(func.count(Resultado.id)).filter(Resultado.acertos <= 5).scalar() or 0,
-                db.query(func.count(Resultado.id)).filter(and_(Resultado.acertos > 5, Resultado.acertos <= 10)).scalar() or 0,
-                db.query(func.count(Resultado.id)).filter(Resultado.acertos > 10).scalar() or 0
+                db.query(func.count(Resultado.id)).filter(Resultado.situacao == 'Insuficiente').scalar() or 0,
+                db.query(func.count(Resultado.id)).filter(Resultado.situacao == 'Regular').scalar() or 0,
+                db.query(func.count(Resultado.id)).filter(Resultado.situacao == 'Suficiente').scalar() or 0
             ]
         }
 
@@ -166,15 +248,34 @@ class AnalyticsService:
             resultados_aluno = db.query(Resultado).filter(Resultado.aluno_id == aluno.idAluno).all()
             notas = [r.acertos for r in resultados_aluno]
             media = sum(notas) / len(notas) if notas else 0
+            
+            # Buscar provas do aluno com suas matérias
+            provas_aluno = {}
+            for resultado in resultados_aluno:
+                prova = db.query(Prova).filter(Prova.id == resultado.prova_id).first()
+                if prova:
+                    materia_norm = normalizar_materia(prova.materia)
+                    # Agrupar por matéria normalizada, pegando o resultado mais recente
+                    if materia_norm not in provas_aluno or resultado.id > provas_aluno[materia_norm]['resultado_id']:
+                        provas_aluno[materia_norm] = {
+                            'acertos': resultado.acertos,
+                            'resultado_id': resultado.id
+                        }
+            
+            # Buscar notas por matéria normalizada
+            nota_portugues = provas_aluno.get('portugues', {}).get('acertos', 0)
+            nota_matematica = provas_aluno.get('matematica', {}).get('acertos', 0)
+            nota_ciencias = provas_aluno.get('ciencias', {}).get('acertos', 0)
+            
             top_alunos_lista.append({
                 'idAluno': aluno.idAluno,
                 'nome': aluno.nome,
                 'turma': aluno.curso,
-                'nota_portugues': next((r.acertos for r in resultados_aluno if db.query(Prova).filter(Prova.id == r.prova_id, Prova.materia == 'Português').first()), 0),
-                'nota_matematica': next((r.acertos for r in resultados_aluno if db.query(Prova).filter(Prova.id == r.prova_id, Prova.materia == 'Matemática').first()), 0),
-                'nota_ciencias': next((r.acertos for r in resultados_aluno if db.query(Prova).filter(Prova.id == r.prova_id, Prova.materia == 'Ciências').first()), 0),
+                'nota_portugues': nota_portugues,
+                'nota_matematica': nota_matematica,
+                'nota_ciencias': nota_ciencias,
                 'media': round(media, 2),
-                'foto': aluno.imagem or '/static/img/user.png'
+                'foto': aluno.imagem or '/static/img/user.jpg'
             })
         top_alunos = sorted(top_alunos_lista, key=lambda x: x['media'], reverse=True)[:10]
 
@@ -263,6 +364,9 @@ class AnalyticsService:
             ]
         }
 
+        # Inicializar max_chart_value antes do loop
+        max_chart_value = 10  # Valor padrão
+        
         # Processar cada matéria
         for materia_nome, provas_turma_list in materias_dict.items():
             # Pegar a prova mais recente da matéria (ordenar por data de criação da prova)
@@ -332,8 +436,9 @@ class AnalyticsService:
                     "resultado": resultado if resultado and resultado.prova_id == prova_turma.prova.id else None
                 })
 
+        # Calcular max_chart_value baseado em todas as provas das turmas do aluno
+        if provas_turmas:
             provas_ids = [pt.prova_id for pt in provas_turmas]
-
             max_questoes = db.query(
                 func.count(ProvaQuestao.id)
             ).join(Prova).filter(
@@ -342,9 +447,10 @@ class AnalyticsService:
                 func.count(ProvaQuestao.id).desc()
             ).limit(1).scalar() or 0
 
-            max_chart_value = max_questoes
-            if max_chart_value > 0 and max_chart_value % 5 != 0:
-                max_chart_value = ((max_chart_value // 5) + 1) * 5
+            if max_questoes > 0:
+                max_chart_value = max_questoes
+                if max_chart_value % 5 != 0:
+                    max_chart_value = ((max_chart_value // 5) + 1) * 5
         
         return {
             "aluno": aluno,
@@ -352,7 +458,7 @@ class AnalyticsService:
             "provas_turmas": provas_turmas_info,
             "dados_grafico_pizza": dados_grafico_pizza,
             "dados_grafico_barra": dados_grafico_barra,
-            "maxChartValue": max_chart_value if max_chart_value > 0 else 10
+            "maxChartValue": max_chart_value
         }
     
     @staticmethod

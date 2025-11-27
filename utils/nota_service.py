@@ -20,11 +20,11 @@ def calcular_nota_e_situacao(acertos: int, total_questoes: int) -> tuple[float, 
     nota = (acertos / total_questoes) * 10
     
     # Determinar situação baseada na nota
-    if nota <= 3.33:
+    if nota <= 5:
         situacao = "Insuficiente"
-    elif nota <= 6.66:
+    elif nota < 8:
         situacao = "Regular"
-    else:  # nota > 6.66
+    else:  # nota >= 8
         situacao = "Suficiente"
     
     return round(nota, 2), situacao
@@ -39,9 +39,9 @@ def classificar_situacao_por_nota(nota: float) -> str:
     Returns:
         str: Situação do aluno
     """
-    if nota <= 3.33:
+    if nota <= 5:
         return "Insuficiente"
-    elif nota <= 6.66:
+    elif nota < 8:
         return "Regular"
-    else:  # nota > 6.66
+    else:  # nota >= 8
         return "Suficiente"

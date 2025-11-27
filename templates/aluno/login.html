@@ -48,8 +48,13 @@
                             placeholder="E-mail" aria-describedby="basic-addon1" required>
                     </div>
                     <div class="col text-center">
-                        <input type="password" name="senha" class="form-control borda-padrao mt-4 fs-4"
-                            placeholder="Senha" aria-label="matricula" aria-describedby="basic-addon2" required>
+                        <div class="position-relative mt-4">
+                            <input type="password" id="senha" name="senha" class="form-control borda-padrao fs-4"
+                                placeholder="Senha" aria-label="matricula" aria-describedby="basic-addon2" required>
+                            <button type="button" id="toggleSenha" class="btn position-absolute top-50 end-0 pe-3 translate-middle-y border-0 bg-transparent">
+                                <i id="iconeSenha" class="bi bi-eye-slash-fill fs-4 c-padrao"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col text-center">
                         <button type="submit" class="btn btn-padrao ativo w-100 mt-4 fs-4 fw-bold c-black">Entrar</a>
@@ -67,6 +72,20 @@
         </div>
     </section>
 
+    <script>
+        const inputSenha = document.getElementById('senha');
+        const btnToggle = document.getElementById('toggleSenha');
+        const iconeSenha = document.getElementById('iconeSenha');
+
+        if (btnToggle && inputSenha && iconeSenha) {
+            btnToggle.addEventListener('click', () => {
+                const mostrando = inputSenha.type === 'text';
+                inputSenha.type = mostrando ? 'password' : 'text';
+                iconeSenha.classList.toggle('bi-eye-fill', !mostrando);
+                iconeSenha.classList.toggle('bi-eye-slash-fill', mostrando);
+            });
+        }
+    </script>
     <script src="https://kit.fontawesome.com/decee3670e.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Form, Request, UploadFile, File, Query, 
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from passlib.hash import bcrypt
 
 # Importações dos seus DAOs e Models
@@ -346,12 +346,28 @@ def listar_alunos(
     matematica = aliased(Prova)
     ciencias = aliased(Prova)
 
+    filtro_portugues = or_(
+        portugues.materia.ilike("português%"), 
+        portugues.materia.ilike("portugues%")
+    )
+    
+    filtro_matematica = or_(
+        matematica.materia.ilike("matemática%"), 
+        matematica.materia.ilike("matematica%")
+    )
+    
+    # Pega "Ciências", "Ciencias", "Ciências da Natureza", etc.
+    filtro_ciencias = or_(
+        ciencias.materia.ilike("ciência%"), 
+        ciencias.materia.ilike("ciencia%")
+    )
+
     # Subquery para calcular a média das notas
     media_subquery = (
         func.coalesce(
             db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
-            .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_portugues, Resultado.aluno_id == Aluno.idAluno) # <-- Filtro novo
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
@@ -360,7 +376,7 @@ def listar_alunos(
         func.coalesce(
             db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
-            .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_matematica, Resultado.aluno_id == Aluno.idAluno) # <-- Filtro novo
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
@@ -369,7 +385,7 @@ def listar_alunos(
         func.coalesce(
             db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
-            .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_ciencias, Resultado.aluno_id == Aluno.idAluno) # <-- Filtro novo
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
@@ -379,33 +395,39 @@ def listar_alunos(
 
     query = db.query(
         Aluno,
+        # Nota de Português
         func.coalesce(
             db.query(Resultado.nota)
             .join(portugues, Resultado.prova_id == portugues.id)
-            .filter(portugues.materia == "Português", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_portugues, Resultado.aluno_id == Aluno.idAluno)
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_portugues"),
+        
+        # Nota de Matemática
         func.coalesce(
             db.query(Resultado.nota)
             .join(matematica, Resultado.prova_id == matematica.id)
-            .filter(matematica.materia == "Matemática", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_matematica, Resultado.aluno_id == Aluno.idAluno)
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_matematica"),
+        
+        # Nota de Ciências
         func.coalesce(
             db.query(Resultado.nota)
             .join(ciencias, Resultado.prova_id == ciencias.id)
-            .filter(ciencias.materia == "Ciências", Resultado.aluno_id == Aluno.idAluno)
+            .filter(filtro_ciencias, Resultado.aluno_id == Aluno.idAluno)
             .order_by(Resultado.id.desc())
             .limit(1)
             .scalar_subquery(),
             0,
         ).label("nota_ciencias"),
+        
         media_subquery.label("media_geral")
     ).select_from(Aluno)
 
@@ -430,11 +452,11 @@ def listar_alunos(
     # Filtro por situação baseado na média calculada (nota de 0-10)
     if situacao:
         if situacao == "suficiente":
-            query = query.filter(media_subquery > 6.66)
+            query = query.filter(media_subquery >= 8)
         elif situacao == "regular":
-            query = query.filter(media_subquery.between(3.34, 6.66))
+            query = query.filter(media_subquery > 5, media_subquery < 8)
         elif situacao == "insuficiente":
-            query = query.filter(media_subquery <= 3.33)
+            query = query.filter(media_subquery <= 5)
 
     alunos = query.all()
 
@@ -620,6 +642,7 @@ async def editar_aluno(
     forma_ingresso: Optional[str] = Form(None),
     acesso_internet: Optional[str] = Form(None),
     foto: UploadFile = File(None),
+    foto_cortada: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
@@ -646,8 +669,8 @@ async def editar_aluno(
     else:
         aluno.acesso_internet = None
 
-    # Atualizar foto se fornecida
-    if foto and foto.filename:
+    # Atualizar foto se fornecida (prioriza base64 cortada)
+    if foto_cortada or (foto and foto.filename):
         # Remover imagem antiga se existir
         if aluno.imagem:
             caminho_antigo = aluno.imagem.lstrip('/')
@@ -662,18 +685,32 @@ async def editar_aluno(
         upload_dir_aluno = os.path.join(UPLOAD_DIR, "alunos")
         os.makedirs(upload_dir_aluno, exist_ok=True)
         
-        # Gerar nome único para o arquivo
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"aluno_{aluno_id}_{timestamp}{Path(foto.filename).suffix}"
-        filepath = os.path.join(upload_dir_aluno, filename)
-        
-        # Salvar arquivo
-        content = await foto.read()
-        with open(filepath, "wb") as buffer:
-            buffer.write(content)
-        
-        # Atualizar caminho da imagem no banco
-        aluno.imagem = f"/static/uploads/alunos/{filename}"
+        if foto_cortada:
+            try:
+                import base64
+                header, b64data = foto_cortada.split(",", 1) if "," in foto_cortada else ("", foto_cortada)
+                img_bytes = base64.b64decode(b64data)
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"aluno_{aluno_id}_{timestamp}.jpg"
+                file_location = os.path.join(upload_dir_aluno, filename)
+                with open(file_location, "wb") as f:
+                    f.write(img_bytes)
+                aluno.imagem = f"/static/uploads/alunos/{filename}"
+            except Exception as e:
+                print(f"Falha ao salvar foto cortada: {e}")
+        elif foto and foto.filename:
+            # Gerar nome único para o arquivo
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"aluno_{aluno_id}_{timestamp}{Path(foto.filename).suffix}"
+            filepath = os.path.join(upload_dir_aluno, filename)
+            
+            # Salvar arquivo
+            content = await foto.read()
+            with open(filepath, "wb") as buffer:
+                buffer.write(content)
+            
+            # Atualizar caminho da imagem no banco
+            aluno.imagem = f"/static/uploads/alunos/{filename}"
 
     db.commit()
     return RedirectResponse(url=f"/alunos/{aluno_id}", status_code=303)

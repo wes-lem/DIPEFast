@@ -158,8 +158,8 @@
                                 <h6 class="mb-0">{{ prova_turma.prova.titulo }}</h6>
                                 <span class="badge 
                                     {% if prova_turma.status.value == 'ativa' %}bg-white c-padrao
-                                    {% elif prova_turma.status.value == 'expirada' %}bg-white c-danger
-                                    {% else %}bg-white c-secondary{% endif %}">
+                                    {% elif prova_turma.status.value == 'expirada' %}bg-white text-danger
+                                    {% else %}bg-white text-secondary{% endif %}">
                                     {{ prova_turma.status.value.title() }}
                                 </span>
                             </div>

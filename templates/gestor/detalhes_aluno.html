@@ -10,7 +10,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* Garantir que os modais apareçam acima de tudo */
+        .modal {
+            z-index: 1055 !important;
+        }
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+        .modal.show {
+            display: block !important;
+        }
+    </style>
 </head>
 
 <body id="topo" class="bg-fundo">
@@ -98,12 +111,12 @@
                         <i class="bi bi-pencil-fill me-2"></i>Editar
                     </button>
                     <a href="/alunos?curso={{ aluno.curso }}&ano={{ aluno.ano }}" class="btn btn-black text-light">
-                        <i class="bi bi-people-fill c-padrao me-2"></i>Ver Turma
+                        <i class="bi bi-people-fill c-padrao"></i>Ver Turma
                     </a>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    <!-- <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                         data-bs-target="#confirmarExclusaoModal">
                         <i class="bi bi-trash-fill text-light me-2"></i>Remover
-                    </button>
+                    </button> -->
                 </div>
             </div>
             <div class="row">
@@ -142,7 +155,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 d-flex">
+                <!-- <div class="col-md-8 d-flex">
                     <div class="card h-100 w-100">
                         <div class="card-header bg-padrao text-light">
                             <h5 class="m-0 fw-semi">Resultado da Avaliação Diagnóstica</h5>
@@ -192,7 +205,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="row mt-4">
@@ -273,9 +286,9 @@
                                                     <thead class="table-light">
                                                         <tr>
                                                             <th>Prova</th>
-                                                            <th>Status</th>
-                                                            <th>Início</th>
-                                                            <th>Expiração</th>
+                                                            <!-- <th>Status</th> -->
+                                                            <!-- <th>Início</th> -->
+                                                            <!-- <th>Expiração</th> -->
                                                             <th>Acertos</th>
                                                             <th>Nota</th>
                                                             <th>Situação</th>
@@ -294,7 +307,7 @@
                                                                         }}</span>
                                                                 </div>
                                                             </td>
-                                                            <td>
+                                                            <!-- <td>
                                                                 {% if pt.status.value == 'ativa' %}
                                                                 <span class="badge bg-success">Ativa</span>
                                                                 {% elif pt.status.value == 'expirada' %}
@@ -304,18 +317,18 @@
                                                                 {% else %}
                                                                 <span class="badge bg-secondary">—</span>
                                                                 {% endif %}
-                                                            </td>
-                                                            <td>{{ pt.data_inicio.strftime('%d/%m/%Y %H:%M') if
+                                                            </td> -->
+                                                            <!-- <td>{{ pt.data_inicio.strftime('%d/%m/%Y %H:%M') if
                                                                 pt.data_inicio else '—' }}</td>
                                                             <td>{{ pt.data_expiracao.strftime('%d/%m/%Y %H:%M') if
-                                                                pt.data_expiracao else '—' }}</td>
+                                                                pt.data_expiracao else '—' }}</td> -->
                                                             <td>{{ r.acertos if r else '—' }}</td>
                                                             <td>{{ '%.1f' % r.nota if r else '—' }}</td>
                                                             <td>
                                                                 {% if r and r.nota is not none %}
-                                                                {% if r.nota >= 6,66 %}
+                                                                {% if r.nota >= 8 %}
                                                                 <span class="badge bg-success">Suficiente</span>
-                                                                {% elif r.nota >= 3,33 %}
+                                                                {% elif r.nota >= 6 %}
                                                                 <span class="badge bg-warning text-dark">Regular</span>
                                                                 {% else %}
                                                                 <span class="badge bg-danger">Insuficiente</span>
@@ -409,7 +422,7 @@
                 <div class="modal-header bg-padrao text-light">
                     <h5 class="modal-title" id="editarAlunoModalLabel"><i class="bi bi-pencil-square text-light"></i>
                         Editar Dados do Aluno</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="/gestor/alunos/{{ aluno.idAluno }}/editar" method="post"
@@ -417,8 +430,15 @@
                         <div class="row">
                             <div class="col-md-4 text-center mb-4">
                                 <div class="position-relative d-inline-block">
-                                    <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" alt="Foto de perfil"
-                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                    <img id="previewFoto" src="{{ aluno.imagem or '/static/img/user.jpg' }}"
+                                        alt="Foto de perfil"
+                                        style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
+                                    <div class="mt-2">
+                                        <button type="button" id="btnRecortarImagemAtual"
+                                            class="btn btn-sm btn-warning">
+                                            <i class="bi bi-crop me-1"></i>Recortar Imagem Atual
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -504,6 +524,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="foto" class="form-label">Foto de Perfil</label>
                                         <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                                        <input type="hidden" id="foto_cortada" name="foto_cortada">
                                     </div>
                                 </div>
                             </div>
@@ -529,7 +550,7 @@
                 <div class="modal-header bg-padrao text-light">
                     <h5 class="modal-title" id="editarObservacoesModalLabel"><i
                             class="bi bi-pencil-square text-light"></i> Editar Observações do Aluno</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form action="/gestor/alunos/{{ aluno.idAluno }}/editar-observacoes" method="post">
@@ -548,48 +569,225 @@
                 </div>
             </div>
         </div>
+    </div>
 
-
-        <!-- Modal de Confirmação de Exclusão -->
-        <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="confirmarExclusaoModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmarExclusaoModalLabel">Confirmar Exclusão</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Tem certeza que deseja remover o aluno <strong>{{ aluno.nome }}</strong>?</p>
-                        <p class="text-danger">Esta ação é irreversível e removerá todos os dados relacionados ao aluno
-                            (respostas de provas, resultados, respostas de formulários, etc.).</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <form action="/gestor/alunos/{{ aluno.idAluno }}/remover" method="post"
-                            style="display: inline;">
-                            <button type="submit" class="btn btn-danger">Remover Aluno</button>
-                        </form>
-                    </div>
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="confirmarExclusaoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmarExclusaoModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja remover o aluno <strong>{{ aluno.nome }}</strong>?</p>
+                    <p class="text-danger">Esta ação é irreversível e removerá todos os dados relacionados ao aluno
+                        (respostas de provas, resultados, respostas de formulários, etc.).</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="/gestor/alunos/{{ aluno.idAluno }}/remover" method="post"
+                        style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Remover Aluno</button>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="/static/js/menu.js"></script>
+    <!-- Modal de Recorte de Imagem -->
+    <div class="modal fade" id="modalCropAluno" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-padrao text-light">
+                    <h5 class="modal-title"><i class="bi bi-crop text-light"></i> Recortar foto (1x1)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container" style="max-height: 50vh; overflow: hidden;">
+                        <img id="cropImageAluno" src="#" alt="Imagem para recorte"
+                            style="display: block; max-width: 100%;" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
+                            class="bi bi-arrow-left text-light"></i> Cancelar</button>
+                    <button type="button" id="btnConfirmCropAluno" class="btn btn-padrao text-light"><i
+                            class="bi bi-check-circle text-light"></i> Confirmar recorte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+        <script src="/static/js/menu.js"></script>
         <script>
-            // Preview da imagem selecionada (inalterado)
-            document.getElementById('foto').addEventListener('change', function (e) {
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        document.querySelector('img[alt="Foto de perfil"]').src = e.target.result;
+            (function () {
+                // Aguarda o DOM estar completamente carregado
+                document.addEventListener('DOMContentLoaded', function() {
+                    const fileInput = document.getElementById('foto');
+                    const hidden = document.getElementById('foto_cortada');
+                    const preview = document.getElementById('previewFoto');
+                    const cropImg = document.getElementById('cropImageAluno');
+                    const btnConfirm = document.getElementById('btnConfirmCropAluno');
+                    const btnRecortarAtual = document.getElementById('btnRecortarImagemAtual');
+
+                    // Elementos dos Modais
+                    const modalCropEl = document.getElementById('modalCropAluno');
+                    const modalEditarEl = document.getElementById('editarAlunoModal');
+
+                    // Instâncias do Bootstrap Modal
+                    let modalCrop = null;
+                    let modalEditar = null;
+                    
+                    // Inicializa os modais apenas se os elementos existirem
+                    if (modalCropEl) {
+                        modalCrop = new bootstrap.Modal(modalCropEl, {
+                            backdrop: 'static',
+                            keyboard: false
+                        });
                     }
-                    reader.readAsDataURL(e.target.files[0]);
-                }
-            });
+                    
+                    if (modalEditarEl) {
+                        modalEditar = bootstrap.Modal.getOrCreateInstance(modalEditarEl);
+                    }
+
+                    let cropper = null;
+
+                    // Função para abrir o cropper
+                    function abrirCropper(imagemSrc) {
+                        if (!cropImg || !modalCrop) return;
+                        
+                        cropImg.src = imagemSrc;
+                        cropImg.style.display = 'block';
+                        
+                        // Se o modal de edição estiver aberto, fecha primeiro
+                        if (modalEditar && modalEditar._isShown) {
+                            modalEditar.hide();
+                            // Aguarda o modal de edição fechar antes de abrir o de crop
+                            modalEditarEl.addEventListener('hidden.bs.modal', function abrirCrop() {
+                                modalCrop.show();
+                                modalEditarEl.removeEventListener('hidden.bs.modal', abrirCrop);
+                            }, { once: true });
+                        } else {
+                            modalCrop.show();
+                        }
+                    }
+
+                    // Quando o modal de Crop fechar, destroi o cropper
+                    if (modalCropEl) {
+                        modalCropEl.addEventListener('hidden.bs.modal', function () {
+                            if (cropper) {
+                                cropper.destroy();
+                                cropper = null;
+                            }
+                            // Limpa a URL do objeto se foi criada
+                            if (cropImg.src && cropImg.src.startsWith('blob:')) {
+                                URL.revokeObjectURL(cropImg.src);
+                            }
+                        });
+                    }
+
+                    // Evento ao abrir o modal de crop (Inicia o CropperJS)
+                    if (modalCropEl) {
+                        modalCropEl.addEventListener('shown.bs.modal', function () {
+                            if (!cropImg || !cropImg.src || cropImg.src === '#') return;
+                            
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            
+                            cropper = new Cropper(cropImg, {
+                                aspectRatio: 1,
+                                viewMode: 1,
+                                autoCropArea: 1,
+                                movable: true,
+                                zoomable: true,
+                                scalable: false,
+                                responsive: true,
+                            });
+                        });
+                    }
+
+                    // Quando seleciona um novo arquivo no input
+                    if (fileInput) {
+                        fileInput.addEventListener('change', function (e) {
+                            const file = e.target.files && e.target.files[0];
+                            if (!file) return;
+                            const url = URL.createObjectURL(file);
+                            abrirCropper(url);
+                        });
+                    }
+
+                    // Quando clica no botão para recortar imagem atual
+                    if (btnRecortarAtual) {
+                        btnRecortarAtual.addEventListener('click', function () {
+                            if (!preview) return;
+                            const imagemAtual = preview.src;
+                            const isImagemPadrao = imagemAtual.includes('/static/img/user.jpg');
+
+                            if (imagemAtual && !isImagemPadrao) {
+                                abrirCropper(imagemAtual);
+                            } else {
+                                alert('Não há imagem válida para recortar.');
+                            }
+                        });
+                    }
+
+                    // Botão Confirmar Recorte
+                    if (btnConfirm) {
+                        btnConfirm.addEventListener('click', function () {
+                            if (!cropper) return;
+                            
+                            const canvas = cropper.getCroppedCanvas({
+                                width: 512,
+                                height: 512,
+                                imageSmoothingQuality: 'high'
+                            });
+
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                            
+                            if (hidden) hidden.value = dataUrl;
+                            if (preview) preview.src = dataUrl;
+
+                            // Fecha o modal de crop
+                            if (modalCrop) {
+                                modalCrop.hide();
+                            }
+                            
+                            // Se o modal de edição estava aberto, reabre
+                            if (modalEditar && !modalEditar._isShown) {
+                                setTimeout(() => {
+                                    modalEditar.show();
+                                }, 300);
+                            }
+                        });
+                    }
+
+                    // Validação do Form
+                    const form = document.querySelector('form[action="/gestor/alunos/{{ aluno.idAluno }}/editar"]');
+                    if (form) {
+                        form.addEventListener('submit', function (e) {
+                            // Se um novo arquivo foi selecionado mas não foi recortado
+                            if (fileInput && fileInput.files && fileInput.files.length > 0 && (!hidden || !hidden.value)) {
+                                e.preventDefault();
+                                alert('Por favor, confirme o recorte da imagem antes de salvar.');
+                                if (modalCrop) {
+                                    modalCrop.show();
+                                }
+                            }
+                            // Se há uma imagem recortada, limpa o input de arquivo
+                            if (hidden && hidden.value && fileInput && fileInput.files && fileInput.files.length > 0) {
+                                fileInput.value = '';
+                            }
+                        });
+                    }
+                });
+            })();
         </script>
 </body>
 

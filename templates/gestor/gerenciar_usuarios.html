@@ -203,7 +203,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tabelaAlunos">
-                                            {% for aluno in alunos %}
+                                            {% for aluno in alunos|sort(attribute='nome')%}
                                             <tr>
                                                 <td>
                                                     <img src="{{ aluno.imagem or '/static/img/user.jpg' }}" alt="Aluno"
@@ -268,7 +268,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tabelaProfessores">
-                                            {% for professor in professores %}
+                                            {% for professor in professores|sort(attribute='nome')%}
                                             <tr>
                                                 <td>
                                                     <img src="{{ professor.imagem or '/static/img/user.jpg' }}"
@@ -325,7 +325,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tabelaGestores">
-                                            {% for gestor in gestores %}
+                                            {% for gestor in gestores|sort(attribute='nome')%}
                                             <tr>
                                                 <td>
                                                     <img src="{{ gestor.imagem or '/static/img/user.jpg' }}"
@@ -386,7 +386,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tabelaCampus">
-                                            {% for campus in campus_list %}
+                                            {% for campus in campus_list|sort(attribute='nome')%}
                                             <tr>
                                                 <td>{{ campus.nome }}</td>
                                                 <td>{{ campus.endereco or '-' }}</td>

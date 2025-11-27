@@ -14,6 +14,7 @@ from models.prova import Prova
 from models.prova_questao import ProvaQuestao
 from models.prova_turma import ProvaTurma, StatusProvaTurma
 from models.resultado import Resultado
+from models.resposta import Resposta
 from models.usuario import Usuario
 
 from controllers.usuario_controller import verificar_sessao
@@ -966,7 +967,19 @@ def excluir_questao_professor(
         raise HTTPException(status_code=404, detail="Questão não encontrada")
     
     # Verificar se a questão está sendo usada em alguma prova
-    # Implementar verificação se necessário
+    prova_questoes = db.query(ProvaQuestao).filter(ProvaQuestao.questao_banco_id == questao_id).first()
+    if prova_questoes:
+        # Se a questão está em uma prova, não pode ser deletada
+        return RedirectResponse(
+            url="/professor/banco-questoes?erro=Não é possível excluir uma questão que está sendo usada em uma prova",
+            status_code=303
+        )
+    
+    # Deletar respostas relacionadas à questão antes de deletar a questão
+    respostas = db.query(Resposta).filter(Resposta.questao_id == questao_id).all()
+    if respostas:
+        db.query(Resposta).filter(Resposta.questao_id == questao_id).delete(synchronize_session=False)
+        db.flush()  # Aplica as deleções sem fazer commit ainda
     
     # Remover imagem se existir
     if questao.imagem:
@@ -980,4 +993,4 @@ def excluir_questao_professor(
     
     db.delete(questao)
     db.commit()
-    return RedirectResponse(url="/professor/banco-questoes", status_code=303)
+    return RedirectResponse(url="/professor/banco-questoes?sucesso=Questão excluída com sucesso", status_code=303)

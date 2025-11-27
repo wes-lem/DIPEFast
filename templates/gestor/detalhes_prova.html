@@ -126,7 +126,7 @@
                                 <div class="row text-center justify-content-center">
                                     <div class="col-6">
                                         <h5 class="text-primary fs-4">{{ prova.prova_turmas|length }}</h5>
-                                        <small class="text-muted">Turmas</small>
+                                        <small class="text-muted">Turmas aplicadas</small>
                                     </div>
                                     <div class="col-6">
                                         <h5 class="text-success fs-4">{{ resultados|length }}</h5>
@@ -240,11 +240,11 @@
                                             <tr>
                                                 <th>Aluno</th>
                                                 <th>Turma</th>
-                                                <th>Nota</th>
-                                                <th>Acertos</th>
-                                                <th>Total</th>
-                                                <th>Data</th>
-                                                <th>Status</th>
+                                                <th class="text-center">Nota</th>
+                                                <th class="text-center">Acertos</th>
+                                                <!-- <th>Total</th>   -->
+                                                <!-- <th>Data</th> -->
+                                                <th>Situação</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -252,16 +252,14 @@
                                             <tr>
                                                 <td>{{ resultado.aluno.nome }}</td>
                                                 <td>{{ resultado.aluno.aluno_turmas[0].turma.nome if resultado.aluno.aluno_turmas else 'N/A' }}</td>
-                                                <td>
-                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                <td class="text-center">
+                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 8 else 'warning' if resultado.acertos >= 6 else 'danger' }}">
                                                         {{ resultado.acertos }}
                                                     </span>
                                                 </td>
-                                                <td>{{ resultado.acertos }}</td>
-                                                <td>{{ resultado.situacao }}</td>
-                                                <td>N/A</td>
+                                                <td class="text-center">{{ resultado.acertos }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 7 else 'warning' if resultado.acertos >= 5 else 'danger' }}">
+                                                    <span class="badge bg-{{ 'success' if resultado.acertos >= 8 else 'warning' if resultado.acertos >= 6 else 'danger' }}">
                                                         {{ resultado.situacao }}
                                                     </span>
                                                 </td>

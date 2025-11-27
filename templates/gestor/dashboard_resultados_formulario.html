@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/icon.svg" type="image/x-icon">
+    <title>Gestor - Resultados do Formulário</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body id="topo">
+    <div class="wrapper">
+        <aside id="sidebar" class="shadow-lg">
+            <div class="d-flex justify-content-center">
+                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
+                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
+                </button>
+            </div>
+            <ul class="sidebar-nav">
+                <a href="/gestor/dashboard"
+            class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Início</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+          <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+            <i class="bi bi-people-fill"></i>
+            <span>Alunos</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+          <a href="/gestor/professores"
+            class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Professores</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+          <a href="/gestor/turmas"
+            class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+            <i class="bi bi-collection-fill"></i>
+            <span>Turmas</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+          <a href="/gestor/provas-professores"
+            class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+            <i class="bi bi-file-earmark-check-fill"></i>
+            <span>Provas dos Professores</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+          <a href="/gestor/formularios"
+            class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %} active">
+            <i class="bi bi-clipboard2-fill"></i>
+            <span>Formulários</span>
+          </a>
+        </li>
+        <li class="sidebar-item mt-3">
+            <a href="/gestor/gerenciar-usuarios" class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                <i class="bi bi-person-fill-gear"></i>
+                <span>Gerenciar Usuários</span>
+            </a>
+        </li>
+        <div class="sidebar-item mt-3">
+          <form action="/sair" method="post" style="display: inline;">
+            <button type="submit" class="sidebar-link w-100 text-start">
+              <i class="bi bi-door-open-fill"></i>
+              <span class="fw-bold">Sair</span>
+            </button>
+          </form>
+        </div>
+      </ul>
+            </ul>
+        </aside>
+
+        <div class="main bg-pattern">
+            <div class="content-wrapper p-4">
+                <!-- Cabeçalho -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1">{{ analytics.formulario.titulo }}</h2>
+                        <p class="text-muted mb-0">{{ analytics.formulario.descricao or 'Sem descrição' }}</p>
+                    </div>
+                    <a href="/gestor/formularios" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left text-light"></i> Voltar
+                    </a>
+                </div>
+
+                <!-- Cards de Estatísticas -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-0 text-primary">{{ analytics.total_respondedores }}</h3>
+                                        <p class="text-muted mb-0">Respondedores</p>
+                                    </div>
+                                    <i class="bi bi-people-fill fs-1 text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-0 text-success">{{ analytics.total_respostas }}</h3>
+                                        <p class="text-muted mb-0">Total de Respostas</p>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill fs-1 text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-0 text-info">{{ analytics.graficos_perguntas|length }}</h3>
+                                        <p class="text-muted mb-0">Perguntas com Gráficos</p>
+                                    </div>
+                                    <i class="bi bi-bar-chart-fill fs-1 text-info"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos Dinâmicos -->
+                {% if analytics.graficos_perguntas %}
+                <div class="row">
+                    {% for grafico_data in analytics.graficos_perguntas %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-padrao text-light">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-question-circle"></i> 
+                                    {{ grafico_data.enunciado }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if grafico_data.tem_respostas %}
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <strong>Total de respostas:</strong> {{ grafico_data.total_respostas }}
+                                    </small>
+                                </div>
+                                <div style="position: relative; height: 300px;">
+                                    <canvas id="grafico_{{ grafico_data.pergunta_id }}"></canvas>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning mb-0">
+                                    <i class="bi bi-exclamation-triangle"></i> 
+                                    Nenhuma resposta registrada para esta pergunta.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    Este formulário não possui perguntas de escolha única ou múltipla escolha para gerar gráficos.
+                </div>
+                {% endif %}
+
+                <!-- Respostas de Texto -->
+                {% if respostas_texto_por_pergunta %}
+                {% for item in respostas_texto_por_pergunta %}
+                <div class="card mb-4">
+                    <div class="card-header bg-padrao text-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-text"></i> 
+                            {{ item.pergunta.enunciado }} (Respostas de Texto)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if item.respostas %}
+                        <div class="list-group">
+                            {% for resposta in item.respostas %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ resposta.aluno_nome }}</h6>
+                                        <p class="mb-1">{{ resposta.texto }}</p>
+                                        <small class="text-muted">
+                                            {{ resposta.data_resposta.strftime('%d/%m/%Y %H:%M') }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted mb-0">Nenhuma resposta de texto registrada.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
+        crossorigin="anonymous"></script>
+    <script src="/static/js/menu.js"></script>
+    
+    <script>
+        // Dados dos gráficos vindos do backend
+        const graficosData = {{ analytics.graficos_perguntas | tojson }};
+        
+        // Criar gráficos dinamicamente
+        graficosData.forEach(function(graficoData) {
+            if (!graficoData.tem_respostas || !graficoData.grafico) {
+                return;
+            }
+            
+            const canvasId = 'grafico_' + graficoData.pergunta_id;
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            const dados = graficoData.grafico;
+            
+            let config = {};
+            
+            if (graficoData.tipo_grafico === 'pie') {
+                // Gráfico de Pizza
+                config = {
+                    type: 'pie',
+                    data: {
+                        labels: dados.labels,
+                        datasets: [{
+                            label: 'Respostas',
+                            data: dados.data,
+                            backgroundColor: dados.cores,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return label + ': ' + value + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+            } else if (graficoData.tipo_grafico === 'bar') {
+                // Gráfico de Barras
+                config = {
+                    type: 'bar',
+                    data: {
+                        labels: dados.labels,
+                        datasets: [{
+                            label: 'Quantidade de Respostas',
+                            data: dados.data,
+                            backgroundColor: dados.cores,
+                            borderColor: dados.cores.map(c => c.replace('0.8', '1')),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+            
+            new Chart(ctx, config);
+        });
+    </script>
+</body>
+
+</html>
+

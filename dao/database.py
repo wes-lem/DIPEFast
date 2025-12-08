@@ -28,7 +28,16 @@ def wait_for_db(db_url: str):
 
     while retries < max_retries:
         try:
-            temp_engine = create_engine(db_url, connect_args={"charset": "utf8mb4"})
+            # Configurações do pool para evitar "MySQL server has gone away"
+            temp_engine = create_engine(
+                db_url,
+                connect_args={"charset": "utf8mb4"},
+                pool_pre_ping=True,  # Verifica se a conexão está viva antes de usar
+                pool_recycle=3600,   # Recicla conexões após 1 hora (preventivo)
+                pool_size=10,        # Tamanho do pool de conexões
+                max_overflow=20,     # Conexões adicionais permitidas
+                echo=False           # Desabilita logs SQL (pode mudar para True para debug)
+            )
             with temp_engine.connect() as connection:
                 connection.execute(text("SELECT 1"))
             print("Conexao com o banco de dados bem-sucedida!")

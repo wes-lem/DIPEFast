@@ -9,8 +9,8 @@ services:
       DATABASE_URL: mysql+pymysql://user:password@db:3306/dipe
 
     volumes:
-      # - .:/app  # Mapeia toda a raiz do projeto para /app no container
-      - /home/dipe/DIPE/templates/static:/app/templates/static
+      - .:/app  # Mapeia toda a raiz do projeto para /app no container
+      # - /home/dipe/DIPE/templates/static:/app/templates/static
 
     depends_on:
       db:

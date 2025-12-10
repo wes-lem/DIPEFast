@@ -111,8 +111,7 @@
         // Passa variáveis do template para JavaScript
         const erroTemplate = {% if erro %}{{ erro|tojson }}{% else %}null{% endif %};
         const sucessoTemplate = {% if sucesso %}{{ sucesso|tojson }}{% else %}null{% endif %};
-    </script>
-    <script>
+
         const inputSenha = document.getElementById('senha');
         const btnToggle = document.getElementById('toggleSenha');
         const iconeSenha = document.getElementById('iconeSenha');

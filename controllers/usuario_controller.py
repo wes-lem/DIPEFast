@@ -63,7 +63,7 @@ async def login(
 
 
 @router.post("/sair")
-def logout(request: Request): # Não precisamos injetar Response aqui
+def logout(request: Request):
     session_user = request.cookies.get("session_user")
     
     if session_user:
@@ -71,9 +71,7 @@ def logout(request: Request): # Não precisamos injetar Response aqui
     else:
         print("❌ Nenhum cookie encontrado, redirecionando mesmo assim.")
 
-    # 2. Cria a resposta de redirecionamento
     response = RedirectResponse(url="/login", status_code=303)
-    # 3. Deleta o cookie NA RESPOSTA QUE SERÁ RETORNADA
     response.delete_cookie(key="session_user", path="/")
     
     print("✅ Instrução de remoção de cookie adicionada à resposta.")

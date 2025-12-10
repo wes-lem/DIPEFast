@@ -38,15 +38,22 @@
                 </div>
                 {% endif %}
                 <form method="post" action="/cadastro" class="d-flex flex-column">
+                    {% if idUser %}
+                    <input type="hidden" name="idUser" value="{{ idUser }}">
+                    {% endif %}
                     <label class="mt-3">Email:</label>
                     <input type="email" name="email" class="form-control border-1 bg-cinza mt-1"
-                    placeholder="Digite seu e-mail" required>
+                    placeholder="Digite seu e-mail" value="{% if email %}{{ email }}{% endif %}" required>
                     <label class="mt-3">Senha:</label>
                     <input type="password" name="senha" class="form-control border-1 bg-cinza mt-1"
                     placeholder="Digite sua senha" required>
                     <div class="w-100 d-flex justify-content-between">
-                        <a href="/login" class="btn mt-4 fs-5 fw-bold c-padrao col-50 text-center">Voltar</a>
-                        <button type="submit" class="btn btn-padrao ativo col-50 mt-4 fs-4 fw-bold c-black">Cadastrar</button>
+                        {% if idUser %}
+                        <a href="/cadastro/aluno/{{ idUser }}" class="btn mt-4 fs-5 fw-bold c-padrao col-50 d-flex justify-content-center align-items-center">Voltar</a>
+                        {% else %}
+                        <a href="/login" class="btn mt-4 fs-5 fw-bold c-padrao col-50 d-flex justify-content-center align-items-center">Voltar</a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-padrao ativo col-50 mt-4 fs-4 fw-bold c-black">{% if idUser %}Atualizar{% else %}Próximo{% endif %}</button>
                     </div>
                 </form>
             </div>

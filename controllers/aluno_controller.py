@@ -38,20 +38,69 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True) # Garante que o diretório existe
 router = APIRouter()
 
 @router.get("/cadastro")
-def cadastro_page(request: Request):
-    return templates.TemplateResponse("aluno/cadastro.html", {"request": request})
+def cadastro_page(request: Request, db: Session = Depends(get_db)):
+    # Se idUser foi fornecido via query params, busca o email do usuário para pré-preencher
+    idUser = request.query_params.get("idUser", None)
+    email = None
+    if idUser:
+        try:
+            idUser = int(idUser)
+            usuario = db.query(Usuario).filter(Usuario.id == idUser).first()
+            if usuario:
+                email = usuario.email
+        except (ValueError, TypeError):
+            idUser = None
+    return templates.TemplateResponse("aluno/cadastro.html", {"request": request, "idUser": idUser, "email": email})
 
 @router.post("/cadastro")
 def cadastro(
     request: Request,
     email: str = Form(...),
     senha: str = Form(...),
+    idUser: Optional[int] = Form(None),
     db: Session = Depends(get_db),
 ):
     """
-    Processa o cadastro de um novo usuário.
+    Processa o cadastro de um novo usuário ou atualiza email/senha de um usuário existente.
     Verifica se o e-mail já existe antes de criar.
     """
+    from dao.senhaHash import criptografar_senha
+    
+    # Se idUser foi fornecido, está editando um usuário existente
+    if idUser:
+        usuario = db.query(Usuario).filter(Usuario.id == idUser).first()
+        if not usuario:
+            return templates.TemplateResponse(
+                "aluno/cadastro.html",
+                {"request": request, "erro": "Usuário não encontrado.", "idUser": idUser}
+            )
+        
+        # Verificar se o novo email já está em uso por outro usuário
+        usuario_com_email = UsuarioDAO.get_by_email(db, email)
+        if usuario_com_email and usuario_com_email.id != idUser:
+            return templates.TemplateResponse(
+                "aluno/cadastro.html",
+                {"request": request, "erro": "E-mail já cadastrado. Por favor, use outro e-mail.", "idUser": idUser}
+            )
+        
+        # Atualizar email e senha do usuário existente
+        try:
+            usuario.email = email
+            usuario.senha_hash = criptografar_senha(senha)
+            db.commit()
+            db.refresh(usuario)
+        except Exception as e:
+            print(f"Erro ao atualizar usuário: {e}")
+            db.rollback()
+            return templates.TemplateResponse(
+                "aluno/cadastro.html",
+                {"request": request, "erro": "Ocorreu um erro ao tentar atualizar. Tente novamente mais tarde.", "idUser": idUser}
+            )
+        
+        # Redireciona de volta para a página de cadastro do aluno
+        return RedirectResponse(url=f"/cadastro/aluno/{idUser}", status_code=303)
+    
+    # Caso contrário, está criando um novo usuário
     # Verificar se o e-mail já está em uso
     usuario_existente = UsuarioDAO.get_by_email(db, email)
     if usuario_existente:

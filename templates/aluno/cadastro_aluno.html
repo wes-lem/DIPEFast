@@ -140,7 +140,8 @@
                             </label>
                         </div>
                     </div>
-                    <div class="w-100 d-flex justify-content-end">
+                    <div class="w-100 d-flex justify-content-between">
+                        <a href="/cadastro?idUser={{ idUser }}" class="btn mt-4 fs-5 fw-bold c-padrao borda-padrao col-50 d-flex align-items-center justify-content-center">Voltar</a>
                         <button type="submit"
                             class="btn btn-padrao ativo col-50 mt-4 fs-4 fw-bold c-black">Cadastrar</button>
                     </div>
@@ -288,6 +289,88 @@
                 } else {
                     descricaoCotaEl.innerHTML = '';
                 }
+            });
+        })();
+
+        // Sistema de salvamento automático dos dados do formulário
+        (function() {
+            const form = document.getElementById('formCadastroAluno');
+            const storageKey = 'cadastro_aluno_dados_' + {{ idUser }};
+            
+            // Função para salvar dados do formulário
+            function salvarDados() {
+                const dados = {};
+                const inputs = form.querySelectorAll('input, select, textarea');
+                
+                inputs.forEach(function(input) {
+                    if (input.type === 'file') return; // Ignora arquivos
+                    if (input.type === 'checkbox') {
+                        dados[input.name] = input.checked ? input.value : 'false';
+                    } else if (input.type === 'hidden' && input.name === 'imagem_cortada') {
+                        // Salva a imagem cortada em base64
+                        if (input.value) {
+                            dados[input.name] = input.value;
+                        }
+                    } else {
+                        dados[input.name] = input.value || '';
+                    }
+                });
+                
+                // Salva no sessionStorage
+                sessionStorage.setItem(storageKey, JSON.stringify(dados));
+            }
+            
+            // Função para restaurar dados do formulário
+            function restaurarDados() {
+                const dadosSalvos = sessionStorage.getItem(storageKey);
+                if (!dadosSalvos) return;
+                
+                try {
+                    const dados = JSON.parse(dadosSalvos);
+                    const inputs = form.querySelectorAll('input, select, textarea');
+                    
+                    inputs.forEach(function(input) {
+                        if (input.type === 'file') return; // Ignora arquivos
+                        
+                        if (dados.hasOwnProperty(input.name)) {
+                            if (input.type === 'checkbox') {
+                                input.checked = dados[input.name] === 'true';
+                            } else if (input.name === 'imagem_cortada' && dados[input.name]) {
+                                // Restaura a imagem cortada
+                                input.value = dados[input.name];
+                                const labelFoto = document.getElementById('labelFoto');
+                                if (labelFoto && dados[input.name]) {
+                                    labelFoto.innerHTML = `<img src="${dados[input.name]}" class="img-fluid rounded-3" style="object-fit: cover; width: 100%; height: 100%;">`;
+                                    labelFoto.classList.remove('py-4');
+                                }
+                            } else {
+                                input.value = dados[input.name];
+                            }
+                            
+                            // Dispara evento change para campos select (para atualizar descrições, etc)
+                            if (input.tagName === 'SELECT') {
+                                input.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error('Erro ao restaurar dados:', e);
+                }
+            }
+            
+            // Salva dados sempre que houver mudança no formulário
+            form.addEventListener('input', salvarDados);
+            form.addEventListener('change', salvarDados);
+            
+            // Restaura dados ao carregar a página
+            restaurarDados();
+            
+            // Limpa os dados salvos quando o formulário for enviado com sucesso
+            form.addEventListener('submit', function() {
+                // Aguarda um pouco antes de limpar para garantir que o submit foi processado
+                setTimeout(function() {
+                    sessionStorage.removeItem(storageKey);
+                }, 1000);
             });
         })();
     </script>

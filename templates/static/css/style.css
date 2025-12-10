@@ -413,3 +413,9 @@ textarea:not(:placeholder-shown) { background-color: white; }
     max-width: 100%;
     display: block; /* O Cropper.js recomenda isso */
 }
+
+/* Adiciona um asterisco vermelho após labels que tenham a classe .required */
+.required::after {
+    content: " *";
+    color: red;
+}

@@ -37,31 +37,35 @@
 
                 <form id="formCadastroAluno" method="post" action="/cadastro/aluno/{{ idUser }}"
                     class="d-flex flex-column" enctype="multipart/form-data">
+                    <div class="row m-0 p-0 mt-3">
+                        <span class="text-danger p-0"> * Campos obrigatórios</span>
+                    </div>
                     <div class="row">
                         <div class="col-8">
-                            <label for="nome" class="mt-3">Nome:</label>
-                            <input type="text" id="nome" name="nome" class="form-control borda bg-cinza mt-1"
-                                placeholder="Digite seu nome" required>
+                            <label for="nome" class="mt-2 required">Nome:</label>
+                            <input type="text" id="nome" name="nome" maxlength="80"
+                                class="form-control borda bg-cinza mt-1" placeholder="Digite seu nome" required>
 
-                            <label for="idade" class="mt-3">Idade:</label>
-                            <input type="number" id="idade" name="idade" class="form-control borda bg-cinza mt-1"
-                                placeholder="Digite sua idade" required>
+                            <label for="idade" class="mt-3 required">Idade:</label>
+                            <input type="number" id="idade" min="1" max="100" oninput="this.value = Math.abs(this.value); if(this.value > 100) this.value = 100;"
+                                name="idade" class="form-control borda bg-cinza mt-1" placeholder="Digite sua idade"
+                                required>
 
-                            <label for="municipio" class="mt-3">Município:</label>
+                            <label for="municipio" class="mt-3 required">Município:</label>
                             <select id="municipio" name="municipio" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione município</option>
                                 <option value="Boa Viagem">Boa Viagem</option>
                                 <option value="Madalena">Madalena</option>
                             </select>
 
-                            <label for="zona" class="mt-3">Zona:</label>
+                            <label for="zona" class="mt-3 required">Zona:</label>
                             <select id="zona" name="zona" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione a zona</option>
                                 <option value="Urbana">Urbana</option>
                                 <option value="Rural">Rural</option>
                             </select>
 
-                            <label for="curso" class="mt-3">Curso:</label>
+                            <label for="curso" class="mt-3 required">Curso:</label>
                             <select id="curso" name="curso" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione seu curso</option>
                                 <option value="Redes de Computadores">Redes de Computadores</option>
@@ -69,7 +73,7 @@
                                 <option value="Partiu IF">Partiu IF</option>
                             </select>
 
-                            <label for="ano" class="mt-3">Série:</label>
+                            <label for="ano" class="mt-3 required">Série:</label>
                             <select id="ano" name="ano" class="form-select borda bg-cinza mt-1" required>
                                 <option value="">Selecione seu ano</option>
                                 <option value="1">1 ano</option>
@@ -77,7 +81,7 @@
                                 <option value="3">3 ano</option>
                             </select>
 
-                            <label for="origem_escolar" class="mt-3">Origem Escolar:</label>
+                            <label for="origem_escolar" class="mt-3 required">Origem Escolar:</label>
                             <select id="origem_escolar" name="origem_escolar" class="form-select borda bg-cinza mt-1"
                                 required>
                                 <option value="">Selecione a origem</option>
@@ -89,7 +93,7 @@
                             <input type="text" id="escola" name="escola" class="form-control borda bg-cinza mt-1"
                                 placeholder="Nome da escola">
 
-                            <label for="forma_ingresso" class="mt-3">Forma de Ingresso / Cota:</label>
+                            <label for="forma_ingresso" class="mt-3 required">Forma de Ingresso / Cota:</label>
                             <select id="forma_ingresso" name="forma_ingresso" class="form-select borda bg-cinza mt-1"
                                 required>
                                 <option value="">Selecione a modalidade</option>
@@ -109,22 +113,30 @@
                             </select>
                             <div id="descricao_cota" class="form-text mt-2"></div>
 
-                            <label for="acesso_internet" class="mt-3">Acesso à internet em casa?</label>
-                            <select id="acesso_internet" name="acesso_internet" class="form-select borda bg-cinza mt-1">
-                                <option value="">Selecione</option>
-                                <option value="true">Sim</option>
-                                <option value="false">Não</option>
-                            </select>
+                            <label class="mt-3">Você possui acesso à internet em casa?</label>
+                            <div class="form-check form-switch mt-1 p-0">
+                                <input type="hidden" name="acesso_internet" value="false">
+                                
+                                <div class="d-flex align-items-center">
+                                    <input class="" type="checkbox" id="acesso_internet" name="acesso_internet" value="true">
+                                    <label class="form-check-label ms-3" for="acesso_internet">Sim, possuo acesso</label>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-4">
                             <input type="file" id="imagem" name="imagem" accept="image/*" class="d-none">
                             <input type="hidden" id="imagem_cortada" name="imagem_cortada">
-                            <label for="imagem" class="mt-3">Foto de perfil</label>
+                            <label for="imagem" class="mt-2">Foto de perfil</label>
                             <label for="imagem" id="labelFoto"
-                                class="bg-cinza mt-1 rounded-3 py-4 d-flex flex-column justify-content-center align-items-center borda">
+                                class="bg-cinza mt-1 rounded-3 pt-4 d-flex flex-column justify-content-center align-items-center borda">
                                 <img id="previewFoto" src="/static/img/foto.png" width="100px" alt="">
-                                <h5 class="m-0 mt-4">Adicionar foto</h5>
+                                <h5 class="m-0 mt-2">Adicionar foto</h5>
+                                <div class="mt-3 pb-2 w-100">
+                                    <hr class="divider m-0 mb-2">
+                                    <p class="fs-7 text-start m-0 p-0 px-2">Apenas arquivos em formato JPEG, PNG ou JPG.
+                                    </p>
+                                </div>
                             </label>
                         </div>
                     </div>

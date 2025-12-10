@@ -37,12 +37,42 @@
                 </div>
 
                 <form method="post" action="/login">
-                    {% if erro %}
-                    <div class="alert alert-danger p-1" role="alert">
-                        <i class="bi bi-exclamation-diamond-fill text-danger ms-3"></i> <strong
-                            class="text-danger">Erro:</strong> {{ erro }}
+                    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+                        <div id="toastSucesso" class="toast align-items-center border-0 border-start border-success border-5 shadow" role="alert"
+                            aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark">Cadastro realizado!</span>
+                                        <span class="text-muted fs-7">Faça login para entrar.</span>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        
+                        <div id="toastErro" class="toast align-items-center border-0 border-start border-danger border-5 shadow" role="alert"
+                            aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body d-flex align-items-center gap-2">
+                                    <i class="bi bi-exclamation-diamond-fill text-danger fs-4"></i>
+
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark">Erro</span>
+                                        <span class="text-muted fs-7" id="mensagemErro"></span>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                    data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
+                    
                     <div class="col text-center">
                         <input type="email" name="email" class="form-control borda-padrao mt-4 borda-padrao fs-4"
                             placeholder="E-mail" aria-describedby="basic-addon1" required>
@@ -51,7 +81,8 @@
                         <div class="position-relative mt-4">
                             <input type="password" id="senha" name="senha" class="form-control borda-padrao fs-4"
                                 placeholder="Senha" aria-label="matricula" aria-describedby="basic-addon2" required>
-                            <button type="button" id="toggleSenha" class="btn position-absolute top-50 end-0 pe-3 translate-middle-y border-0 bg-transparent">
+                            <button type="button" id="toggleSenha"
+                                class="btn position-absolute top-50 end-0 pe-3 translate-middle-y border-0 bg-transparent">
                                 <i id="iconeSenha" class="bi bi-eye-slash-fill fs-4 c-padrao"></i>
                             </button>
                         </div>
@@ -72,6 +103,15 @@
         </div>
     </section>
 
+    <script src="https://kit.fontawesome.com/decee3670e.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>
+        // Passa variáveis do template para JavaScript
+        const erroTemplate = {% if erro %}{{ erro|tojson }}{% else %}null{% endif %};
+        const sucessoTemplate = {% if sucesso %}{{ sucesso|tojson }}{% else %}null{% endif %};
+    </script>
     <script>
         const inputSenha = document.getElementById('senha');
         const btnToggle = document.getElementById('toggleSenha');
@@ -85,11 +125,106 @@
                 iconeSenha.classList.toggle('bi-eye-slash-fill', mostrando);
             });
         }
+
+        // Inicializa e exibe os toasts
+        function inicializarToasts() {
+            // Verifica se há parâmetro de sucesso na URL ou no template
+            const urlParams = new URLSearchParams(window.location.search);
+            const sucessoUrl = urlParams.get('sucesso');
+            const sucesso = sucessoUrl || sucessoTemplate;
+            const erroUrl = urlParams.get('erro');
+            const erro = erroUrl || erroTemplate;
+
+            // Toast de sucesso - verifica se existe qualquer valor (string não vazia)
+            // Verifica tanto na URL quanto no template
+            const temSucessoNaUrl = sucessoUrl && sucessoUrl.trim() !== '';
+            const temSucessoNoTemplate = sucessoTemplate && 
+                                        sucessoTemplate !== null && 
+                                        sucessoTemplate !== 'null' && 
+                                        String(sucessoTemplate).trim() !== '';
+            const temSucesso = temSucessoNaUrl || temSucessoNoTemplate;
+            
+            // Debug temporário
+            if (temSucesso || sucessoUrl || sucessoTemplate) {
+                console.log('Parâmetro sucesso detectado:', {
+                    sucessoUrl: sucessoUrl,
+                    sucessoTemplate: sucessoTemplate,
+                    temSucesso: temSucesso
+                });
+            }
+            
+            if (temSucesso) {
+                var toastSucessoEl = document.getElementById('toastSucesso');
+                if (toastSucessoEl) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap && bootstrap.Toast) {
+                        try {
+                            var toastSucesso = new bootstrap.Toast(toastSucessoEl, {
+                                delay: 5000, // 5 segundos
+                                autohide: true
+                            });
+                            toastSucesso.show();
+                            console.log('Toast de sucesso exibido com sucesso!');
+                        } catch (e) {
+                            console.error('Erro ao exibir toast de sucesso:', e);
+                        }
+                    } else {
+                        console.warn('Bootstrap Toast não está disponível');
+                    }
+                } else {
+                    console.warn('Elemento toastSucesso não encontrado');
+                }
+            }
+
+            // Toast de erro
+            if (erro) {
+                var toastErroEl = document.getElementById('toastErro');
+                var mensagemErroEl = document.getElementById('mensagemErro');
+                if (toastErroEl && mensagemErroEl && typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+                    mensagemErroEl.textContent = erro;
+                    var toastErro = new bootstrap.Toast(toastErroEl, {
+                        delay: 5000, // 5 segundos
+                        autohide: true
+                    });
+                    toastErro.show();
+                }
+            }
+        }
+
+        // Aguarda o DOM e o Bootstrap estarem prontos
+        function tentarInicializar() {
+            // Verifica se o Bootstrap está disponível
+            if (typeof bootstrap !== 'undefined' && bootstrap && bootstrap.Toast) {
+                inicializarToasts();
+                return true;
+            }
+            return false;
+        }
+
+        // Função para tentar inicializar com retry
+        function inicializarComRetry(tentativas = 0, maxTentativas = 50) {
+            if (tentarInicializar()) {
+                return; // Sucesso
+            }
+            
+            if (tentativas < maxTentativas) {
+                setTimeout(function() {
+                    inicializarComRetry(tentativas + 1, maxTentativas);
+                }, 100);
+            }
+        }
+
+        // Aguarda o carregamento completo da página
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                inicializarComRetry();
+            });
+        } else {
+            // DOM já está pronto, aguarda um pouco para garantir que o Bootstrap esteja carregado
+            setTimeout(function() {
+                inicializarComRetry();
+            }, 100);
+        }
     </script>
-    <script src="https://kit.fontawesome.com/decee3670e.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>

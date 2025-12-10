@@ -159,7 +159,7 @@ async def cadastrar_aluno(
         observacoes=observacoes
     )
 
-    return RedirectResponse(url="/login", status_code=303)
+    return RedirectResponse(url="/login?sucesso=cadastro_realizado", status_code=303)
 
 # --- Rota /perfil (AGORA REFATORADA) ---
 @router.get("/perfil")

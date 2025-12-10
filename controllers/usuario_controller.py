@@ -15,7 +15,8 @@ router = APIRouter()
 @router.get("/login")
 def login_page(request: Request):
     erro = request.query_params.get("erro", None)
-    return templates.TemplateResponse("aluno/login.html", {"request": request, "erro": erro})
+    sucesso = request.query_params.get("sucesso", None)
+    return templates.TemplateResponse("aluno/login.html", {"request": request, "erro": erro, "sucesso": sucesso})
 
 @router.get("/index")
 def index_page(request: Request):
@@ -62,30 +63,21 @@ async def login(
 
 
 @router.post("/sair")
-def logout(request: Request, response: Response):
-    # Verifica se o cookie está presente antes de remover
+def logout(request: Request): # Não precisamos injetar Response aqui
     session_user = request.cookies.get("session_user")
-
+    
     if session_user:
-        print(f"🔍 Cookie encontrado antes do logout: {session_user}")
+        print(f"🔍 Cookie encontrado: {session_user}")
     else:
-        print("❌ Nenhum cookie encontrado antes do logout.")
-        return RedirectResponse(url="/login", status_code=303)
+        print("❌ Nenhum cookie encontrado, redirecionando mesmo assim.")
 
-    # Remove o cookie definindo a expiração para o passado
-    response.delete_cookie("session_user", path="/")
-
-    # Verifica se o cookie foi removido imediatamente
-    session_user_after = request.cookies.get("session_user")
-
-    if session_user_after:
-        print("❌ O cookie ainda está presente após a tentativa de remoção.")
-        return RedirectResponse(url="/login", status_code=303)
-
-    print("✅ Cookie 'session_user' removido com sucesso.")
-
-    # Redireciona para a página de login após a remoção do cookie
-    return RedirectResponse(url="/login", status_code=303)
+    # 2. Cria a resposta de redirecionamento
+    response = RedirectResponse(url="/login", status_code=303)
+    # 3. Deleta o cookie NA RESPOSTA QUE SERÁ RETORNADA
+    response.delete_cookie(key="session_user", path="/")
+    
+    print("✅ Instrução de remoção de cookie adicionada à resposta.")
+    return response
 
 
 #  Solução correta para verificar a sessão

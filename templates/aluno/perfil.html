@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="px-3 mt-2 d-flex flex-wrap">
-                            <img src="{{ imagem }}" alt="" width="60px" class="rounded-circle">
+                            <img src="{{ imagem or '/static/img/user.jpg' }}" alt="" width="60px" class="rounded-circle">
                             <div class="ms-1 h-100 align-self-center">
                                 <strong>{{ nome }}</strong><br>
                                 <small><i class="bi bi-mortarboard-fill c-padrao me-1"></i> {{ curso }}</small>

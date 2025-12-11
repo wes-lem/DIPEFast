@@ -139,33 +139,80 @@
                 <div class="row" id="turmas-container">
                     {% for turma in turmas %}
                     <div class="col-md-6 col-lg-4 mb-4 turma-card" data-status="{{ turma.status.value }}">
-                        <div class="card h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center bg-padrao text-light">
-                                <h6 class="mb-0">{{ turma.nome }}</h6>
-                                <span class="badge {% if turma.status.value == 'ativa' %}bg-white c-padrao{% else %}bg-secondary{% endif %}">
-                                    {{ turma.status.value.title() }}
-                                </span>
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden rounded-3">
+                            
+                            <div class="card-header border-0 p-4 position-relative bg-padrao" style="color: white; padding-bottom: 3rem !important;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-light">{{ turma.nome }}</h5>
+                                        <p class="mb-0 opacity-75 text-light">{{ turma.professor.nome }}</p>
+                                    </div>
+                                    <span class="badge bg-white text-info shadow-sm fs-7">{{ turma.codigo }}</span>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    <strong>Professor:</strong> {{ turma.professor.nome }}<br>
-                                    <strong>Campus:</strong> {{ turma.campus.nome }}<br>
-                                    <strong>Código:</strong> <code>{{ turma.codigo }}</code><br>
-                                    <strong>Criada em:</strong> {{ turma.data_criacao.strftime('%d/%m/%Y') }}<br>
-                                    <strong>Alunos:</strong> {{ turma.aluno_turmas|length }} matriculados
-                                </p>
+                    
+                            <div class="card-body position-relative pt-0 bg-white">
+                                
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3 position-relative" style="margin-top: -40px;">
+                                        <img src="{{ turma.imagem_professor or '/static/img/user.jpg' }}" 
+                                             alt="{{ turma.professor.nome }}" 
+                                             class="rounded-circle border border-4 border-white shadow-sm" 
+                                             width="80" 
+                                             height="80" 
+                                             style="object-fit: cover; background-color: white;">
+                                    </div>
+                                    
+                                    <div class="flex-grow-1 mt-2">
+                                        <!-- <div class="mb-2 pb-2 border-bottom border-light">
+                                            <span class="badge {% if turma.status.value == 'ativa' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                                                {{ turma.status.value.title() }}
+                                            </span>
+                                        </div> -->
+                                        
+                                        <div class="d-flex flex-column gap-1 text-muted small">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-calendar-event me-2 text-primary"></i> 
+                                                <span>Criada em: {{ turma.data_criacao.strftime('%d/%m/%Y') }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-geo-alt me-2 text-danger"></i> 
+                                                <span>{{ turma.campus.nome }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="w-100">
-                                    <a href="/gestor/turma/{{ turma.id }}/detalhes" class="btn btn-black btn-sm">
-                                        <i class="bi bi-eye c-padrao"></i> Detalhes
-                                    </a>
-                                    <a href="/gestor/turma/{{ turma.id }}/alunos" class="btn btn-black btn-sm">
-                                        <i class="bi bi-people c-padrao"></i> Alunos
-                                    </a>
-                                    <a href="/gestor/turma/{{ turma.id }}/provas" class="btn btn-black btn-sm">
-                                        <i class="bi bi-file-text c-padrao"></i> Provas
-                                    </a>
+                    
+                            <div class="card-footer bg-white border-top py-3">
+                                <div class="row text-center g-0 divide-x">
+                                    
+                                    <div class="col-3 border-end">
+                                        <h5 class="fw-bold mb-0 text-dark">{{ turma.aluno_turmas|length }}</h5>
+                                        <small class="text-muted fs-7">Matriculados</small>
+                                    </div>
+                    
+                                    <div class="col-3 border-end">
+                                        <a href="/gestor/turma/{{ turma.id }}/detalhes" class="text-decoration-none text-dark d-block">
+                                            <i class="bi bi-eye fs-5 c-padrao"></i>
+                                            <div class="text-muted fs-7 c-padrao">Detalhes</div>
+                                        </a>
+                                    </div>
+                    
+                                    <div class="col-3 border-end">
+                                        <a href="/gestor/turma/{{ turma.id }}/alunos" class="text-decoration-none text-dark d-block">
+                                            <i class="bi bi-people fs-5 c-padrao"></i>
+                                            <div class="text-muted fs-7 c-padrao">Alunos</div>
+                                        </a>
+                                    </div>
+                    
+                                    <div class="col-3">
+                                        <a href="/gestor/turma/{{ turma.id }}/provas" class="text-decoration-none text-dark d-block">
+                                            <i class="bi bi-file-text fs-5 c-padrao"></i>
+                                            <div class="text-muted fs-7 c-padrao">Provas</div>
+                                        </a>
+                                    </div>
+                    
                                 </div>
                             </div>
                         </div>

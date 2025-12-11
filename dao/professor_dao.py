@@ -108,3 +108,17 @@ class ProfessorDAO:
     def get_all_with_campus(db: Session):
         """Busca todos os professores com dados do campus"""
         return db.query(Professor).join(Professor.campus).all()
+
+    @staticmethod
+    def get_imagem_by_id(db: Session, professor_id: int) -> str | None:
+        """
+        Busca o caminho/nome da imagem de um professor pelo ID.
+
+        Retorna:
+            str | None: O caminho da imagem (string) ou None se o professor não for encontrado.
+        """
+        professor = ProfessorDAO.get_by_id(db, professor_id)
+        
+        if professor:
+            return professor.imagem
+        return None

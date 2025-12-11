@@ -962,8 +962,16 @@ def listar_turmas_gestor(
     db: Session = Depends(get_db),
     gestor_id: int = Depends(verificar_gestor_sessao)
 ):
-    """Lista todas as turmas de todos os professores"""
+    """Lista todas as turmas e anexa a imagem do professor manualmente"""
     turmas = TurmaDAO.get_all_with_details(db)
+    
+    for turma in turmas:
+        # Acessa a imagem do professor diretamente do relacionamento carregado
+        if turma.professor and turma.professor.imagem:
+            setattr(turma, 'imagem_professor', turma.professor.imagem)
+        else:
+            setattr(turma, 'imagem_professor', None)
+
     return templates.TemplateResponse(
         "gestor/gestor_turmas.html",
         {"request": request, "turmas": turmas}

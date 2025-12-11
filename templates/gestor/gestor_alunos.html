@@ -247,8 +247,9 @@
                                                 class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
                                     </div>
                                     <div class="card-body pt-0">
+                                        <p class="m-0 fs-5">{{ aluno.nome.split(' ')[0] }}</p>
                                         <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
-                                        <small class="text-{{ cor }} fw-bold">{{ "%.1f"|format(media) }}</small>
+                                        <!-- <small class="text-{{ cor }} fw-bold">{{ "%.1f"|format(media) }}</small> -->
                                     </div>
                                 </a>
                             </div>

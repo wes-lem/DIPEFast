@@ -132,27 +132,38 @@
             </div>
 
             <div class="content-wrapper mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Todas as Provas dos Professores</h2>
-                    
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('ativa')">
-                            <i class="bi bi-play-circle text-success"></i> Ativas
-                        </button>
-                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('rascunho')">
-                            <i class="bi bi-pencil text-warning"></i> Rascunhos
-                        </button>
-                        <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('expirada')">
-                            <i class="bi bi-clock-history text-danger"></i> Expiradas
-                        </button>
-                        <button type="button" class="btn btn-outline-black border-start-0" onclick="filtrarPorStatus('todas')">
-                            <i class="bi bi-list text-secondary"></i> Todas
-                        </button>
-                    </div>
-                </div>
+                
 
                 {% if provas %}
                 <div class="row" id="provas-container">
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3 c-black">Desempenho por Simulado</h5>
+                                <div style="height: 320px;">
+                                    <canvas id="provasChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Todas as Provas dos Professores</h2>
+                        
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('ativa')">
+                                <i class="bi bi-play-circle text-success"></i> Ativas
+                            </button>
+                            <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('rascunho')">
+                                <i class="bi bi-pencil text-warning"></i> Rascunhos
+                            </button>
+                            <button type="button" class="btn btn-outline-black border-end-0" onclick="filtrarPorStatus('expirada')">
+                                <i class="bi bi-clock-history text-danger"></i> Expiradas
+                            </button>
+                            <button type="button" class="btn btn-outline-black border-start-0" onclick="filtrarPorStatus('todas')">
+                                <i class="bi bi-list text-secondary"></i> Todas
+                            </button>
+                        </div>
+                    </div>
                     {% for prova in provas %}
                     <div class="col-md-6 col-lg-4 mb-4 prova-card" data-status="{{ prova.status }}">
                         <div class="card h-100">
@@ -199,9 +210,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoT1M7WU2s484xIq7t8/84EdhRxl2bc3SB8XntG7FwUPFGZ"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/static/js/menu.js"></script>
     
     <script>
@@ -215,6 +225,49 @@
                 }
             });
         }
+
+        (function () {
+            const colors = {
+                insuficiente: '#e74c3c',
+                regular: '#f1c40f',
+                suficiente: '#2ecc71',
+                neutro: '#cfd8dc'
+            };
+
+            const chartData = {{ chart_data|default({})|tojson }};
+            console.log('chartData provas-professores:', chartData);
+            if (!chartData || !chartData.labels || !chartData.labels.length) {
+                console.warn('Sem dados para gráfico de provas.');
+                return;
+            }
+
+            const ctx = document.getElementById('provasChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        { label: 'Insuficiente', data: chartData.insuficiente, backgroundColor: colors.insuficiente },
+                        { label: 'Regular', data: chartData.regular, backgroundColor: colors.regular },
+                        { label: 'Suficiente', data: chartData.suficiente, backgroundColor: colors.suficiente },
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        })();
     </script>
 </body>
 

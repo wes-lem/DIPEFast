@@ -9,6 +9,8 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy import func, or_
+from fastapi.encoders import jsonable_encoder
+import re
 from passlib.hash import bcrypt
 
 # Importações dos seus DAOs e Models
@@ -993,9 +995,66 @@ def listar_provas_professores(
         joinedload(Prova.professor),
         joinedload(Prova.prova_questoes)
     ).filter(Prova.professor_id.isnot(None)).order_by(Prova.data_criacao.desc()).all()
+
+    # --- Dados para o gráfico stacked (desempenho real dos alunos por prova/simulado) ---
+    def normalizar_nome(titulo: str | None, materia: str | None) -> str:
+        """
+        Extrai o número do simulado a partir do título (ex: '4º Prova...', 'SIMULADO 4').
+        Ignora matéria; se não achar número, usa 'Simulado'.
+        """
+        t = (titulo or materia or "").lower()
+        mnum = re.search(r"(\d+)", t)
+        if mnum:
+            return f"{mnum.group(1)}º Simulado"
+        return "Simulado"
+
+    def faixa_por_nota(nota: float | None) -> str:
+        if nota is None:
+            return "neutro"
+        if nota <= 5:
+            return "insuficiente"
+        if nota < 8:
+            return "regular"
+        return "suficiente"
+
+    # Busca desempenho real (Resultados) por prova
+    resultados = (
+        db.query(Prova.id, Prova.titulo, Prova.materia, Resultado.nota)
+        .join(Resultado, Resultado.prova_id == Prova.id)
+        .filter(Prova.professor_id.isnot(None))
+        .all()
+    )
+
+    agg: dict[str, dict[str, int]] = {}
+    for pid, titulo, materia, nota in resultados:
+        label = normalizar_nome(titulo, materia)
+        faixa = faixa_por_nota(nota)
+        if label not in agg:
+            agg[label] = {"insuficiente": 0, "regular": 0, "suficiente": 0, "neutro": 0}
+        agg[label][faixa] += 1
+
+    if not agg:
+        agg["Sem dados"] = {"insuficiente": 0, "regular": 0, "suficiente": 0, "neutro": 0}
+
+    chart_labels = list(agg.keys())
+    chart_data = jsonable_encoder({
+        "labels": chart_labels,
+        "insuficiente": [agg[l]["insuficiente"] for l in chart_labels],
+        "regular": [agg[l]["regular"] for l in chart_labels],
+        "suficiente": [agg[l]["suficiente"] for l in chart_labels],
+    })
+    try:
+        print("chart_data provas-professores:", chart_data)
+    except Exception:
+        pass
+
     return templates.TemplateResponse(
         "gestor/gestor_provas_professores.html",
-        {"request": request, "provas": provas}
+        {
+            "request": request,
+            "provas": provas,
+            "chart_data": chart_data,
+        }
     )
 
 # === ROTAS DE DETALHES PARA GESTOR ===

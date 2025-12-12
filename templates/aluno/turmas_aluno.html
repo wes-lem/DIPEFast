@@ -106,29 +106,82 @@
                     </button>
                 </div>
 
+                {% set paleta = [
+                    '#B93C30',  
+                    '#264653',  
+                    '#1D7065',  
+                    '#A45D1D',  
+                    '#6D3B68',  
+                    '#8C2F39',  
+                    '#3D5A80'   
+                ] %}
+
                 {% if turmas_aluno %}
                 <div class="row">
                     {% for turma_aluno in turmas_aluno %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100">
-                            <div class="card-header bg-padrao text-light">
-                                <h5 class="mb-0">{{ turma_aluno.turma.nome }}</h5>
+                    {% set turma = turma_aluno.turma %}
+                    {% set cor_card = paleta[turma_aluno.id % paleta|length] %}
+                    <div class="col-md-6 col-lg-4 mb-4 turma-card" data-status="">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden rounded-3">
+                            
+                            <div class="card-header border-0 p-4 position-relative" style="background-color: {{ cor_card }}; color: white; padding-bottom: 3rem !important;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-light">{{ turma_aluno.turma.nome }}</h5>
+                                        <p class="mb-0 opacity-75 text-light">{{ turma_aluno.turma.professor.nome }}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    <strong>Professor:</strong> {{ turma_aluno.turma.professor.nome }}<br>
-                                    <strong>Campus:</strong> {{ turma_aluno.turma.campus.nome }}<br>
-                                    <strong>Entrou em:</strong> {{ turma_aluno.data_entrada.strftime('%d/%m/%Y') }}
-                                </p>
+                    
+                            <div class="card-body position-relative pt-0 bg-white">
+                                
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3 position-relative" style="margin-top: -40px;">
+                                        <img src="{{ turma.imagem_professor or '/static/img/user.jpg' }}" 
+                                             alt="{{ turma.professor.nome }}" 
+                                             class="rounded-circle border border-4 border-white shadow-sm" 
+                                             width="80" 
+                                             height="80" 
+                                             style="object-fit: cover; background-color: white;">
+                                    </div>
+                                    
+                                    <div class="flex-grow-1 mt-2">
+                                        <div class="d-flex flex-column gap-1 text-muted small">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-calendar-event-fill me-2"></i> 
+                                                <span>Entrou em: {{ turma_aluno.data_entrada.strftime('%d/%m/%Y') }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-geo-alt-fill me-2"></i> 
+                                                <span>{{ turma_aluno.turma.campus.nome }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="w-100">
-                                    <a href="/aluno/provas?turma={{ turma_aluno.turma.id }}" class="btn btn-black btn-sm">
-                                        <i class="bi bi-file-earmark-text text-light"></i> Ver Provas
-                                    </a>
-                                    <a href="/aluno/turma/{{ turma_aluno.turma.id }}/detalhes" class="btn btn-info btn-sm">
-                                        <i class="bi bi-info-circle"></i> Detalhes
-                                    </a>
+                    
+                            <div class="card-footer bg-white border-top py-3">
+                                <div class="row text-center g-0 divide-x">
+                                    
+                                    <div class="col-4 border-end">
+                                        <h5 class="fw-bold mb-0 text-dark">{{ turma.aluno_turmas|length }}</h5>
+                                        <small class="text-muted fs-7">Matriculados</small>
+                                    </div>
+                    
+                                    <div class="col-4 border-end">
+                                        <a href="/aluno/turma/{{ turma_aluno.turma.id }}/detalhes" class="text-decoration-none text-dark d-block">
+                                            <i class="bi bi-eye-fill fs-5 c-padrao"></i>
+                                            <div class="text-muted fs-7 c-padrao">Detalhes</div>
+                                        </a>
+                                    </div>
+                    
+                                    <div class="col-4">
+                                        <a href="/aluno/provas?turma={{ turma_aluno.turma.id }}" class="text-decoration-none text-dark d-block">
+                                            <i class="bi bi-file-text-fill fs-5 c-padrao"></i>
+                                            <div class="text-muted fs-7 c-padrao">Provas</div>
+                                        </a>
+                                    </div>
+                    
                                 </div>
                             </div>
                         </div>

@@ -238,6 +238,22 @@
                                 {% set situacao = "Suficiente" %} 
                                 {% set cor = "success" %} 
                             {% endif %} 
+                            {# Calcular nome_curto #}
+                            {% if aluno.nome %}
+                                {% set partes = aluno.nome.strip().split() %}
+                                {% if partes|length <= 2 %}
+                                    {% set nome_curto = aluno.nome %}
+                                {% else %}
+                                    {% set conectivos = ['da', 'de', 'do', 'das', 'dos', 'e'] %}
+                                    {% if partes[1].lower() in conectivos %}
+                                        {% set nome_curto = partes[0] ~ ' ' ~ partes[1] ~ ' ' ~ partes[2] %}
+                                    {% else %}
+                                        {% set nome_curto = partes[0] ~ ' ' ~ partes[1] %}
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% set nome_curto = "" %}
+                            {% endif %}
                             {# --------------------------------------- #}
                 
                             <div class="col-lg-2 col-md-3 col-sm-6">
@@ -247,7 +263,7 @@
                                                 class="card-img-top p-3 rounded-5" alt="Foto de {{ aluno.nome }}">
                                     </div>
                                     <div class="card-body pt-0">
-                                        <p class="m-0 fs-5">{{ aluno.nome.split(' ')[0] }}</p>
+                                        <p class="m-0 fs-5">{{ nome_curto }}</p>
                                         <p class="card-text text-{{ cor }} fw-bold fs-6">{{ situacao }}</p>
                                         <!-- <small class="text-{{ cor }} fw-bold">{{ "%.1f"|format(media) }}</small> -->
                                     </div>

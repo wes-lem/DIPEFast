@@ -10,5 +10,3 @@ env = Environment(
 )
 
 env.filters['fromjson'] = json.loads 
-
-templates = Jinja2Templates(env=env) 

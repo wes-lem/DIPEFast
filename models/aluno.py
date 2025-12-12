@@ -29,3 +29,19 @@ class Aluno(Base):
     respostas = relationship("Resposta", back_populates="aluno", cascade="all, delete-orphan") ## -> ADICIONADO/CORRIGIDO
     resultados = relationship("Resultado", back_populates="aluno", cascade="all, delete-orphan")
     aluno_turmas = relationship("AlunoTurma", back_populates="aluno", cascade="all, delete-orphan")
+
+    @property
+    def nome_curto(self):
+        if not self.nome:
+            return ""
+            
+        partes = self.nome.strip().split()
+        if len(partes) <= 2:
+            return self.nome
+
+        conectivos = {'da', 'de', 'do', 'das', 'dos', 'e'}
+        
+        if partes[1].lower() in conectivos:
+            return " ".join(partes[:3])
+            
+        return " ".join(partes[:2])

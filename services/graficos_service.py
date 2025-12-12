@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, distinct, and_
 from models.aluno import Aluno
 from models.prova import Prova
+from models.professor import Professor
+from models.gestor import Gestor
 from models.resultado import Resultado
 from models.gestor import Gestor # Para buscar dados do gestor, se necessário
 import unicodedata
@@ -60,7 +62,10 @@ class AnalyticsService:
 
         # Dados para os cards
         total_alunos = db.query(func.count(Aluno.idAluno)).scalar() or 0
+        total_professores = db.query(func.count(Professor.id)).scalar() or 0
         total_provas = db.query(func.count(distinct(Resultado.prova_id))).scalar() or 0
+        total_gestores = db.query(func.count(distinct(Gestor.id))).scalar() or 0
+        total_usuarios = total_alunos + total_professores + total_gestores
         
         # Calcular média geral
         resultados_acertos = db.query(Resultado.acertos).all()
@@ -75,6 +80,9 @@ class AnalyticsService:
             
         cards = {
             'total_alunos': total_alunos,
+            'total_professores': total_professores,
+            'total_gestores': total_gestores,
+            'total_usuarios': total_usuarios,
             'total_provas': total_provas,
             'media_geral': f"{media_geral:.1f}",
             'percentual_suficiente': f"{percentual_suficiente:.1f}"

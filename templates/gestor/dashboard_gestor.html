@@ -114,47 +114,36 @@
 
             <!-- KPIs compactos -->
             <div class="row g-3 mb-3">
-                <div class="col-6 col-md-3">
-                    <div class="card border-0">
-                        <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="text-muted small">Total de Alunos</div>
-                                <div class="fs-5">{{ dados.cards.total_alunos }}</div>
-                            </div>
-                            <i class="bi bi-people-fill text-danger fs-4"></i>
+                
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ dados.cards.total_alunos }}</h5>
+                            <p class="card-text">Total de Alunos</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="card border-0">
-                        <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="text-muted small">Provas Realizadas</div>
-                                <div class="fs-5">{{ dados.cards.total_provas }}</div>
-                            </div>
-                            <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">{{ dados.cards.total_professores }}</h5>
+                            <p class="card-text">Total de Professores</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="card border-0">
-                        <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="text-muted small">Média Geral</div>
-                                <div class="fs-5">{{ dados.cards.media_geral }}</div>
-                            </div>
-                            <i class="bi bi-bar-chart-line-fill text-warning fs-4"></i>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">{{ dados.cards.total_gestores }}</h5>
+                            <p class="card-text">Total de Gestores</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="card border-0">
-                        <div class="card-body rounded-3 borda py-2 d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="text-muted small">% Suficiente</div>
-                                <div class="fs-5">{{ dados.cards.percentual_suficiente }}%</div>
-                            </div>
-                            <i class="bi bi-patch-check-fill text-success fs-4"></i>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">{{ dados.cards.total_usuarios }}</h5>
+                            <p class="card-text">Total de Usuários</p>
                         </div>
                     </div>
                 </div>

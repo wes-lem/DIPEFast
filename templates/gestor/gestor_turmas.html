@@ -135,13 +135,24 @@
                     </div>
                 </div>
 
+                {% set paleta = [
+                    '#B93C30',  
+                    '#264653',  
+                    '#1D7065',  
+                    '#A45D1D',  
+                    '#6D3B68',  
+                    '#8C2F39',  
+                    '#3D5A80'   
+                ] %}
+
                 {% if turmas %}
                 <div class="row" id="turmas-container">
                     {% for turma in turmas %}
+                    {% set cor_card = paleta[turma.id % paleta|length] %}
                     <div class="col-md-6 col-lg-4 mb-4 turma-card" data-status="{{ turma.status.value }}">
                         <div class="card h-100 border-0 shadow-sm overflow-hidden rounded-3">
                             
-                            <div class="card-header border-0 p-4 position-relative bg-padrao" style="color: white; padding-bottom: 3rem !important;">
+                            <div class="card-header border-0 p-4 position-relative" style="background-color: {{ cor_card }}; color: white; padding-bottom: 3rem !important;">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <h5 class="fw-bold mb-1 text-light">{{ turma.nome }}</h5>
@@ -172,11 +183,11 @@
                                         
                                         <div class="d-flex flex-column gap-1 text-muted small">
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-calendar-event-fill me-2 text-primary"></i> 
+                                                <i class="bi bi-calendar-event-fill me-2"></i> 
                                                 <span>Criada em: {{ turma.data_criacao.strftime('%d/%m/%Y') }}</span>
                                             </div>
                                             <div class="d-flex align-items-center">
-                                                <i class="bi bi-geo-alt-fill me-2 text-danger"></i> 
+                                                <i class="bi bi-geo-alt-fill me-2"></i> 
                                                 <span>{{ turma.campus.nome }}</span>
                                             </div>
                                         </div>

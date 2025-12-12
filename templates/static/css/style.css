@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@800&display=swap');
 :root {
     --green-50: #f2fbf2;
     --green-100: #e2f6e3;
@@ -24,6 +24,7 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .fw-semi { font-weight: 500; }
 .f-libre { font-family: "Libre Bodoni", serif; }
 .f-dipe { font-family: "Bungee", serif; }
+.f-exo { font-family: "Exo", sans-serif; }
 
 /* Colors */
 .c-padrao { color: var(--green-400) !important; }
@@ -52,6 +53,7 @@ h1, h2, h3, h4, h5 { font-weight: 600; margin: 0; }
 .borda { border: #D9D9D9 solid 1px; }
 .borda-padrao { border: var(--green-500) solid 1px; }
 .rounded { border-radius: 8px; }
+.cursor-pointer { cursor: pointer !important; }
 
 /* Botões */
 .btn-padrao {
@@ -227,9 +229,20 @@ li {
     background-color: #fafbfe;
 }
 
+#sidebar-wrapper {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
 #sidebar {
     width: 70px;
     min-width: 70px;
+    height: 100%;
     z-index: 1000;
     transition: all .25s ease-in-out;
     background: linear-gradient(172.513deg, #C6ECC8 0%, #64C46A 100%);
@@ -243,11 +256,61 @@ li {
     min-width: 260px;
 }
 
+#toggle-bar {
+    width: 20px;
+    min-width: 20px;
+    height: 100%;
+    align-self: stretch;
+    position: relative;
+    z-index: 1001;
+    transition: all .25s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    background: linear-gradient(172.513deg, var(--green-200) 0%, var(--green-500) 100%);
+    flex-shrink: 0;
+}
+
+#toggle-bar:hover {
+    background: linear-gradient(172.513deg, var(--green-300) 0%, var(--green-600) 100%);
+}
+
+#toggle-bar:active {
+    background: linear-gradient(172.513deg, var(--green-400) 0%, var(--green-700) 100%);
+}
+
+.toggle-icon {
+    font-size: 1.2rem;
+    transition: transform .25s ease-in-out;
+}
+
+#sidebar-wrapper:not(.expand) #toggle-bar .toggle-icon {
+    transform: rotate(0deg);
+}
+
+#sidebar-wrapper.expand #toggle-bar .toggle-icon {
+    transform: rotate(180deg);
+}
+
 .toggle-btn {
     background-color: transparent;
     cursor: pointer;
     border: 0;
-    padding: 1rem 1.5rem;
+    padding: 0;
+}
+
+.toggle-btn.sidebar-link {
+    padding: .625rem 1.625rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sidebar.expand .toggle-btn.sidebar-link {
+    justify-content: flex-start;
 }
 
 .toggle-btn i {
@@ -255,18 +318,45 @@ li {
     color: #0B334C;
 }
 
-.sidebar-logo {
-    margin: auto 0;
+.sidebar-logo-container {
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.sidebar-logo a {
-    font-size: 1.15rem;
-    font-weight: 600;
+#sidebar.expand .sidebar-logo-container {
+    justify-content: flex-start;
+    padding-left: 0;
 }
 
-.sidebar-logo button {
-    font-size: 1.15rem;
-    font-weight: 600;
+.toggle-btn.sidebar-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#sidebar.expand .toggle-btn.sidebar-link {
+    justify-content: flex-start;
+}
+
+.sidebar-logo-icon {
+    display: block;
+    flex-shrink: 0;
+}
+
+#sidebar:not(.expand) .sidebar-logo-icon {
+    margin: 0 auto;
+}
+
+#sidebar.expand .sidebar-logo-icon {
+    margin-right: .75rem;
+}
+
+.toggle-btn.sidebar-link span {
+    white-space: nowrap;
+    color: #0B334C;
 }
 
 #sidebar:not(.expand) .sidebar-logo,

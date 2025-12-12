@@ -15,82 +15,84 @@
 
 <body id="topo">
     <div class="wrapper">
-        <aside id="sidebar" class="shadow-lg">
-            <div class="d-flex justify-content-center">
-                <button class="toggle-btn d-flex flex-column align-items-center p-0 pt-3 w-100" type="button">
-                    <img src="/static/img/DipePreta.svg" width="40px" alt="">
-                </button>
-                <div class="sidebar-logo me-4">
+        <div id="sidebar-wrapper" class="d-flex expand">
+            <aside id="sidebar" class="expand shadow-lg">
+                <div class="sidebar-logo-container">
+                    <button class="toggle-btn sidebar-link" type="button">
+                        <img src="/static/img/DipePreta.svg" width="24px" alt="DIPE" class="sidebar-logo-icon">
+                        <span class="f-exo fs-6 fw-black">DIPE</span>
+                    </button>
                 </div>
-            </div>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="/gestor/dashboard"
-                        class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
-                        <i class="bi bi-house-door-fill"></i>
-                        <span>Início</span>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-item">
+                        <a href="/gestor/dashboard"
+                            class="sidebar-link {% if request.url.path == '/gestor/dashboard' %}active{% endif %}">
+                            <i class="bi bi-house-door-fill"></i>
+                            <span>Início</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Alunos</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/gestor/professores"
+                            class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Professores</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/gestor/turmas"
+                            class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
+                            <i class="bi bi-collection-fill"></i>
+                            <span>Turmas</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/gestor/provas-professores"
+                            class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
+                            <i class="bi bi-file-earmark-check-fill"></i>
+                            <span>Provas dos Professores</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/gestor/formularios"
+                            class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
+                            <i class="bi bi-clipboard2-fill"></i>
+                            <span>Formulários</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item mt-3">
+                        <a href="/gestor/gerenciar-usuarios"
+                            class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
+                            <i class="bi bi-person-fill-gear"></i>
+                            <span>Gerenciar Usuários</span>
+                        </a>
+                    </li>
+                    <div class="sidebar-item mt-3">
+                        <form action="/sair" method="post" style="display: inline;">
+                            <button type="submit" class="sidebar-link w-100 text-start">
+                                <i class="bi bi-door-open-fill"></i>
+                                <span class="fw-bold">Sair</span>
+                            </button>
+                        </form>
+                    </div>
+                </ul>
+                <div class="sidebar-footer">
+                    <a href="#topo" class="sidebar-link">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>Voltar ao topo</span>
                     </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/alunos" class="sidebar-link {% if request.url.path == '/alunos' %}active{% endif %}">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Alunos</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/professores"
-                        class="sidebar-link {% if request.url.path == '/gestor/professores' or request.url.path.startswith('/gestor/professores/') %}active{% endif %}">
-                        <i class="bi bi-person-badge-fill"></i>
-                        <span>Professores</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/turmas"
-                        class="sidebar-link {% if request.url.path == '/gestor/turmas' or request.url.path.startswith('/gestor/turma/') %}active{% endif %}">
-                        <i class="bi bi-collection-fill"></i>
-                        <span>Turmas</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/provas-professores"
-                        class="sidebar-link {% if request.url.path == '/gestor/provas-professores' or request.url.path.startswith('/gestor/prova/') %}active{% endif %}">
-                        <i class="bi bi-file-earmark-check-fill"></i>
-                        <span>Provas dos Professores</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/formularios"
-                        class="sidebar-link {% if request.url.path == '/gestor/formularios' %}active{% endif %}">
-                        <i class="bi bi-clipboard2-fill"></i>
-                        <span>Formulários</span>
-                    </a>
-                </li>
-                <li class="sidebar-item mt-3">
-                    <a href="/gestor/gerenciar-usuarios"
-                        class="sidebar-link {% if request.url.path == '/gestor/gerenciar-usuarios' %}active{% endif %}">
-                        <i class="bi bi-person-fill-gear"></i>
-                        <span>Gerenciar Usuários</span>
-                    </a>
-                </li>
-                <div class="sidebar-item mt-3">
-                    <form action="/sair" method="post" style="display: inline;">
-                        <button type="submit" class="sidebar-link w-100 text-start">
-                            <i class="bi bi-door-open-fill"></i>
-                            <span class="fw-bold">Sair</span>
-                        </button>
-                    </form>
                 </div>
-            </ul>
-            <div class="sidebar-footer">
-                <a href="#topo" class="sidebar-link">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>Voltar ao topo</span>
-                </a>
+            </aside>
+
+            <div id="toggle-bar" class="d-flex align-items-center justify-content-center shadow-lg bg-gradiente cursor-pointer">
+                <i class="bi bi-chevron-right toggle-icon c-black"></i>
             </div>
-
-
-
-        </aside>
+        </div>
 
         <div class="main p-4 bg-pattern">
             <!-- Cabeçalho + Filtros Globais -->
@@ -114,12 +116,12 @@
 
             <!-- KPIs compactos -->
             <div class="row g-3 mb-3">
-                
+
                 <div class="col-md-3">
                     <div class="card text-center">
                         <div class="card-body">
                             <h5 class="card-title text-primary">{{ dados.cards.total_alunos }}</h5>
-                            <p class="card-text">Total de Alunos</p>
+                            <p class="card-text">Alunos</p>
                         </div>
                     </div>
                 </div>
@@ -127,7 +129,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <h5 class="card-title text-success">{{ dados.cards.total_professores }}</h5>
-                            <p class="card-text">Total de Professores</p>
+                            <p class="card-text">Professores</p>
                         </div>
                     </div>
                 </div>
@@ -135,7 +137,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <h5 class="card-title text-info">{{ dados.cards.total_gestores }}</h5>
-                            <p class="card-text">Total de Gestores</p>
+                            <p class="card-text">Coordenadores</p>
                         </div>
                     </div>
                 </div>
@@ -143,7 +145,7 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <h5 class="card-title text-warning">{{ dados.cards.total_usuarios }}</h5>
-                            <p class="card-text">Total de Usuários</p>
+                            <p class="card-text">Usuários</p>
                         </div>
                     </div>
                 </div>
@@ -263,8 +265,8 @@
                                             <tr onclick="window.location.href='/alunos/{{ aluno.idAluno }}';"
                                                 style="cursor: pointer;">
                                                 <td>
-                                                    <img src="{{ aluno.foto or '/static/img/user.jpg' }}" alt="{{ aluno.nome }}"
-                                                        class="rounded-circle"
+                                                    <img src="{{ aluno.foto or '/static/img/user.jpg' }}"
+                                                        alt="{{ aluno.nome }}" class="rounded-circle"
                                                         style="width: 40px; height: 40px; object-fit: cover;"
                                                         onerror="this.src='/static/img/user.jpg'">
                                                 </td>
